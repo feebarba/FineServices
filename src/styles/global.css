@@ -186,8 +186,8 @@ p { margin: 0; font-family: var(--garamono); font-size: 11px; font-weight: 500; 
   .project-year-cell { grid-column: 3; grid-row: 2; }
   .design-project-meta .project-year-cell { grid-column: 4; grid-row: 2; }
   .design-accordion-panel { overflow-wrap: anywhere; }
-  .gallery-scroll { --photo-width: 83.6vw; --photo-height: 56.1vw; --photo-vertical-width: min(37.4vw, 183.33px); --photo-vertical-height: min(56.1vw, 275px); --photo-max-height: 275px; --photo-vertical-max-height: none; }
-  .gallery-scroll.is-expanded { --photo-width: 182.4vw; --photo-height: 122.4vw; --photo-vertical-width: min(81.6vw, 400px); --photo-vertical-height: min(122.4vw, 600px); --photo-max-height: 600px; --photo-vertical-max-height: none; }
+  .gallery-scroll { --photo-width: 41.8vw; --photo-height: 28.05vw; --photo-vertical-width: min(18.7vw, 91.665px); --photo-vertical-height: min(28.05vw, 137.5px); --photo-max-height: 137.5px; --photo-vertical-max-height: none; }
+  .gallery-scroll.is-expanded { --photo-width: 91.2vw; --photo-height: 61.2vw; --photo-vertical-width: min(40.8vw, 200px); --photo-vertical-height: min(61.2vw, 300px); --photo-max-height: 300px; --photo-vertical-max-height: none; }
 }
 
 @media (prefers-reduced-motion: reduce) {
