@@ -940,6 +940,7 @@ const pageTitle = initialTab === "design"
 
     gallery.addEventListener("pointerdown", (event) => {
       if (event.pointerType === "mouse" && event.button !== 0) return;
+      if (event.pointerType === "touch") return;
 
       cancelMomentum();
       cancelExpansionSync();
