@@ -51,8 +51,13 @@ p { margin: 0; font-family: var(--garamono); font-size: 11px; font-weight: 500; 
 
 .tab { position: relative; height: var(--tab-height); overflow: hidden; transition: height 600ms cubic-bezier(0.25, 0.8, 0.35, 1), bottom 600ms cubic-bezier(0.25, 0.8, 0.35, 1), background-color 350ms ease-in-out; }
 .tab:not(.active) { cursor: pointer; transition: height 350ms ease-in-out, bottom 350ms ease-in-out, background-color 350ms ease-in-out; }
-.tab:not(.active):hover { height: 82px; }
-.design-panel:not(.active):hover, .collection:not(.active):hover { background: #e7fddb; }
+@media (hover: hover) and (pointer: fine) {
+  .tab:not(.active):hover { height: 82px; }
+  .design-panel:not(.active):hover, .collection:not(.active):hover { background: #e7fddb; }
+}
+@media (hover: none) and (pointer: coarse) {
+  .design-panel:has(.design-toggle:active), .collection:has(.collection-toggle:active) { background: #e7fddb; }
+}
 .portfolio-shell.is-tab-transitioning .tab { transition: height 600ms cubic-bezier(0.25, 0.8, 0.35, 1), bottom 600ms cubic-bezier(0.25, 0.8, 0.35, 1), background-color 350ms ease-in-out; pointer-events: none !important; }
 .tab-head { position: absolute; z-index: 10; top: 0; left: 0; width: 100%; overflow: hidden; }
 .tab-content { position: absolute; z-index: 5; top: 0; right: 0; width: 100%; height: 100dvh; overflow: auto; opacity: 0; scrollbar-width: none; transition: opacity 400ms ease-in-out; }
@@ -95,13 +100,15 @@ p { margin: 0; font-family: var(--garamono); font-size: 11px; font-weight: 500; 
 .portfolio-shell.is-tab-transitioning .collection.is-closing .collection-content { opacity: 0; pointer-events: none; transition: opacity 600ms cubic-bezier(0.25, 0.8, 0.35, 1); }
 .collection.is-closing { background: #f4ffee; }
 .collection.is-closing .collection-heading { background: #f4ffee; }
-.portfolio-shell:has(.home-panel:hover) .design-panel.active { bottom: 42px; }
-.portfolio-shell:has(.home-panel:hover) .design-panel.inactive { bottom: calc(100dvh - 132px); }
-.portfolio-shell:has(.design-panel:hover) .design-panel.inactive { bottom: calc(100dvh - 132px); }
-.portfolio-shell:has(.design-panel:hover) .collection.active { bottom: -20px; }
-.portfolio-shell:has(.photography-panel:hover) .design-panel:not(.active) { bottom: 82px; }
-.portfolio-shell:has(.photography-panel:hover) .design-panel.inactive { bottom: calc(100dvh - 112px); }
-.portfolio-shell:has(.photography-panel:hover) .collection:not(.active) { height: 82px; }
+@media (hover: hover) and (pointer: fine) {
+  .portfolio-shell:has(.home-panel:hover) .design-panel.active { bottom: 42px; }
+  .portfolio-shell:has(.home-panel:hover) .design-panel.inactive { bottom: calc(100dvh - 132px); }
+  .portfolio-shell:has(.design-panel:hover) .design-panel.inactive { bottom: calc(100dvh - 132px); }
+  .portfolio-shell:has(.design-panel:hover) .collection.active { bottom: -20px; }
+  .portfolio-shell:has(.photography-panel:hover) .design-panel:not(.active) { bottom: 82px; }
+  .portfolio-shell:has(.photography-panel:hover) .design-panel.inactive { bottom: calc(100dvh - 112px); }
+  .portfolio-shell:has(.photography-panel:hover) .collection:not(.active) { height: 82px; }
+}
 .project-list { margin-top: clamp(57.6px, 6.8vw, 104px); }
 .project + .project { margin-top: clamp(57.6px, 6.8vw, 104px); }
 .project-meta { grid-template-columns: repeat(3, minmax(0, 1fr)) 50px; gap: 18px; min-height: 20px; padding: 0 0 5px; font-size: 11px; font-weight: 600; line-height: 1.1; white-space: nowrap; }
