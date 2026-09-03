@@ -524,7 +524,6 @@ const pageTitle = initialTab === "design"
                   <span class="project-number">{String(projectIndex + 1).padStart(2, "0")}.</span>{" "}
                   <span class="project-title">{project.title}</span>
                 </h2>
-                <span class="design-project-type">{project.designType}</span>
 
                 <div class="design-accordion design-info-accordion" data-design-accordion>
                   <button
@@ -554,45 +553,16 @@ const pageTitle = initialTab === "design"
                     aria-labelledby={`design-info-toggle-${projectIndex}`}
                     aria-hidden="true"
                   >
-                    <p>{project.info}</p>
-                  </div>
-                </div>
-
-                <div class="design-accordion design-credits-accordion" data-design-accordion>
-                  <button
-                    class="design-accordion-toggle"
-                    id={`design-credits-toggle-${projectIndex}`}
-                    type="button"
-                    data-design-accordion-toggle
-                    aria-expanded="false"
-                    aria-controls={`design-credits-panel-${projectIndex}`}
-                  >
-                    <span>Credits</span>
-                    <img
-                      class="design-accordion-arrow"
-                      src="/icons/credits-arrow-down.svg"
-                      data-closed-src="/icons/credits-arrow-down.svg"
-                      data-open-src="/icons/credits-arrow-up.svg"
-                      alt=""
-                      width="8"
-                      height="8"
-                    />
-                  </button>
-                  <div
-                    class="design-accordion-panel design-credits-panel"
-                    id={`design-credits-panel-${projectIndex}`}
-                    data-design-accordion-panel
-                    role="region"
-                    aria-labelledby={`design-credits-toggle-${projectIndex}`}
-                    aria-hidden="true"
-                  >
-                    <div class="design-credits-list">
-                      {project.credits.map((credit) => (
-                        <div class="design-credit">
-                          <p class="design-credit-category">{credit.category}</p>
-                          <p class="design-credit-name">{credit.name}</p>
-                        </div>
-                      ))}
+                    <div class="design-info-details">
+                      <p>{project.info}</p>
+                      <div class="design-credits-list">
+                        {project.credits.map((credit) => (
+                          <div class="design-credit">
+                            <p class="design-credit-category">{credit.category}</p>
+                            <p class="design-credit-name">{credit.name}</p>
+                          </div>
+                        ))}
+                      </div>
                     </div>
                   </div>
                 </div>
