@@ -186,8 +186,8 @@ p { margin: 0; font-family: var(--garamono); font-size: 11px; font-weight: 500; 
   .project-year-cell { grid-column: 3; grid-row: 2; }
   .design-project-meta .project-year-cell { grid-column: 4; grid-row: 2; }
   .design-accordion-panel { overflow-wrap: anywhere; }
-  .gallery-scroll { --photo-width: 41.8vw; --photo-height: 28.05vw; --photo-vertical-width: min(18.7vw, 91.665px); --photo-vertical-height: min(28.05vw, 137.5px); --photo-max-height: 137.5px; --photo-vertical-max-height: none; }
-  .gallery-scroll.is-expanded { --photo-width: 91.2vw; --photo-height: 61.2vw; --photo-vertical-width: min(40.8vw, 200px); --photo-vertical-height: min(61.2vw, 300px); --photo-max-height: 300px; --photo-vertical-max-height: none; }
+  .gallery-scroll { --photo-width: 48.07vw; --photo-height: 32.2575vw; --photo-vertical-width: min(21.505vw, 105.41475px); --photo-vertical-height: min(32.2575vw, 158.125px); --photo-max-height: 158.125px; --photo-vertical-max-height: none; }
+  .gallery-scroll.is-expanded { --photo-width: 104.88vw; --photo-height: 70.38vw; --photo-vertical-width: min(46.92vw, 230px); --photo-vertical-height: min(70.38vw, 345px); --photo-max-height: 345px; --photo-vertical-max-height: none; }
 }
 
 @media (prefers-reduced-motion: reduce) {
