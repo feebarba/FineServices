@@ -1,0 +1,1235 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import "../styles/global.css";
+
+type PhotoOrientation = "horizontal" | "vertical";
+type PhotoPalette = "black-and-white" | "color";
+
+type ProjectPhoto = {
+  kind?: "image";
+  src: string;
+  alt: string;
+  orientation: PhotoOrientation;
+  palette: PhotoPalette;
+  width: number;
+  height: number;
+};
+
+type ProjectVideo = {
+  kind: "video";
+  src: string;
+  alt: string;
+  orientation: PhotoOrientation;
+  width: number;
+  height: number;
+};
+
+type ProjectMedia = ProjectPhoto | ProjectVideo;
+
+type DesignCredit = {
+  category: string;
+  name: string;
+};
+
+type Project = {
+  title: string;
+  designType: string;
+  info: string;
+  credits: DesignCredit[];
+  location: string;
+  medium: string;
+  year: string;
+  photoCount: number;
+  photos?: ProjectPhoto[];
+  designMedia?: ProjectMedia[];
+};
+
+const defaultDesignInfo = "A creative digital identity positioned directly within the acidity of Brazilian Design. Three years after its first launch, we have developed a new website for the Polar portfolio. Accessible buttons, to the content classification through filters and different types of visualization, the interface design.";
+
+const defaultDesignCredits: DesignCredit[] = [
+  { category: "Design", name: "Felipe Barbosa, Ralph Mayer" },
+  { category: "Development", name: "Ariel Tonglet" },
+  { category: "Verbal Brand Identity", name: "Pedro Kastelic" },
+  { category: "Typeface", name: "Universal Sans (Family Type)" },
+];
+
+const polarCaseVideo: ProjectVideo = {
+  kind: "video",
+  src: "/videos/projects/polar-case-18.mp4",
+  alt: "Vídeo do case Polar",
+  orientation: "vertical",
+  width: 1280,
+  height: 1600,
+};
+
+const polarDesignMedia: ProjectMedia[] = [
+  polarCaseVideo,
+  {
+    kind: "image",
+    src: "/images/projects/polar-case/polar-case-07.png",
+    alt: "Copos empilhados com detalhes amarelos no estúdio da Polar",
+    orientation: "vertical",
+    palette: "color",
+    width: 1280,
+    height: 1601,
+  },
+  {
+    kind: "video",
+    src: "/videos/projects/polar-website-06.mp4",
+    alt: "Vídeo do website da Polar",
+    orientation: "horizontal",
+    width: 2560,
+    height: 1440,
+  },
+  {
+    kind: "video",
+    src: "/videos/projects/polar-card-feed-05.mp4",
+    alt: "Vídeo do card de feed da Polar",
+    orientation: "vertical",
+    width: 1280,
+    height: 1600,
+  },
+  {
+    kind: "video",
+    src: "/videos/projects/polar-website-16.mp4",
+    alt: "Vídeo do website da Polar",
+    orientation: "horizontal",
+    width: 2560,
+    height: 1440,
+  },
+  {
+    kind: "image",
+    src: "/images/projects/polar-case/home-feed-02.png",
+    alt: "Página inicial do feed da Polar",
+    orientation: "vertical",
+    palette: "color",
+    width: 1080,
+    height: 1280,
+  },
+];
+
+const enchantedFeelingsPhotos: ProjectPhoto[] = [
+  {
+    src: "/images/projects/enchanted-feelings/R0001868.jpg",
+    alt: "Cachorro branco em uma feira cercado por pessoas",
+    orientation: "horizontal",
+    palette: "black-and-white",
+    width: 2000,
+    height: 1333,
+  },
+  {
+    src: "/images/projects/enchanted-feelings/R0002020-hor.jpg",
+    alt: "Homem dentro de um café visto através de uma vitrine refletida",
+    orientation: "horizontal",
+    palette: "black-and-white",
+    width: 2500,
+    height: 1608,
+  },
+  {
+    src: "/images/projects/enchanted-feelings/R0002235.jpg",
+    alt: "Mulher caminhando diante de portas vermelhas",
+    orientation: "horizontal",
+    palette: "color",
+    width: 2000,
+    height: 1333,
+  },
+  {
+    src: "/images/projects/enchanted-feelings/R0002402.jpg",
+    alt: "Skatista visto através de uma estrutura envidraçada",
+    orientation: "horizontal",
+    palette: "black-and-white",
+    width: 2000,
+    height: 1333,
+  },
+  {
+    src: "/images/projects/enchanted-feelings/R0002694.jpg",
+    alt: "Passageiros sentados no interior de um trem",
+    orientation: "horizontal",
+    palette: "color",
+    width: 2268,
+    height: 1512,
+  },
+  {
+    src: "/images/projects/enchanted-feelings/R0002854.jpg",
+    alt: "Fachada urbana com letreiro amarelo e estrutura vermelha",
+    orientation: "horizontal",
+    palette: "color",
+    width: 2000,
+    height: 1333,
+  },
+  {
+    src: "/images/projects/enchanted-feelings/R0002456.jpg",
+    alt: "Duas mulheres caminhando e comendo em uma rua movimentada",
+    orientation: "horizontal",
+    palette: "color",
+    width: 2000,
+    height: 1333,
+  },
+  {
+    src: "/images/projects/enchanted-feelings/R0002344.jpg",
+    alt: "Pessoas jogando em um salão de sinuca iluminado",
+    orientation: "horizontal",
+    palette: "color",
+    width: 2000,
+    height: 1333,
+  },
+  {
+    src: "/images/projects/enchanted-feelings/R0001853.jpg",
+    alt: "Casal caminhando diante de uma fachada vermelha",
+    orientation: "horizontal",
+    palette: "color",
+    width: 2829,
+    height: 1886,
+  },
+  {
+    src: "/images/projects/enchanted-feelings/R0001880.jpg",
+    alt: "Mulher em primeiro plano em uma feira fotografada em preto e branco",
+    orientation: "horizontal",
+    palette: "black-and-white",
+    width: 2800,
+    height: 1867,
+  },
+  {
+    src: "/images/projects/enchanted-feelings/R0001984.jpg",
+    alt: "Casal sentado em uma banca de flores",
+    orientation: "horizontal",
+    palette: "color",
+    width: 2935,
+    height: 1933,
+  },
+  {
+    src: "/images/projects/enchanted-feelings/R0002082.jpg",
+    alt: "Reflexos e frutas em um interior fotografado em preto e branco",
+    orientation: "vertical",
+    palette: "black-and-white",
+    width: 2000,
+    height: 3000,
+  },
+  {
+    src: "/images/projects/enchanted-feelings/R0002771.jpg",
+    alt: "Pessoas sentadas em bancos à beira-mar em preto e branco",
+    orientation: "horizontal",
+    palette: "black-and-white",
+    width: 2800,
+    height: 1867,
+  },
+  {
+    src: "/images/projects/enchanted-feelings/R0002394.jpg",
+    alt: "Silhueta desfocada atrás de painéis de vidro colorido",
+    orientation: "vertical",
+    palette: "color",
+    width: 2816,
+    height: 4225,
+  },
+];
+
+const blackAndWhitePhotos = enchantedFeelingsPhotos.filter(
+  ({ palette }) => palette === "black-and-white",
+);
+const colorPhotos = enchantedFeelingsPhotos.filter(({ palette }) => palette === "color");
+colorPhotos.unshift(colorPhotos.pop()!);
+
+const quietStructuresPhotos: ProjectPhoto[] = [
+  {
+    src: "/images/projects/quiet-structures/Scan15015.jpg",
+    alt: "Parede de elementos vazados fotografada em preto e branco",
+    orientation: "horizontal",
+    palette: "black-and-white",
+    width: 1600,
+    height: 1060,
+  },
+  {
+    src: "/images/projects/quiet-structures/Scan14998.jpg",
+    alt: "Detalhe circular de um objeto metálico em preto e branco",
+    orientation: "horizontal",
+    palette: "black-and-white",
+    width: 1600,
+    height: 1060,
+  },
+  {
+    src: "/images/projects/quiet-structures/Scan15031.jpg",
+    alt: "Vista urbana através de uma janela com um ventilador",
+    orientation: "vertical",
+    palette: "black-and-white",
+    width: 795,
+    height: 1200,
+  },
+  {
+    src: "/images/projects/quiet-structures/Scan15024.jpg",
+    alt: "Mesa com peças de cerâmica diante de uma janela aberta",
+    orientation: "vertical",
+    palette: "black-and-white",
+    width: 795,
+    height: 1200,
+  },
+  {
+    src: "/images/projects/quiet-structures/Scan15025.jpg",
+    alt: "Interior de ateliê com prateleiras e uma janela aberta",
+    orientation: "vertical",
+    palette: "black-and-white",
+    width: 795,
+    height: 1200,
+  },
+  {
+    src: "/images/projects/quiet-structures/Scan15021.jpg",
+    alt: "Mulher em um terraço diante de edifícios urbanos",
+    orientation: "vertical",
+    palette: "black-and-white",
+    width: 795,
+    height: 1200,
+  },
+  {
+    src: "/images/projects/quiet-structures/Scan15018.jpg",
+    alt: "Biombo metálico com desenhos florais em um interior",
+    orientation: "vertical",
+    palette: "black-and-white",
+    width: 795,
+    height: 1200,
+  },
+  {
+    src: "/images/projects/quiet-structures/Scan15036.jpg",
+    alt: "Janelas basculantes formando uma composição geométrica",
+    orientation: "vertical",
+    palette: "black-and-white",
+    width: 795,
+    height: 1200,
+  },
+  {
+    src: "/images/projects/quiet-structures/Scan15022.jpg",
+    alt: "Fachada de ateliê com portas de vidro e persianas",
+    orientation: "horizontal",
+    palette: "black-and-white",
+    width: 1600,
+    height: 1060,
+  },
+  {
+    src: "/images/projects/quiet-structures/Scan15044.jpg",
+    alt: "Pessoa sentada entre janelas em um interior sombreado",
+    orientation: "vertical",
+    palette: "black-and-white",
+    width: 795,
+    height: 1200,
+  },
+  {
+    src: "/images/projects/quiet-structures/Scan15026.jpg",
+    alt: "Prateleiras de cerâmica e uma mesa de trabalho",
+    orientation: "vertical",
+    palette: "black-and-white",
+    width: 795,
+    height: 1200,
+  },
+  {
+    src: "/images/projects/quiet-structures/Scan15035.jpg",
+    alt: "Edifício industrial com uma sequência de janelas abertas",
+    orientation: "horizontal",
+    palette: "black-and-white",
+    width: 1600,
+    height: 1060,
+  },
+  {
+    src: "/images/projects/quiet-structures/Scan15034.jpg",
+    alt: "Silhueta diante de uma parede vazada com desenhos",
+    orientation: "horizontal",
+    palette: "black-and-white",
+    width: 1600,
+    height: 1060,
+  },
+].reverse();
+
+const projects: Project[] = [
+  {
+    title: "Enchanted feelings",
+    designType: "Visual identity",
+    info: defaultDesignInfo,
+    credits: defaultDesignCredits,
+    location: "Catalunya, Spain",
+    medium: "Kodak 400Tx",
+    year: "2016",
+    photoCount: blackAndWhitePhotos.length,
+    photos: blackAndWhitePhotos,
+    designMedia: polarDesignMedia,
+  },
+  {
+    title: "Nocturnal forms",
+    designType: "Editorial design",
+    info: defaultDesignInfo,
+    credits: defaultDesignCredits,
+    location: "São Paulo, Brazil",
+    medium: "Ilford HP5 Plus",
+    year: "2019",
+    photoCount: colorPhotos.length,
+    photos: colorPhotos,
+  },
+  {
+    title: "Quiet structures",
+    designType: "Digital experience",
+    info: defaultDesignInfo,
+    credits: defaultDesignCredits,
+    location: "Lisbon, Portugal",
+    medium: "Mamiya 7",
+    year: "2020",
+    photoCount: quietStructuresPhotos.length,
+    photos: quietStructuresPhotos,
+  },
+  {
+    title: "Enchanted feelings",
+    designType: "Visual identity",
+    info: defaultDesignInfo,
+    credits: defaultDesignCredits,
+    location: "Catalunya, Spain",
+    medium: "Kodak 400Tx",
+    year: "2016",
+    photoCount: blackAndWhitePhotos.slice(-4).length,
+    photos: blackAndWhitePhotos.slice(-4),
+  },
+  {
+    title: "Nocturnal forms",
+    designType: "Art direction",
+    info: defaultDesignInfo,
+    credits: defaultDesignCredits,
+    location: "São Paulo, Brazil",
+    medium: "Ilford HP5 Plus",
+    year: "2019",
+    photoCount: colorPhotos.slice(-2).length,
+    photos: colorPhotos.slice(-2),
+  },
+  {
+    title: "Quiet structures",
+    designType: "Publication",
+    info: defaultDesignInfo,
+    credits: defaultDesignCredits,
+    location: "Lisbon, Portugal",
+    medium: "Mamiya 7",
+    year: "2020",
+    photoCount: quietStructuresPhotos.slice(-6).length,
+    photos: quietStructuresPhotos.slice(-6),
+  },
+];
+
+projects.push(
+  ...projects.slice(1).map((project) => ({
+    ...project,
+    photos: project.photos ? [...project.photos] : undefined,
+  })),
+);
+
+const designProjects = projects.slice(0, -1);
+const designMediaByProject: ProjectMedia[][] = designProjects.map(
+  (project) => project.designMedia ?? project.photos ?? [],
+);
+
+const orientationsByProject: PhotoOrientation[][] = projects.map(({ photoCount, photos }) => {
+  if (photos) {
+    return photos.map(({ orientation }) => orientation);
+  }
+
+  const orientations = Array.from({ length: photoCount }, () =>
+    Math.random() < 0.5 ? "horizontal" : "vertical",
+  );
+
+  if (orientations.every((orientation) => orientation === "horizontal")) {
+    orientations[0] = "vertical";
+  }
+
+  if (orientations.every((orientation) => orientation === "vertical")) {
+    orientations[0] = "horizontal";
+  }
+
+  return orientations;
+});
+
+const designOrientationsByProject = designMediaByProject.map((media) =>
+  media.map(({ orientation }) => orientation),
+);
+
+const totalPhotoCount = projects.reduce((total, project) => total + project.photoCount, 0);
+type PortfolioTab = "home" | "design" | "photography";
+const normalizedPath = Astro.url.pathname.replace(/\/+$/, "") || "/";
+const initialTab: PortfolioTab = normalizedPath === "/design"
+  ? "design"
+  : normalizedPath === "/photography"
+    ? "photography"
+    : "home";
+const pageTitle = initialTab === "design"
+  ? "Design — Felipe Barbosa"
+  : initialTab === "photography"
+    ? "Photography — Felipe Barbosa"
+    : "Felipe Barbosa";
+---
+
+<BaseLayout
+  title={pageTitle}
+  description="Portfólio de design e fotografia de Felipe Barbosa."
+>
+  <main class="portfolio-shell" id="index">
+    <section class:list={["tab", "home-panel", { active: initialTab === "home" }]} data-home-panel aria-label="Página inicial">
+      <div class="tab-head home-head">
+        <header class="site-header">
+          <a href="/" class="brand" data-home-toggle>FELIPE BARBOSA</a>
+        </header>
+      </div>
+
+      <div class="tab-content home-content" data-home-content>
+        <div class="home-inner">
+          <div class="home-copy">
+            <p>
+              I'm Felipe, a graphic designer with artistic and technical influences dedicated to developing design solutions guided by a strategic digital approach. My contributions go beyond creating modern and creative visual solutions for clients. I also approach design with a systematic and strategic mindset to simplify processes and scaling these solutions. I see design as a tool that helps individuals and brands in their daily lives, enhancing our ability to face the challenges of today's world.
+            </p>
+            <p>
+              I collaborated with teams from studios such as HardCuore in Rio de Janeiro, Hardy in Minas Gerais and Polar, Ltda in São Paulo, and worked on projects for clients such as Instituto Moreira Salles, Museu de Arte do Rio, Aliança Francesa, Revista Amarello, Vox Capital, Nubank, Daily Paper and much more.
+            </p>
+
+            <div class="home-list">
+              <div class="home-list-label"><p><i>Pratice</i></p></div>
+              <div class="home-list-items">
+                <p>Latin American Design Awards 2024<br /><i>Silver, Category Digital</i></p>
+                <p>Awwwards 2022<br /><i>Honor Mention</i></p>
+                <p>Brasil Design Awards 2021<br /><i>Silver, Category Digital</i></p>
+              </div>
+            </div>
+
+            <div class="home-list">
+              <div class="home-list-label"><p><i>Mentions &amp; Awards</i></p></div>
+              <div class="home-list-items">
+                <p>Latin American Design Awards 2026<br /><i>Gold, Category Digital</i></p>
+                <p>Latin American Design Awards 2026<br /><i>2x Silver, Category Digital</i></p>
+                <p>14th Brazilian Design Biennial<br /><i>Category Digital</i></p>
+                <p>Latin American Design Awards 2024<br /><i>Silver, Category Digital</i></p>
+                <p>Awwwards 2022<br /><i>Honor Mention</i></p>
+                <p>Brasil Design Awards 2021<br /><i>Silver, Category Digital</i></p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class:list={["tab", "design-panel", "off", { active: initialTab === "design", inactive: initialTab === "photography" }]} data-design-panel aria-label="Design">
+      <a
+        class="tab-heading design-toggle"
+        href="/design"
+        data-design-toggle
+        aria-controls="design-content"
+        aria-expanded={String(initialTab === "design")}
+      >
+        <span>Design</span>
+        <span>{designProjects.length} projects</span>
+      </a>
+      <div class="tab-content design-content" id="design-content" data-design-content aria-hidden={String(initialTab !== "design")}>
+        <div class="project-list">
+          {designProjects.map((project, projectIndex) => (
+            <article class="project">
+              <div class="project-meta design-project-meta">
+                <h2>
+                  <span class="project-number">{String(projectIndex + 1).padStart(2, "0")}.</span>{" "}
+                  <span class="project-title">{project.title}</span>
+                </h2>
+                <span class="design-project-type">{project.designType}</span>
+
+                <div class="design-accordion design-info-accordion" data-design-accordion>
+                  <button
+                    class="design-accordion-toggle"
+                    id={`design-info-toggle-${projectIndex}`}
+                    type="button"
+                    data-design-accordion-toggle
+                    aria-expanded="false"
+                    aria-controls={`design-info-panel-${projectIndex}`}
+                  >
+                    <span>Info</span>
+                    <img
+                      class="design-accordion-arrow"
+                      src="/icons/info-arrow-down.svg"
+                      data-closed-src="/icons/info-arrow-down.svg"
+                      data-open-src="/icons/info-arrow-up.svg"
+                      alt=""
+                      width="8"
+                      height="8"
+                    />
+                  </button>
+                  <div
+                    class="design-accordion-panel design-info-panel"
+                    id={`design-info-panel-${projectIndex}`}
+                    data-design-accordion-panel
+                    role="region"
+                    aria-labelledby={`design-info-toggle-${projectIndex}`}
+                    aria-hidden="true"
+                  >
+                    <p>{project.info}</p>
+                  </div>
+                </div>
+
+                <div class="design-accordion design-credits-accordion" data-design-accordion>
+                  <button
+                    class="design-accordion-toggle"
+                    id={`design-credits-toggle-${projectIndex}`}
+                    type="button"
+                    data-design-accordion-toggle
+                    aria-expanded="false"
+                    aria-controls={`design-credits-panel-${projectIndex}`}
+                  >
+                    <span>Credits</span>
+                    <img
+                      class="design-accordion-arrow"
+                      src="/icons/credits-arrow-down.svg"
+                      data-closed-src="/icons/credits-arrow-down.svg"
+                      data-open-src="/icons/credits-arrow-up.svg"
+                      alt=""
+                      width="8"
+                      height="8"
+                    />
+                  </button>
+                  <div
+                    class="design-accordion-panel design-credits-panel"
+                    id={`design-credits-panel-${projectIndex}`}
+                    data-design-accordion-panel
+                    role="region"
+                    aria-labelledby={`design-credits-toggle-${projectIndex}`}
+                    aria-hidden="true"
+                  >
+                    <div class="design-credits-list">
+                      {project.credits.map((credit) => (
+                        <div class="design-credit">
+                          <p class="design-credit-category">{credit.category}</p>
+                          <p class="design-credit-name">{credit.name}</p>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+                <div class="project-year-cell">
+                  <span class="project-year">{project.year}</span>
+                </div>
+              </div>
+
+              <div
+                class="gallery-scroll"
+                data-gallery-scroll
+                data-tab-gallery="design"
+                tabindex="0"
+                aria-expanded="false"
+                aria-label={`Imagens do projeto ${project.title}, rolagem horizontal`}
+              >
+                <div class="gallery-track">
+                  {Array.from({ length: designMediaByProject[projectIndex].length }, (_, photoIndex) => {
+                    const media = designMediaByProject[projectIndex][photoIndex];
+
+                    return (
+                      <figure
+                        class="photo"
+                        data-photo={photoIndex + 1}
+                        data-orientation={designOrientationsByProject[projectIndex][photoIndex]}
+                        style={`--reveal-delay: ${photoIndex * 150}ms; --media-ratio: ${media ? media.width / media.height : 1}`}
+                      >
+                        <div class:list={["photo-frame", { "has-image": Boolean(media) }]}> 
+                          {media?.kind === "video" ? (
+                            <video
+                              class="project-video"
+                              data-src={media.src}
+                              aria-label={media.alt}
+                              width={media.width}
+                              height={media.height}
+                              autoplay
+                              loop
+                              muted
+                              playsinline
+                              preload="none"
+                              disablepictureinpicture
+                              disableremoteplayback
+                            ></video>
+                          ) : media ? (
+                            <img
+                              class="project-image"
+                              data-src={media.src}
+                              alt={media.alt}
+                              width={media.width}
+                              height={media.height}
+                              loading="eager"
+                              decoding="async"
+                              draggable="false"
+                            />
+                          ) : (
+                            <span class="photo-placeholder"></span>
+                          )}
+                        </div>
+                      </figure>
+                    );
+                  })}
+                </div>
+              </div>
+            </article>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <section class:list={["tab", "collection", "photography-panel", "off", { active: initialTab === "photography" }]} id="photography-panel" data-photography-panel aria-labelledby="collection-title">
+      <a
+        class="collection-heading collection-toggle"
+        href="/photography"
+        data-photography-toggle
+        aria-controls="photography-content"
+        aria-expanded={String(initialTab === "photography")}
+      >
+        <h1 id="collection-title">Photography</h1>
+        <span>{totalPhotoCount} images</span>
+      </a>
+
+      <div class="collection-content" id="photography-content" data-photography-content aria-hidden={String(initialTab !== "photography")}>
+
+        <div class="project-list">
+          {projects.map((project, projectIndex) => (
+            <article class="project">
+              <div class="project-meta">
+                <h2>
+                  <span class="project-number">{String(projectIndex + 1).padStart(2, "0")}.</span>{" "}
+                  <span class="project-title">{project.title}</span>
+                </h2>
+                <span class="project-location">{project.location}</span>
+                <span class="project-medium">{project.medium}</span>
+                <div class="project-year-cell">
+                  <span class="project-year">{project.year}</span>
+                </div>
+              </div>
+
+              <div
+                class="gallery-scroll"
+                data-gallery-scroll
+                data-tab-gallery="photography"
+                tabindex="0"
+                aria-expanded="false"
+                aria-label={`Imagens do projeto ${project.title}, rolagem horizontal`}
+              >
+                <div class="gallery-track">
+                  {Array.from({ length: project.photoCount }, (_, photoIndex) => {
+                    const photo = project.photos?.[photoIndex];
+
+                    return (
+                      <figure
+                        class="photo"
+                        data-photo={photoIndex + 1}
+                        data-orientation={orientationsByProject[projectIndex][photoIndex]}
+                        style={`--reveal-delay: ${photoIndex * 150}ms`}
+                      >
+                        <div class:list={["photo-frame", { "has-image": Boolean(photo) }]}> 
+                          {photo ? (
+                            <img
+                              class="project-image"
+                              data-src={photo.src}
+                              alt={photo.alt}
+                              width={photo.width}
+                              height={photo.height}
+                              loading="eager"
+                              decoding="async"
+                              draggable="false"
+                            />
+                          ) : (
+                            <span class="photo-placeholder"></span>
+                          )}
+                        </div>
+                      </figure>
+                    );
+                  })}
+                </div>
+              </div>
+            </article>
+          ))}
+        </div>
+      </div>
+    </section>
+  </main>
+</BaseLayout>
+
+<script>
+  const galleries = Array.from(
+    document.querySelectorAll<HTMLElement>("[data-gallery-scroll]"),
+  );
+  type GalleryTab = "design" | "photography";
+  const resetGalleryStates: Array<{ tab: GalleryTab; reset: () => void }> = [];
+
+  const loadGalleryMedia = (gallery: HTMLElement) => {
+    if (gallery.dataset.loadStarted === "true") return;
+    gallery.dataset.loadStarted = "true";
+
+    const galleryImages = Array.from(gallery.querySelectorAll<HTMLImageElement>(".project-image"));
+    const galleryVideos = Array.from(gallery.querySelectorAll<HTMLVideoElement>(".project-video"));
+    const galleryMedia = [...galleryImages, ...galleryVideos];
+
+    if (galleryMedia.length === 0) {
+      requestAnimationFrame(() => gallery.classList.add("is-images-ready"));
+      return;
+    }
+
+    const settledMedia = new Set<HTMLImageElement | HTMLVideoElement>();
+
+    const markMediaSettled = (media: HTMLImageElement | HTMLVideoElement) => {
+      if (settledMedia.has(media)) return;
+
+      settledMedia.add(media);
+
+      if (settledMedia.size === galleryMedia.length) {
+        gallery.classList.add("is-images-ready");
+      }
+    };
+
+    galleryImages.forEach((image) => {
+      const source = image.dataset.src;
+
+      if (!source) {
+        markMediaSettled(image);
+        return;
+      }
+
+      image.addEventListener("load", () => markMediaSettled(image), { once: true });
+      image.addEventListener("error", () => markMediaSettled(image), { once: true });
+      image.src = source;
+      image.removeAttribute("data-src");
+
+      if (image.complete) {
+        markMediaSettled(image);
+      }
+    });
+
+    galleryVideos.forEach((video) => {
+      const source = video.dataset.src;
+
+      if (!source) {
+        markMediaSettled(video);
+        return;
+      }
+
+      const startPlayback = () => {
+        const playback = video.play();
+        playback?.catch(() => undefined);
+      };
+
+      video.addEventListener("loadeddata", () => {
+        markMediaSettled(video);
+        startPlayback();
+      }, { once: true });
+      video.addEventListener("error", () => markMediaSettled(video), { once: true });
+      video.src = source;
+      video.removeAttribute("data-src");
+      video.load();
+      startPlayback();
+
+      if (video.readyState >= HTMLMediaElement.HAVE_CURRENT_DATA) {
+        markMediaSettled(video);
+      }
+    });
+  };
+
+  const restartGalleryLoading = (tab: GalleryTab) => {
+    const readyGalleries = galleries.filter((gallery) =>
+      gallery.dataset.tabGallery === tab &&
+      gallery.classList.contains("is-images-ready"),
+    );
+
+    if (readyGalleries.length === 0) return;
+
+    readyGalleries.forEach((gallery) => {
+      gallery.classList.remove("is-images-ready");
+      gallery.querySelectorAll<HTMLElement>(".photo-frame").forEach((frame) => {
+        frame.classList.remove("is-revealed");
+      });
+    });
+
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        readyGalleries.forEach((gallery) => gallery.classList.add("is-images-ready"));
+      });
+    });
+  };
+
+  if ("IntersectionObserver" in window) {
+    const galleryObserver = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (!entry.isIntersecting) return;
+
+          const gallery = entry.target as HTMLElement;
+          loadGalleryMedia(gallery);
+          galleryObserver.unobserve(gallery);
+        });
+      },
+      { threshold: 0.01 },
+    );
+
+    galleries.forEach((gallery) => galleryObserver.observe(gallery));
+  } else {
+    galleries.forEach(loadGalleryMedia);
+  }
+
+  galleries.forEach((gallery) => {
+    const galleryTab: GalleryTab = gallery.dataset.tabGallery === "design"
+      ? "design"
+      : "photography";
+
+    let isDragging = false;
+    let hasDragged = false;
+    let dragStartX = 0;
+    let dragStartScrollLeft = 0;
+    let dragSamples: Array<{ x: number; time: number }> = [];
+    let momentumFrame: number | null = null;
+    let expansionSyncFrame: number | null = null;
+
+    const cancelMomentum = () => {
+      if (momentumFrame === null) return;
+      cancelAnimationFrame(momentumFrame);
+      momentumFrame = null;
+    };
+
+    const cancelExpansionSync = () => {
+      if (expansionSyncFrame === null) return;
+      cancelAnimationFrame(expansionSyncFrame);
+      expansionSyncFrame = null;
+    };
+
+    const resetGalleryState = () => {
+      cancelMomentum();
+      cancelExpansionSync();
+      isDragging = false;
+      hasDragged = false;
+      dragSamples = [];
+      gallery.classList.remove("is-dragging", "is-expanded");
+      gallery.setAttribute("aria-expanded", "false");
+      gallery.scrollTo({ left: 0, behavior: "auto" });
+    };
+
+    resetGalleryStates.push({ tab: galleryTab, reset: resetGalleryState });
+
+    const startMomentum = () => {
+      if (dragSamples.length < 2) return;
+
+      const firstSample = dragSamples[0];
+      const lastSample = dragSamples[dragSamples.length - 1];
+      const sampleDuration = Math.max(lastSample.time - firstSample.time, 1);
+      const idleTime = Math.min(performance.now() - lastSample.time, 120);
+      let velocity = -((lastSample.x - firstSample.x) / sampleDuration);
+
+      velocity *= Math.pow(0.84, idleTime / 16);
+      velocity = Math.max(-3.2, Math.min(3.2, velocity));
+
+      if (Math.abs(velocity) < 0.012) return;
+
+      let previousTime = performance.now();
+
+      const animateMomentum = (time: number) => {
+        const elapsed = Math.min(time - previousTime, 32);
+        previousTime = time;
+
+        const previousScrollLeft = gallery.scrollLeft;
+        gallery.scrollLeft += velocity * elapsed;
+
+        if (gallery.scrollLeft === previousScrollLeft) {
+          momentumFrame = null;
+          return;
+        }
+
+        velocity *= Math.pow(0.97, elapsed / 16);
+
+        if (Math.abs(velocity) < 0.012) {
+          momentumFrame = null;
+          return;
+        }
+
+        momentumFrame = requestAnimationFrame(animateMomentum);
+      };
+
+      momentumFrame = requestAnimationFrame(animateMomentum);
+    };
+
+    gallery.addEventListener("pointerdown", (event) => {
+      if (event.pointerType === "mouse" && event.button !== 0) return;
+
+      cancelMomentum();
+      cancelExpansionSync();
+      isDragging = true;
+      hasDragged = false;
+      dragStartX = event.clientX;
+      dragStartScrollLeft = gallery.scrollLeft;
+      dragSamples = [{ x: event.clientX, time: performance.now() }];
+      gallery.classList.add("is-dragging");
+      gallery.setPointerCapture(event.pointerId);
+    });
+
+    gallery.addEventListener("pointermove", (event) => {
+      if (!isDragging) return;
+
+      const now = performance.now();
+      const distance = event.clientX - dragStartX;
+      dragSamples.push({ x: event.clientX, time: now });
+      while (dragSamples.length > 1 && now - dragSamples[0].time > 120) {
+        dragSamples.shift();
+      }
+
+      if (Math.abs(distance) < 4) return;
+
+      hasDragged = true;
+      event.preventDefault();
+      gallery.scrollLeft = dragStartScrollLeft - distance;
+    });
+
+    const stopDragging = (event: PointerEvent) => {
+      if (!isDragging) return;
+
+      if (event.type === "pointerup") {
+        const now = performance.now();
+        dragSamples.push({ x: event.clientX, time: now });
+        while (dragSamples.length > 1 && now - dragSamples[0].time > 120) {
+          dragSamples.shift();
+        }
+      }
+
+      isDragging = false;
+      gallery.classList.remove("is-dragging");
+      if (gallery.hasPointerCapture(event.pointerId)) {
+        gallery.releasePointerCapture(event.pointerId);
+      }
+
+      if (event.type === "pointerup" && hasDragged) {
+        startMomentum();
+      }
+    };
+
+    gallery.addEventListener("pointerup", stopDragging);
+    gallery.addEventListener("pointercancel", stopDragging);
+    gallery.addEventListener("lostpointercapture", stopDragging);
+
+    gallery.addEventListener("animationend", (event) => {
+      const frame = event.target;
+
+      if (frame instanceof HTMLElement && frame.classList.contains("photo-frame")) {
+        frame.classList.add("is-revealed");
+      }
+    });
+
+    const toggleExpanded = () => {
+      cancelMomentum();
+      cancelExpansionSync();
+
+      gallery.querySelectorAll<HTMLElement>(".photo-frame").forEach((frame) => {
+        frame.classList.add("is-revealed");
+      });
+
+      const initialMaxScroll = Math.max(0, gallery.scrollWidth - gallery.clientWidth);
+      const scrollProgress = initialMaxScroll > 0 ? gallery.scrollLeft / initialMaxScroll : 0;
+      const isExpanded = gallery.classList.toggle("is-expanded");
+      gallery.setAttribute("aria-expanded", String(isExpanded));
+
+      const transitionStartedAt = performance.now();
+      const transitionDuration = 550;
+
+      const preserveScrollProgress = (time: number) => {
+        const currentMaxScroll = Math.max(0, gallery.scrollWidth - gallery.clientWidth);
+        gallery.scrollLeft = currentMaxScroll * scrollProgress;
+
+        if (time - transitionStartedAt < transitionDuration + 50) {
+          expansionSyncFrame = requestAnimationFrame(preserveScrollProgress);
+          return;
+        }
+
+        expansionSyncFrame = null;
+      };
+
+      expansionSyncFrame = requestAnimationFrame(preserveScrollProgress);
+    };
+
+    gallery.addEventListener("click", () => {
+      if (hasDragged) {
+        hasDragged = false;
+        return;
+      }
+
+      toggleExpanded();
+    });
+
+    gallery.addEventListener("keydown", (event) => {
+      if (event.key === "Enter" || event.key === " ") {
+        event.preventDefault();
+        toggleExpanded();
+        return;
+      }
+
+      if (event.key !== "ArrowLeft" && event.key !== "ArrowRight") return;
+      event.preventDefault();
+      gallery.scrollBy({ left: event.key === "ArrowRight" ? 320 : -320, behavior: "smooth" });
+    });
+  });
+
+  const designAccordionResetters: Array<() => void> = [];
+  const designAccordions = Array.from(
+    document.querySelectorAll<HTMLElement>("[data-design-accordion]"),
+  );
+
+  designAccordions.forEach((accordion) => {
+    const toggle = accordion.querySelector<HTMLButtonElement>("[data-design-accordion-toggle]");
+    const panel = accordion.querySelector<HTMLElement>("[data-design-accordion-panel]");
+    const arrow = accordion.querySelector<HTMLImageElement>(".design-accordion-arrow");
+
+    if (!toggle || !panel || !arrow) return;
+
+    const getNaturalHeight = () => {
+      const previousMaxHeight = accordion.style.maxHeight;
+      accordion.style.maxHeight = "none";
+      const naturalHeight = accordion.getBoundingClientRect().height;
+      accordion.style.maxHeight = previousMaxHeight;
+      return naturalHeight;
+    };
+
+    const setExpanded = (expanded: boolean) => {
+      const currentHeight = accordion.getBoundingClientRect().height;
+      accordion.style.maxHeight = `${currentHeight}px`;
+      accordion.classList.toggle("is-open", expanded);
+      toggle.setAttribute("aria-expanded", String(expanded));
+      panel.setAttribute("aria-hidden", String(!expanded));
+      arrow.src = expanded
+        ? arrow.dataset.openSrc ?? arrow.src
+        : arrow.dataset.closedSrc ?? arrow.src;
+
+      void accordion.offsetHeight;
+      const targetHeight = expanded ? getNaturalHeight() : 20;
+
+      requestAnimationFrame(() => {
+        accordion.style.maxHeight = `${targetHeight}px`;
+      });
+    };
+
+    const updateExpandedHeight = () => {
+      if (!accordion.classList.contains("is-open")) return;
+      accordion.style.maxHeight = `${getNaturalHeight()}px`;
+    };
+
+    if ("ResizeObserver" in window) {
+      const resizeObserver = new ResizeObserver(updateExpandedHeight);
+      resizeObserver.observe(panel);
+    }
+
+    toggle.addEventListener("click", () => {
+      setExpanded(toggle.getAttribute("aria-expanded") !== "true");
+    });
+
+    designAccordionResetters.push(() => setExpanded(false));
+  });
+
+  const portfolioShell = document.querySelector<HTMLElement>(".portfolio-shell");
+  const homePanel = document.querySelector<HTMLElement>("[data-home-panel]");
+  const homeToggle = document.querySelector<HTMLAnchorElement>("[data-home-toggle]");
+  const designToggle = document.querySelector<HTMLAnchorElement>("[data-design-toggle]");
+  const designPanel = document.querySelector<HTMLElement>("[data-design-panel]");
+  const designContent = document.querySelector<HTMLElement>("[data-design-content]");
+  const photographyPanel = document.querySelector<HTMLElement>("[data-photography-panel]");
+  const photographyContent = document.querySelector<HTMLElement>("[data-photography-content]");
+  const photographyToggle = document.querySelector<HTMLAnchorElement>("[data-photography-toggle]");
+  const tabTransitionDuration = 600;
+  type PortfolioTab = "home" | "design" | "photography";
+  type HistoryMode = "push" | "replace" | "none";
+  const tabPaths: Record<PortfolioTab, string> = {
+    home: "/",
+    design: "/design",
+    photography: "/photography",
+  };
+  const tabTitles: Record<PortfolioTab, string> = {
+    home: "Felipe Barbosa",
+    design: "Design — Felipe Barbosa",
+    photography: "Photography — Felipe Barbosa",
+  };
+  const tabFromPath = (path: string): PortfolioTab => {
+    const normalizedPath = path.replace(/\/+$/, "") || "/";
+    if (normalizedPath === "/design") return "design";
+    if (normalizedPath === "/photography") return "photography";
+    return "home";
+  };
+  let activeTab: PortfolioTab = tabFromPath(window.location.pathname);
+  let tabTransitionTimer: number | null = null;
+
+  const resetTabState = (tab: PortfolioTab) => {
+    if (tab === "design" || tab === "photography") {
+      const content = tab === "design" ? designContent : photographyContent;
+      content?.scrollTo({ top: 0, left: 0, behavior: "auto" });
+      resetGalleryStates
+        .filter(({ tab: galleryTab }) => galleryTab === tab)
+        .forEach(({ reset }) => reset());
+      if (tab === "design") {
+        designAccordionResetters.forEach((reset) => reset());
+      }
+      return;
+    }
+
+    const content = (tab === "design" ? designPanel : homePanel)?.querySelector<HTMLElement>(
+      ".tab-content",
+    );
+    content?.scrollTo({ top: 0, left: 0, behavior: "auto" });
+  };
+
+  const setActiveTab = (nextTab: PortfolioTab, historyMode: HistoryMode = "push") => {
+    if (!portfolioShell || !homePanel || !designPanel || !photographyPanel) return;
+    if (activeTab === nextTab) return;
+
+    const previousTab = activeTab;
+
+    activeTab = nextTab;
+    document.title = tabTitles[nextTab];
+
+    if (tabTransitionTimer !== null) {
+      window.clearTimeout(tabTransitionTimer);
+    }
+
+    if (historyMode !== "none") {
+      const historyMethod = historyMode === "replace" ? "replaceState" : "pushState";
+      window.history[historyMethod]({ portfolioTab: nextTab }, "", tabPaths[nextTab]);
+    }
+
+    const previousPanel = previousTab === "home"
+      ? homePanel
+      : previousTab === "design"
+        ? designPanel
+        : photographyPanel;
+
+    portfolioShell.classList.add("is-tab-transitioning");
+    previousPanel.classList.add("is-closing");
+    homePanel.classList.toggle("active", nextTab === "home");
+    designPanel.classList.toggle("active", nextTab === "design");
+    designPanel.classList.toggle("inactive", nextTab === "photography");
+    photographyPanel.classList.toggle("active", nextTab === "photography");
+
+    designToggle?.setAttribute("aria-expanded", String(nextTab === "design"));
+    photographyToggle?.setAttribute("aria-expanded", String(nextTab === "photography"));
+    designPanel.querySelector(".tab-content")?.setAttribute("aria-hidden", String(nextTab !== "design"));
+    photographyContent?.setAttribute("aria-hidden", String(nextTab !== "photography"));
+
+    if (nextTab === "design" || nextTab === "photography") {
+      const content = nextTab === "design" ? designContent : photographyContent;
+      content?.scrollTo({ top: 0, behavior: "auto" });
+      restartGalleryLoading(nextTab);
+    }
+
+    tabTransitionTimer = window.setTimeout(() => {
+      portfolioShell.classList.remove("is-tab-transitioning");
+      previousPanel.classList.remove("is-closing");
+      resetTabState(previousTab);
+      if (nextTab === "home") {
+        resetTabState("home");
+      }
+      tabTransitionTimer = null;
+    }, tabTransitionDuration);
+  };
+
+  homeToggle?.addEventListener("click", (event) => {
+    event.preventDefault();
+    setActiveTab("home");
+  });
+
+  designToggle?.addEventListener("click", (event) => {
+    event.preventDefault();
+    setActiveTab("design");
+  });
+
+  photographyToggle?.addEventListener("click", (event) => {
+    event.preventDefault();
+    setActiveTab("photography");
+  });
+
+  window.addEventListener("popstate", () => {
+    setActiveTab(tabFromPath(window.location.pathname), "none");
+  });
+</script>
