@@ -168,6 +168,7 @@ p { margin: 0; font-family: var(--garamono); font-size: 11px; font-weight: 500; 
   :root { --shell-gutter: 20px; }
   :root { --shell-bottom-space: 0px; }
   .portfolio-shell { padding: 0; }
+  .site-header .brand { transform: translateY(-20px); }
   .site-header, .category-row, .collection-heading { font-size: 9px; }
   .project-list { margin-top: 70.4px; }
   .project + .project { margin-top: 70.4px; }
@@ -185,6 +186,11 @@ p { margin: 0; font-family: var(--garamono); font-size: 11px; font-weight: 500; 
   .project-medium { grid-column: 2; justify-self: start; }
   .project-year-cell { grid-column: 3; grid-row: 2; }
   .design-project-meta .project-year-cell { grid-column: 4; grid-row: 2; }
+  .collection-content .project-meta { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) 50px; column-gap: 8px; row-gap: 0; white-space: nowrap; }
+  .collection-content .project-meta h2 { grid-column: auto; min-width: 0; white-space: nowrap; }
+  .collection-content .project-location { grid-column: auto; min-width: 0; white-space: nowrap; }
+  .collection-content .project-medium { display: none; }
+  .collection-content .project-year-cell { grid-column: 3; grid-row: 1; }
   .design-accordion-panel { overflow-wrap: anywhere; }
   .gallery-scroll { --photo-width: 48.07vw; --photo-height: 32.2575vw; --photo-vertical-width: min(21.505vw, 105.41475px); --photo-vertical-height: min(32.2575vw, 158.125px); --photo-max-height: 158.125px; --photo-vertical-max-height: none; }
   .gallery-scroll.is-expanded { --photo-width: 104.88vw; --photo-height: 70.38vw; --photo-vertical-width: min(46.92vw, 230px); --photo-vertical-height: min(70.38vw, 345px); --photo-max-height: 345px; --photo-vertical-max-height: none; }
