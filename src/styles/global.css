@@ -171,26 +171,28 @@ p { margin: 0; font-family: var(--garamono); font-size: 11px; font-weight: 500; 
   .site-header, .category-row, .collection-heading { font-size: 9px; }
   .project-list { margin-top: 70.4px; }
   .project + .project { margin-top: 70.4px; }
-  .project-meta { grid-template-columns: repeat(2, minmax(0, 1fr)) 50px; gap: 7px 12px; padding-bottom: 7px; white-space: normal; }
-  .design-project-meta { grid-template-columns: minmax(0, 1fr) 50px; gap: 7px 8px; padding-bottom: 0; }
-  .project-meta h2 { grid-column: 1 / -1; }
-  .design-project-meta h2 { grid-column: 1 / -1; }
-  .design-info-accordion { grid-column: 1; grid-row: 2; width: 100%; margin: 0; }
+  .project-meta { display: flex; justify-content: space-between; align-items: baseline; gap: 0; padding-bottom: 7px; white-space: nowrap; }
+  .project-meta h2 { grid-column: auto; min-width: 0; flex: 0 1 auto; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+  .design-project-meta { gap: 0; padding-bottom: 0; }
+  .design-project-meta h2 { grid-column: auto; flex: 0 1 auto; }
+  .design-info-accordion { grid-column: auto; grid-row: auto; width: auto; margin: 0; flex: 0 1 auto; }
+  .design-info-accordion:not(.is-open) { flex: 0 0 34px; width: 34px; }
+  .design-info-accordion.is-open { flex: 1 1 0; width: auto; min-width: 0; }
   .design-accordion { min-width: 0; }
   .design-accordion { grid-template-columns: minmax(0, 1fr); }
   .design-accordion-toggle, .design-accordion-panel { grid-column: 1; }
-  .project-location { grid-column: 1; }
-  .project-medium { grid-column: 2; justify-self: start; }
-  .project-year-cell { grid-column: 3; grid-row: 2; }
-  .design-project-meta .project-year-cell { grid-column: 2; grid-row: 2; }
-  .collection-content .project-meta { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) 50px; column-gap: 8px; row-gap: 0; white-space: nowrap; }
-  .collection-content .project-meta h2 { grid-column: auto; min-width: 0; white-space: nowrap; }
-  .collection-content .project-location { grid-column: auto; min-width: 0; white-space: nowrap; }
+  .project-location { grid-column: auto; min-width: 0; flex: 0 1 auto; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+  .project-medium { display: none; }
+  .project-year-cell { grid-column: auto; grid-row: auto; flex: 0 0 50px; width: 50px; }
+  .design-project-meta .project-year-cell { grid-column: auto; grid-row: auto; }
+  .collection-content .project-meta { display: flex; justify-content: space-between; align-items: baseline; gap: 0; white-space: nowrap; }
+  .collection-content .project-meta h2 { grid-column: auto; min-width: 0; flex: 0 1 auto; white-space: nowrap; }
+  .collection-content .project-location { grid-column: auto; min-width: 0; flex: 0 1 auto; white-space: nowrap; }
   .collection-content .project-medium { display: none; }
-  .collection-content .project-year-cell { grid-column: 3; grid-row: 1; }
+  .collection-content .project-year-cell { grid-column: auto; grid-row: auto; flex: 0 0 50px; }
   .design-accordion-panel { overflow-wrap: anywhere; }
-  .gallery-scroll { --photo-width: 48.07vw; --photo-height: 32.2575vw; --photo-vertical-width: min(21.505vw, 105.41475px); --photo-vertical-height: min(32.2575vw, 158.125px); --photo-max-height: 158.125px; --photo-vertical-max-height: none; }
-  .gallery-scroll.is-expanded { --photo-width: 104.88vw; --photo-height: 70.38vw; --photo-vertical-width: min(46.92vw, 230px); --photo-vertical-height: min(70.38vw, 345px); --photo-max-height: 345px; --photo-vertical-max-height: none; }
+  .gallery-scroll { --photo-width: 52.877vw; --photo-height: 35.48325vw; --photo-vertical-width: min(23.6555vw, 115.956225px); --photo-vertical-height: min(35.48325vw, 173.9375px); --photo-max-height: 173.9375px; --photo-vertical-max-height: none; }
+  .gallery-scroll.is-expanded { --photo-width: 115.368vw; --photo-height: 77.418vw; --photo-vertical-width: min(51.612vw, 253px); --photo-vertical-height: min(77.418vw, 379.5px); --photo-max-height: 379.5px; --photo-vertical-max-height: none; }
 }
 
 @media (prefers-reduced-motion: reduce) {
