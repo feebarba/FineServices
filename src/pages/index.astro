@@ -974,6 +974,16 @@ const pageTitle = initialTab === "design"
       }
     });
 
+    gallery.addEventListener("scroll", () => {
+      const maxScroll = Math.max(0, gallery.scrollWidth - gallery.clientWidth);
+
+      if (gallery.scrollLeft < 0) {
+        gallery.scrollLeft = 0;
+      } else if (gallery.scrollLeft > maxScroll) {
+        gallery.scrollLeft = maxScroll;
+      }
+    }, { passive: true });
+
     const toggleExpanded = () => {
       cancelMomentum();
       cancelExpansionSync();

@@ -201,6 +201,9 @@ p { margin: 0; font-family: var(--garamono); font-size: 11px; font-weight: 500; 
   .design-accordion-panel { overflow-wrap: anywhere; }
   .gallery-track { min-width: 0; }
   .gallery-track::after { display: none; }
+  .photography-panel .gallery-scroll { overflow-x: scroll; overscroll-behavior-x: none; }
+  .photography-panel .gallery-track { width: max-content; min-width: 0; }
+  .photography-panel .gallery-track::after { content: none; }
   .gallery-scroll { --photo-width: 52.877vw; --photo-height: 35.48325vw; --photo-vertical-width: min(23.6555vw, 115.956225px); --photo-vertical-height: min(35.48325vw, 173.9375px); --photo-max-height: 173.9375px; --photo-vertical-max-height: none; }
   .gallery-scroll.is-expanded { --photo-width: 115.368vw; --photo-height: 77.418vw; --photo-vertical-width: min(51.612vw, 253px); --photo-vertical-height: min(77.418vw, 379.5px); --photo-max-height: 379.5px; --photo-vertical-max-height: none; }
 }
