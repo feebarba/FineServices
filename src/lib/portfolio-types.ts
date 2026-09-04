@@ -31,6 +31,7 @@ export type DesignCredit = {
 export type HomeListItem = {
   title: string;
   detail: string;
+  link?: string;
 };
 
 export type HomeListBlock = {
@@ -42,6 +43,17 @@ export type PortfolioHome = {
   brand: string;
   intro: string[];
   lists: HomeListBlock[];
+};
+
+export type PortfolioSiteConfig = {
+  title: string;
+  description: string;
+  faviconUrl?: string;
+  shareTitle?: string;
+  shareDescription?: string;
+  shareImageUrl?: string;
+  canonicalUrl?: string;
+  themeColor?: string;
 };
 
 export type PortfolioProject = {

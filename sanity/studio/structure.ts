@@ -21,6 +21,10 @@ export const structure: StructureResolver = (S) =>
     .title('Portfólio')
     .items([
       S.listItem()
+        .title('Configurações gerais')
+        .child(S.document().schemaType('siteConfig').documentId('siteConfig')),
+      S.divider(),
+      S.listItem()
         .title('Home')
         .child(S.document().schemaType('siteSettings').documentId('siteSettings')),
       S.divider(),

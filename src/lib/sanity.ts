@@ -6,6 +6,7 @@ import type {
   HomeListBlock,
   PortfolioHome,
   PortfolioProject,
+  PortfolioSiteConfig,
   PortfolioSection,
   ProjectMedia,
 } from "./portfolio-types";
@@ -55,8 +56,19 @@ type RawHome = {
   intro?: string[];
   lists?: Array<{
     title?: string;
-    items?: Array<{ title?: string; detail?: string }>;
+    items?: Array<{ title?: string; detail?: string; link?: string }>;
   }>;
+};
+
+type RawSiteConfig = {
+  siteTitle?: string;
+  siteDescription?: string;
+  faviconUrl?: string;
+  shareTitle?: string;
+  shareDescription?: string;
+  shareImageUrl?: string;
+  canonicalUrl?: string;
+  themeColor?: string;
 };
 
 const MEDIA_PROJECTION = `{
@@ -112,6 +124,19 @@ const PORTFOLIO_HOME_QUERY = `
       title,
       items[]{title, detail}
     }
+  }
+`;
+
+const PORTFOLIO_SITE_CONFIG_QUERY = `
+  *[_type == "siteConfig" && _id == "siteConfig"][0] {
+    siteTitle,
+    siteDescription,
+    "faviconUrl": favicon.asset->url,
+    shareTitle,
+    shareDescription,
+    "shareImageUrl": shareImage.asset->url,
+    canonicalUrl,
+    themeColor
   }
 `;
 
@@ -171,8 +196,23 @@ const normalizeHome = (home: RawHome): PortfolioHome => ({
       items:
         list.items
           ?.filter((item) => item.title && item.detail)
-          .map((item) => ({ title: item.title!, detail: item.detail! })) ?? [],
+          .map((item) => ({
+            title: item.title!,
+            detail: item.detail!,
+            ...(item.link ? { link: item.link } : {}),
+          })) ?? [],
     })) ?? [],
+});
+
+const normalizeSiteConfig = (config: RawSiteConfig): PortfolioSiteConfig => ({
+  title: config.siteTitle ?? "Felipe Barbosa",
+  description: config.siteDescription ?? "Portfólio de design e fotografia de Felipe Barbosa.",
+  faviconUrl: config.faviconUrl,
+  shareTitle: config.shareTitle,
+  shareDescription: config.shareDescription,
+  shareImageUrl: config.shareImageUrl,
+  canonicalUrl: config.canonicalUrl,
+  themeColor: config.themeColor,
 });
 
 /**
@@ -204,6 +244,19 @@ export async function getPortfolioHome(): Promise<PortfolioHome | null> {
     const home = await client.fetch<RawHome | null>(PORTFOLIO_HOME_QUERY);
     if (!home) return null;
     return normalizeHome(home);
+  } catch {
+    return null;
+  }
+}
+
+/** Fetches public site metadata at build time. Sensitive SSO values are not queried. */
+export async function getPortfolioSiteConfig(): Promise<PortfolioSiteConfig | null> {
+  if (!client) return null;
+
+  try {
+    const config = await client.fetch<RawSiteConfig | null>(PORTFOLIO_SITE_CONFIG_QUERY);
+    if (!config) return null;
+    return normalizeSiteConfig(config);
   } catch {
     return null;
   }

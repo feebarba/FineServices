@@ -2,13 +2,27 @@
 interface Props {
   title?: string;
   description?: string;
+  faviconUrl?: string;
+  shareTitle?: string;
+  shareDescription?: string;
+  shareImageUrl?: string;
+  canonicalUrl?: string;
+  themeColor?: string;
 }
 
 const {
   title = "Fine Services — Photography",
   description = "Fine Services — arquivo fotográfico de Felipe Barbosa.",
+  faviconUrl = "/favicon.svg",
+  shareTitle = title,
+  shareDescription = description,
+  shareImageUrl,
+  canonicalUrl,
+  themeColor,
 } = Astro.props;
-const canonical = new URL(Astro.url.pathname, Astro.site);
+const canonical = canonicalUrl
+  ? new URL(Astro.url.pathname, canonicalUrl).toString()
+  : new URL(Astro.url.pathname, Astro.site).toString();
 ---
 
 <!doctype html>
@@ -18,10 +32,16 @@ const canonical = new URL(Astro.url.pathname, Astro.site);
     <meta name="viewport" content="width=device-width" />
     <meta name="description" content={description} />
     <link rel="canonical" href={canonical} />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <meta property="og:title" content={title} />
-    <meta property="og:description" content={description} />
+    <link rel="icon" href={faviconUrl} />
+    {themeColor ? <meta name="theme-color" content={themeColor} /> : null}
+    <meta property="og:title" content={shareTitle} />
+    <meta property="og:description" content={shareDescription} />
     <meta property="og:type" content="website" />
+    {shareImageUrl ? <meta property="og:image" content={shareImageUrl} /> : null}
+    <meta name="twitter:card" content={shareImageUrl ? "summary_large_image" : "summary"} />
+    <meta name="twitter:title" content={shareTitle} />
+    <meta name="twitter:description" content={shareDescription} />
+    {shareImageUrl ? <meta name="twitter:image" content={shareImageUrl} /> : null}
     <title>{title}</title>
   </head>
   <body>

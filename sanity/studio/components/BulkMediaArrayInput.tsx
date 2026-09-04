@@ -1,6 +1,6 @@
 import {Button, Stack, Text} from '@sanity/ui'
 import {insert, setIfMissing, type ArrayOfObjectsInputProps, useClient} from 'sanity'
-import {useRef, useState, type ChangeEvent} from 'react'
+import {useRef, useState, type ChangeEvent, type ReactNode} from 'react'
 
 type BulkMediaMode = 'design' | 'photography'
 
@@ -22,6 +22,8 @@ const makeKey = () =>
     : `${Date.now()}-${Math.random().toString(36).slice(2)}`
 
 const filenameToAlt = (filename: string) => filename.replace(/\.[^/.]+$/, '').replace(/[-_]+/g, ' ')
+
+const RenderItemsOnly = ({children}: {children?: ReactNode}) => <>{children}</>
 
 const getDimensions = (asset: UploadedAsset, file: File) => {
   const width = asset.metadata?.dimensions?.width ?? 1
@@ -118,7 +120,7 @@ function BulkMediaArrayInput(
 
   return (
     <Stack gap={3}>
-      {props.renderDefault(props)}
+      {props.renderDefault({...props, arrayFunctions: RenderItemsOnly})}
       <Stack gap={2}>
         <input
           ref={inputRef}

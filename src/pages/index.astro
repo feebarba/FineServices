@@ -1,6 +1,6 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
-import { getPortfolioHome, getPortfolioProjects } from "../lib/sanity";
+import { getPortfolioHome, getPortfolioProjects, getPortfolioSiteConfig } from "../lib/sanity";
 import type {
   DesignCredit,
   PhotoOrientation,
@@ -405,6 +405,7 @@ const fallbackProjects: Project[] = [
 
 const cmsHome = await getPortfolioHome();
 const cmsProjects = await getPortfolioProjects();
+const cmsSiteConfig = await getPortfolioSiteConfig();
 const home = cmsHome ?? fallbackHome;
 const projects: Project[] = cmsProjects ?? fallbackProjects;
 
@@ -459,16 +460,24 @@ const initialTab: PortfolioTab = normalizedPath === "/design"
   : normalizedPath === "/photography"
     ? "photography"
     : "home";
+const siteTitle = cmsSiteConfig?.title ?? "Felipe Barbosa";
+const pageDescription = cmsSiteConfig?.description ?? "Portfólio de design e fotografia de Felipe Barbosa.";
 const pageTitle = initialTab === "design"
-  ? "Design — Felipe Barbosa"
+  ? `Design — ${siteTitle}`
   : initialTab === "photography"
-    ? "Photography — Felipe Barbosa"
-    : "Felipe Barbosa";
+    ? `Photography — ${siteTitle}`
+    : siteTitle;
 ---
 
 <BaseLayout
   title={pageTitle}
-  description="Portfólio de design e fotografia de Felipe Barbosa."
+  description={pageDescription}
+  faviconUrl={cmsSiteConfig?.faviconUrl}
+  shareTitle={cmsSiteConfig?.shareTitle ?? pageTitle}
+  shareDescription={cmsSiteConfig?.shareDescription ?? pageDescription}
+  shareImageUrl={cmsSiteConfig?.shareImageUrl}
+  canonicalUrl={cmsSiteConfig?.canonicalUrl}
+  themeColor={cmsSiteConfig?.themeColor}
 >
   <main class="portfolio-shell" id="index">
     <section class:list={["tab", "home-panel", { active: initialTab === "home" }]} data-home-panel aria-label="Página inicial">

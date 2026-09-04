@@ -532,6 +532,14 @@ const photographyProjects = projects.filter((project) => project.sections.includ
 
 const documents = [
   {
+    _id: 'siteConfig',
+    _type: 'siteConfig',
+    siteTitle: 'Felipe Barbosa',
+    siteDescription: 'Portfólio de design e fotografia de Felipe Barbosa.',
+    shareTitle: 'Felipe Barbosa',
+    shareDescription: 'Portfólio de design e fotografia de Felipe Barbosa.',
+  },
+  {
     _id: 'siteSettings',
     _type: 'siteSettings',
     brand: 'FELIPE BARBOSA',

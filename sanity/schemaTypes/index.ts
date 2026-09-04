@@ -6,6 +6,7 @@ import { credit } from "./credit";
 import { homeListItem } from "./homeListItem";
 import { homeListBlock } from "./homeListBlock";
 import { siteSettings } from "./siteSettings";
+import { siteConfig } from "./siteConfig";
 
 export const schemaTypes = [
   designProject,
@@ -16,4 +17,5 @@ export const schemaTypes = [
   homeListItem,
   homeListBlock,
   siteSettings,
+  siteConfig,
 ];

@@ -24,6 +24,7 @@ Os schemas usados pelo Studio vêm de `sanity/schemaTypes/index.ts`, que é comp
 
 O Structure Tool apresenta duas entradas independentes:
 
+- `Configurações gerais`: favicon, título e descrição padrão, metadados de compartilhamento, URL canônica, cor do navegador e configuração pública de SSO.
 - `Design`: mostra documentos do tipo `designProject`.
 - `Photography`: mostra documentos do tipo `photographyProject`.
 
@@ -31,7 +32,9 @@ Os projetos são independentes e não possuem o campo `Exibir na aba`. Projetos 
 
 `Home` concentra a apresentação e os blocos de listas da página inicial. Cada bloco tem um título editável e sua própria lista de itens; use `Adicionar item` para criar novos blocos além de `Pratice` e `Mentions & Awards`, ou edite esses títulos diretamente.
 
-As duas galerias têm um botão de upload múltiplo. Selecione vários arquivos na mesma janela para adicioná-los de uma vez; o nome do arquivo é usado como texto alternativo inicial e cada item pode ser aberto depois para ajustar alt, orientação, paleta e dimensões.
+As duas galerias têm apenas o botão de upload múltiplo. Selecione vários arquivos na mesma janela para adicioná-los de uma vez; o nome do arquivo é usado como texto alternativo inicial e cada item pode ser aberto depois para ajustar alt, orientação, paleta e dimensões.
+
+Cada item das listas da Home também possui um campo opcional de `Link externo`, validado para URLs `http` e `https`.
 
 ## Migração inicial
 
