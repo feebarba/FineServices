@@ -1319,6 +1319,8 @@ const pageTitle = initialTab === "design"
     if (activeTab === nextTab) return;
 
     const previousTab = activeTab;
+    const homeContent = homePanel.querySelector<HTMLElement>(".home-content");
+    const homeWasScrolled = previousTab === "home" && (homeContent?.scrollTop ?? 0) > 0;
 
     activeTab = nextTab;
     document.title = tabTitles[nextTab];
@@ -1340,6 +1342,7 @@ const pageTitle = initialTab === "design"
         : photographyPanel;
 
     portfolioShell.classList.add("is-tab-transitioning");
+    homePanel.classList.toggle("is-scrolled", homeWasScrolled);
     [homePanel, designPanel, photographyPanel].forEach((panel) => {
       panel.classList.remove("is-closing");
     });
@@ -1367,6 +1370,7 @@ const pageTitle = initialTab === "design"
       if (nextTab === "home") {
         resetTabState("home");
       }
+      homePanel.classList.remove("is-scrolled");
       tabTransitionTimer = null;
     }, tabTransitionDuration);
   };
