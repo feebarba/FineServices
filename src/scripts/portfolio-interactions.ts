@@ -173,71 +173,6 @@ let galleryObserver: IntersectionObserver | null = null;
 const pendingGalleryLoads = new Map<HTMLElement, number>();
 const intersectingGalleries = new Set<HTMLElement>();
 
-const resetGalleryReveal = (gallery: HTMLElement) => {
-  gallery.classList.remove("is-images-ready");
-  gallery.querySelectorAll<HTMLElement>(".photo-frame").forEach((frame) => {
-    frame.classList.remove("is-media-ready", "is-revealed");
-  });
-};
-
-const replayLoadedGallery = (gallery: HTMLElement) => {
-  resetGalleryReveal(gallery);
-
-  requestAnimationFrame(() => {
-    requestAnimationFrame(() => {
-      if (gallery.dataset.replayPending !== "true") return;
-
-      gallery.querySelectorAll<HTMLElement>(".photo-frame").forEach((frame) => {
-        frame.classList.add("is-media-ready");
-      });
-      gallery.classList.add("is-images-ready");
-      delete gallery.dataset.replayPending;
-    });
-  });
-};
-
-const replayGalleryReveal = (tab: GalleryTab) => {
-  const pendingGalleries = galleries.filter((gallery) =>
-    gallery.dataset.tabGallery === tab &&
-    gallery.dataset.replayPending === "true",
-  );
-
-  if (pendingGalleries.length === 0) return;
-
-  if (!galleryObserver) {
-    pendingGalleries.forEach(replayLoadedGallery);
-    return;
-  }
-
-  pendingGalleries.forEach((gallery) => galleryObserver?.observe(gallery));
-};
-
-const prepareGalleryReveal = (tab: GalleryTab) => {
-  galleries
-    .filter((gallery) =>
-      gallery.dataset.tabGallery === tab &&
-      gallery.classList.contains("is-images-ready"),
-    )
-    .forEach((gallery) => {
-      gallery.dataset.replayPending = "true";
-      resetGalleryReveal(gallery);
-      galleryObserver?.unobserve(gallery);
-    });
-};
-
-const resetTabRevealState = (tab: GalleryTab) => {
-  galleries
-    .filter((gallery) =>
-      gallery.dataset.tabGallery === tab &&
-      gallery.dataset.loadStarted === "true",
-    )
-    .forEach((gallery) => {
-      gallery.dataset.replayPending = "true";
-      resetGalleryReveal(gallery);
-      galleryObserver?.unobserve(gallery);
-    });
-};
-
 const cancelPendingGalleryLoad = (gallery: HTMLElement) => {
   const timer = pendingGalleryLoads.get(gallery);
   if (timer === undefined) return;
@@ -259,9 +194,6 @@ const scheduleGalleryLoad = (gallery: HTMLElement) => {
     if (!intersectingGalleries.has(gallery)) return;
 
     loadGalleryMedia(gallery);
-    if (gallery.dataset.replayPending === "true") {
-      replayLoadedGallery(gallery);
-    }
     galleryObserver?.unobserve(gallery);
   }, galleryLoadDelay);
 
@@ -293,12 +225,6 @@ if ("IntersectionObserver" in window) {
         }
 
         intersectingGalleries.add(gallery);
-        if (gallery.dataset.replayPending === "true") {
-          replayLoadedGallery(gallery);
-          galleryObserver?.unobserve(gallery);
-          return;
-        }
-
         scheduleGalleryLoad(gallery);
       });
     },
@@ -523,6 +449,7 @@ galleries.forEach((gallery) => {
 });
 
 const designAccordionResetters: Array<() => void> = [];
+const designAccordionLayoutSyncers: Array<(isMobile: boolean) => void> = [];
 const designAccordions = Array.from(
   document.querySelectorAll<HTMLElement>("[data-design-accordion]"),
 );
@@ -549,11 +476,15 @@ designAccordions.forEach((accordion) => {
     }
 
     designMeta.style.removeProperty("height");
-    accordion.style.removeProperty("--mobile-info-left");
+    designMeta.style.removeProperty("--mobile-info-top");
+    designMeta.style.removeProperty("--mobile-info-content-left");
+    accordion.style.removeProperty("--mobile-info-height");
+    accordion.style.removeProperty("max-height");
+    panel.style.removeProperty("max-height");
     mobileMetaBaseHeight = null;
   };
 
-  const syncMobileInfoHeight = (accordionHeight: number) => {
+  const syncMobileInfoHeight = (panelHeight: number) => {
     if (
       !isMobileInfoAccordion ||
       !designMeta ||
@@ -561,8 +492,30 @@ designAccordions.forEach((accordion) => {
       !accordion.classList.contains("is-open")
     ) return;
 
-    const paddingBottom = Number.parseFloat(getComputedStyle(designMeta).paddingBottom) || 0;
-    designMeta.style.height = `${accordionHeight + paddingBottom}px`;
+    const baseHeight = mobileMetaBaseHeight ?? designMeta.getBoundingClientRect().height;
+    designMeta.style.setProperty("--mobile-info-top", `${baseHeight}px`);
+    accordion.style.setProperty("--mobile-info-height", `${panelHeight}px`);
+    designMeta.style.height = `${panelHeight}px`;
+  };
+
+  const syncMobileInfoContentInset = () => {
+    if (!isMobileInfoAccordion || !designMeta || !isMobileLayout()) return;
+
+    const projectTitle = designMeta.querySelector<HTMLElement>(".project-title");
+    if (!projectTitle) return;
+
+    const metaRect = designMeta.getBoundingClientRect();
+    const titleRect = projectTitle.getBoundingClientRect();
+    const contentInset = Math.max(0, titleRect.left - metaRect.left);
+    designMeta.style.setProperty("--mobile-info-content-left", `${contentInset}px`);
+  };
+
+  const getMobilePanelHeight = () => {
+    const previousMaxHeight = panel.style.maxHeight;
+    panel.style.maxHeight = "none";
+    const naturalHeight = panel.scrollHeight;
+    panel.style.maxHeight = previousMaxHeight;
+    return naturalHeight;
   };
 
   const getNaturalHeight = () => {
@@ -574,7 +527,9 @@ designAccordions.forEach((accordion) => {
   };
 
   const setExpanded = (expanded: boolean) => {
-    if (isMobileInfoAccordion && designMeta && isMobileLayout()) {
+    const isMobileInfo = isMobileInfoAccordion && designMeta && isMobileLayout();
+
+    if (isMobileInfo) {
       if (mobileMetaCleanupTimer !== null) {
         window.clearTimeout(mobileMetaCleanupTimer);
         mobileMetaCleanupTimer = null;
@@ -582,14 +537,42 @@ designAccordions.forEach((accordion) => {
 
       if (expanded) {
         const metaRect = designMeta.getBoundingClientRect();
-        const accordionRect = accordion.getBoundingClientRect();
         mobileMetaBaseHeight ??= metaRect.height;
-        accordion.style.setProperty(
-          "--mobile-info-left",
-          `${accordionRect.left - metaRect.left}px`,
-        );
-        designMeta.style.height = `${metaRect.height}px`;
+        syncMobileInfoContentInset();
+        designMeta.style.setProperty("--mobile-info-top", `${mobileMetaBaseHeight}px`);
+        designMeta.style.height = `${mobileMetaBaseHeight}px`;
       }
+    }
+
+    if (isMobileInfo) {
+      accordion.classList.toggle("is-open", expanded);
+      toggle.setAttribute("aria-expanded", String(expanded));
+      panel.setAttribute("aria-hidden", String(!expanded));
+      arrow.src = expanded
+        ? arrow.dataset.openSrc ?? arrow.src
+        : arrow.dataset.closedSrc ?? arrow.src;
+
+      if (expanded) {
+        panel.style.maxHeight = "0px";
+        void panel.offsetHeight;
+        const targetPanelHeight = getMobilePanelHeight();
+        accordion.style.setProperty("--mobile-info-height", `${targetPanelHeight}px`);
+        panel.style.maxHeight = `${targetPanelHeight}px`;
+        syncMobileInfoHeight(targetPanelHeight);
+      } else {
+        panel.style.maxHeight = "0px";
+        const targetMetaHeight = mobileMetaBaseHeight ?? designMeta.getBoundingClientRect().height;
+        requestAnimationFrame(() => {
+          designMeta.style.height = `${targetMetaHeight}px`;
+        });
+        mobileMetaCleanupTimer = window.setTimeout(() => {
+          if (!accordion.classList.contains("is-open")) {
+            clearMobileInfoLayout();
+          }
+        }, 350);
+      }
+
+      return;
     }
 
     const currentHeight = accordion.getBoundingClientRect().height;
@@ -627,10 +610,38 @@ designAccordions.forEach((accordion) => {
 
   const updateExpandedHeight = () => {
     if (!accordion.classList.contains("is-open")) return;
+
+    if (isMobileInfoAccordion && designMeta && isMobileLayout()) {
+      syncMobileInfoContentInset();
+      const naturalPanelHeight = getMobilePanelHeight();
+      panel.style.maxHeight = `${naturalPanelHeight}px`;
+      syncMobileInfoHeight(naturalPanelHeight);
+      return;
+    }
+
     const naturalHeight = getNaturalHeight();
     accordion.style.maxHeight = `${naturalHeight}px`;
     syncMobileInfoHeight(naturalHeight);
   };
+
+  if (isMobileInfoAccordion && designMeta) {
+    designAccordionLayoutSyncers.push((isMobile) => {
+      const isOpen = toggle.getAttribute("aria-expanded") === "true";
+
+      if (isMobile) {
+        clearMobileInfoLayout();
+        if (isOpen) setExpanded(true);
+        return;
+      }
+
+      clearMobileInfoLayout();
+      if (!isOpen) return;
+
+      accordion.style.removeProperty("max-height");
+      const naturalHeight = getNaturalHeight();
+      accordion.style.maxHeight = `${naturalHeight}px`;
+    });
+  }
 
   if ("ResizeObserver" in window) {
     const resizeObserver = new ResizeObserver(updateExpandedHeight);
@@ -642,6 +653,15 @@ designAccordions.forEach((accordion) => {
   });
 
   designAccordionResetters.push(() => setExpanded(false));
+});
+
+let isMobileDesignLayout = window.matchMedia("(max-width: 743px)").matches;
+window.addEventListener("resize", () => {
+  const nextIsMobileDesignLayout = window.matchMedia("(max-width: 743px)").matches;
+  if (nextIsMobileDesignLayout === isMobileDesignLayout) return;
+
+  isMobileDesignLayout = nextIsMobileDesignLayout;
+  designAccordionLayoutSyncers.forEach((syncLayout) => syncLayout(isMobileDesignLayout));
 });
 
 const portfolioShell = document.querySelector<HTMLElement>(".portfolio-shell");
@@ -657,6 +677,13 @@ const photographyToggle = document.querySelector<HTMLAnchorElement>("[data-photo
 const syncTabBlur = (content: HTMLElement, panel: HTMLElement) => {
   panel.classList.toggle("has-scroll", content.scrollTop > 0);
 };
+
+const homeContent = homePanel?.querySelector<HTMLElement>(".home-content");
+if (homeContent && homePanel) {
+  const sync = () => syncTabBlur(homeContent, homePanel);
+  homeContent.addEventListener("scroll", sync, { passive: true });
+  sync();
+}
 
 [[designContent, designPanel], [photographyContent, photographyPanel]].forEach(([content, panel]) => {
   if (!content || !panel) return;
@@ -686,11 +713,6 @@ const tabPaths: Record<PortfolioTab, string> = {
   design: "/design",
   photography: "/photography",
 };
-const tabTitles: Record<PortfolioTab, string> = {
-  home: "Felipe Barbosa",
-  design: "Design — Felipe Barbosa",
-  photography: "Photography — Felipe Barbosa",
-};
 const tabFromPath = (path: string): PortfolioTab => {
   const normalizedPath = path.replace(/\/+$/, "") || "/";
   if (normalizedPath === "/design") return "design";
@@ -699,8 +721,6 @@ const tabFromPath = (path: string): PortfolioTab => {
 };
 let activeTab: PortfolioTab = tabFromPath(window.location.pathname);
 let tabTransitionTimer: number | null = null;
-let galleryRevealTimer: number | null = null;
-
 const resetTabState = (tab: PortfolioTab) => {
   if (tab === "design" || tab === "photography") {
     const content = tab === "design" ? designContent : photographyContent;
@@ -708,7 +728,6 @@ const resetTabState = (tab: PortfolioTab) => {
     resetGalleryStates
       .filter(({ tab: galleryTab }) => galleryTab === tab)
       .forEach(({ reset }) => reset());
-    resetTabRevealState(tab);
     if (tab === "design") {
       designAccordionResetters.forEach((reset) => reset());
     }
@@ -728,15 +747,10 @@ const setActiveTab = (nextTab: PortfolioTab, historyMode: HistoryMode = "push") 
   const homeWasScrolled = previousTab === "home" && (homeContent?.scrollTop ?? 0) > 0;
 
   activeTab = nextTab;
-  document.title = tabTitles[nextTab];
 
   if (tabTransitionTimer !== null) {
     window.clearTimeout(tabTransitionTimer);
     tabTransitionTimer = null;
-  }
-  if (galleryRevealTimer !== null) {
-    window.clearTimeout(galleryRevealTimer);
-    galleryRevealTimer = null;
   }
   cancelPendingGalleryLoads();
 
@@ -770,11 +784,6 @@ const setActiveTab = (nextTab: PortfolioTab, historyMode: HistoryMode = "push") 
   if (nextTab === "design" || nextTab === "photography") {
     const content = nextTab === "design" ? designContent : photographyContent;
     content?.scrollTo({ top: 0, behavior: "auto" });
-    prepareGalleryReveal(nextTab);
-    galleryRevealTimer = window.setTimeout(() => {
-      galleryRevealTimer = null;
-      if (activeTab === nextTab) replayGalleryReveal(nextTab);
-    }, galleryLoadDelay);
   }
 
   tabTransitionTimer = window.setTimeout(() => {
