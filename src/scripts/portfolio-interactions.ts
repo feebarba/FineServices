@@ -43,6 +43,7 @@ const galleries = Array.from(
   document.querySelectorAll<HTMLElement>("[data-gallery-scroll]"),
 );
 type GalleryTab = "design" | "photography";
+const galleryLoadDelay = 150;
 const resetGalleryStates: Array<{ tab: GalleryTab; reset: () => void }> = [];
 
 const loadGalleryMedia = (gallery: HTMLElement) => {
@@ -169,6 +170,8 @@ const loadGalleryMedia = (gallery: HTMLElement) => {
 };
 
 let galleryObserver: IntersectionObserver | null = null;
+const pendingGalleryLoads = new Map<HTMLElement, number>();
+const intersectingGalleries = new Set<HTMLElement>();
 
 const resetGalleryReveal = (gallery: HTMLElement) => {
   gallery.classList.remove("is-images-ready");
@@ -212,18 +215,55 @@ const replayGalleryReveal = (tab: GalleryTab) => {
   }
 };
 
+const cancelPendingGalleryLoad = (gallery: HTMLElement) => {
+  const timer = pendingGalleryLoads.get(gallery);
+  if (timer === undefined) return;
+  window.clearTimeout(timer);
+  pendingGalleryLoads.delete(gallery);
+};
+
+const cancelPendingGalleryLoads = () => {
+  pendingGalleryLoads.forEach((timer) => window.clearTimeout(timer));
+  pendingGalleryLoads.clear();
+  intersectingGalleries.clear();
+};
+
+const scheduleGalleryLoad = (gallery: HTMLElement) => {
+  if (pendingGalleryLoads.has(gallery)) return;
+
+  const timer = window.setTimeout(() => {
+    pendingGalleryLoads.delete(gallery);
+    if (!intersectingGalleries.has(gallery)) return;
+
+    loadGalleryMedia(gallery);
+    if (gallery.dataset.replayPending === "true") {
+      replayLoadedGallery(gallery);
+    }
+    galleryObserver?.unobserve(gallery);
+  }, galleryLoadDelay);
+
+  pendingGalleryLoads.set(gallery, timer);
+};
+
 if ("IntersectionObserver" in window) {
   galleryObserver = new IntersectionObserver(
     (entries) => {
       entries.forEach((entry) => {
-        if (!entry.isIntersecting) return;
-
         const gallery = entry.target as HTMLElement;
-        loadGalleryMedia(gallery);
+        if (!entry.isIntersecting) {
+          intersectingGalleries.delete(gallery);
+          cancelPendingGalleryLoad(gallery);
+          return;
+        }
+
+        intersectingGalleries.add(gallery);
         if (gallery.dataset.replayPending === "true") {
           replayLoadedGallery(gallery);
+          galleryObserver?.unobserve(gallery);
+          return;
         }
-        galleryObserver?.unobserve(gallery);
+
+        scheduleGalleryLoad(gallery);
       });
     },
     { threshold: 0.01 },
@@ -231,7 +271,7 @@ if ("IntersectionObserver" in window) {
 
   galleries.forEach((gallery) => galleryObserver?.observe(gallery));
 } else {
-  galleries.forEach(loadGalleryMedia);
+  setTimeout(() => galleries.forEach(loadGalleryMedia), galleryLoadDelay);
 }
 
 galleries.forEach((gallery) => {
@@ -623,6 +663,7 @@ const tabFromPath = (path: string): PortfolioTab => {
 };
 let activeTab: PortfolioTab = tabFromPath(window.location.pathname);
 let tabTransitionTimer: number | null = null;
+let galleryRevealTimer: number | null = null;
 
 const resetTabState = (tab: PortfolioTab) => {
   if (tab === "design" || tab === "photography") {
@@ -656,6 +697,11 @@ const setActiveTab = (nextTab: PortfolioTab, historyMode: HistoryMode = "push") 
     window.clearTimeout(tabTransitionTimer);
     tabTransitionTimer = null;
   }
+  if (galleryRevealTimer !== null) {
+    window.clearTimeout(galleryRevealTimer);
+    galleryRevealTimer = null;
+  }
+  cancelPendingGalleryLoads();
 
   if (historyMode !== "none") {
     const historyMethod = historyMode === "replace" ? "replaceState" : "pushState";
@@ -687,7 +733,10 @@ const setActiveTab = (nextTab: PortfolioTab, historyMode: HistoryMode = "push") 
   if (nextTab === "design" || nextTab === "photography") {
     const content = nextTab === "design" ? designContent : photographyContent;
     content?.scrollTo({ top: 0, behavior: "auto" });
-    replayGalleryReveal(nextTab);
+    galleryRevealTimer = window.setTimeout(() => {
+      galleryRevealTimer = null;
+      if (activeTab === nextTab) replayGalleryReveal(nextTab);
+    }, galleryLoadDelay);
   }
 
   tabTransitionTimer = window.setTimeout(() => {
@@ -709,12 +758,12 @@ homeToggle?.addEventListener("click", (event) => {
 
 designToggle?.addEventListener("click", (event) => {
   event.preventDefault();
-  setActiveTab("design");
+  setActiveTab(activeTab === "design" ? "home" : "design");
 });
 
 photographyToggle?.addEventListener("click", (event) => {
   event.preventDefault();
-  setActiveTab("photography");
+  setActiveTab(activeTab === "photography" ? "home" : "photography");
 });
 
 window.addEventListener("popstate", () => {
