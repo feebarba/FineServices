@@ -28,6 +28,18 @@ export type DesignCredit = {
   name: string;
 };
 
+export type HomeListItem = {
+  title: string;
+  detail: string;
+};
+
+export type PortfolioHome = {
+  brand: string;
+  intro: string[];
+  practice: HomeListItem[];
+  mentionsAwards: HomeListItem[];
+};
+
 export type PortfolioProject = {
   title: string;
   designType: string;

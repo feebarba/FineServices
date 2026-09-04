@@ -3,6 +3,7 @@ import type {
   DesignCredit,
   PhotoOrientation,
   PhotoPalette,
+  PortfolioHome,
   PortfolioProject,
   PortfolioSection,
   ProjectMedia,
@@ -48,6 +49,13 @@ type RawProject = {
   designMedia?: RawMedia[];
 };
 
+type RawHome = {
+  brand?: string;
+  intro?: string[];
+  practice?: Array<{ title?: string; detail?: string }>;
+  mentionsAwards?: Array<{ title?: string; detail?: string }>;
+};
+
 const PORTFOLIO_PROJECTS_QUERY = `
   *[_type == "project" && defined(title)] | order(coalesce(order, 9999) asc, year desc) {
     title,
@@ -81,6 +89,15 @@ const PORTFOLIO_PROJECTS_QUERY = `
       "assetWidth": select(kind == "video" => video.asset->metadata.dimensions.width, image.asset->metadata.dimensions.width),
       "assetHeight": select(kind == "video" => video.asset->metadata.dimensions.height, image.asset->metadata.dimensions.height)
     }
+  }
+`;
+
+const PORTFOLIO_HOME_QUERY = `
+  *[_type == "siteSettings" && _id == "siteSettings"][0] {
+    brand,
+    intro,
+    practice[]{title, detail},
+    mentionsAwards[]{title, detail}
   }
 `;
 
@@ -130,6 +147,17 @@ const normalizeProject = (project: RawProject): PortfolioProject => {
   };
 };
 
+const normalizeHome = (home: RawHome): PortfolioHome => ({
+  brand: home.brand ?? "FELIPE BARBOSA",
+  intro: home.intro?.filter(Boolean) ?? [],
+  practice: home.practice
+    ?.filter((item) => item.title && item.detail)
+    .map((item) => ({title: item.title!, detail: item.detail!})) ?? [],
+  mentionsAwards: home.mentionsAwards
+    ?.filter((item) => item.title && item.detail)
+    .map((item) => ({title: item.title!, detail: item.detail!})) ?? [],
+});
+
 /**
  * Fetches published portfolio content at build time.
  * Returns null when the CMS is not configured or has no usable documents so
@@ -142,6 +170,19 @@ export async function getPortfolioProjects(): Promise<PortfolioProject[] | null>
     const projects = await client.fetch<RawProject[]>(PORTFOLIO_PROJECTS_QUERY);
     if (!projects.length) return null;
     return projects.map(normalizeProject);
+  } catch {
+    return null;
+  }
+}
+
+/** Fetches the editable Home content at build time. */
+export async function getPortfolioHome(): Promise<PortfolioHome | null> {
+  if (!client) return null;
+
+  try {
+    const home = await client.fetch<RawHome | null>(PORTFOLIO_HOME_QUERY);
+    if (!home) return null;
+    return normalizeHome(home);
   } catch {
     return null;
   }

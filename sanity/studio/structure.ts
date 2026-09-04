@@ -17,6 +17,10 @@ export const structure: StructureResolver = (S) =>
     .title('Portfólio')
     .items([
       S.listItem()
+        .title('Home')
+        .child(S.document().schemaType('siteSettings').documentId('siteSettings')),
+      S.divider(),
+      S.listItem()
         .title('Design')
         .child(projectList(S, 'design-projects', 'Projetos de Design', 'design')),
       S.listItem()

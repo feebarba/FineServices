@@ -1,6 +1,6 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
-import { getPortfolioProjects } from "../lib/sanity";
+import { getPortfolioHome, getPortfolioProjects } from "../lib/sanity";
 import type {
   DesignCredit,
   PhotoOrientation,
@@ -8,6 +8,7 @@ import type {
   ProjectMedia,
   ProjectPhoto,
   ProjectVideo,
+  PortfolioHome,
 } from "../lib/portfolio-types";
 import "../styles/global.css";
 
@@ -19,6 +20,27 @@ const defaultDesignCredits: DesignCredit[] = [
   { category: "Verbal Brand Identity", name: "Pedro Kastelic" },
   { category: "Typeface", name: "Universal Sans (Family Type)" },
 ];
+
+const fallbackHome: PortfolioHome = {
+  brand: "FELIPE BARBOSA",
+  intro: [
+    "I'm Felipe, a graphic designer with artistic and technical influences dedicated to developing design solutions guided by a strategic digital approach. My contributions go beyond creating modern and creative visual solutions for clients. I also approach design with a systematic and strategic mindset to simplify processes and scaling these solutions. I see design as a tool that helps individuals and brands in their daily lives, enhancing our ability to face the challenges of today's world.",
+    "I collaborated with teams from studios such as HardCuore in Rio de Janeiro, Hardy in Minas Gerais and Polar, Ltda in São Paulo, and worked on projects for clients such as Instituto Moreira Salles, Museu de Arte do Rio, Aliança Francesa, Revista Amarello, Vox Capital, Nubank, Daily Paper and much more.",
+  ],
+  practice: [
+    { title: "Latin American Design Awards 2024", detail: "Silver, Category Digital" },
+    { title: "Awwwards 2022", detail: "Honor Mention" },
+    { title: "Brasil Design Awards 2021", detail: "Silver, Category Digital" },
+  ],
+  mentionsAwards: [
+    { title: "Latin American Design Awards 2026", detail: "Gold, Category Digital" },
+    { title: "Latin American Design Awards 2026", detail: "2x Silver, Category Digital" },
+    { title: "14th Brazilian Design Biennial", detail: "Category Digital" },
+    { title: "Latin American Design Awards 2024", detail: "Silver, Category Digital" },
+    { title: "Awwwards 2022", detail: "Honor Mention" },
+    { title: "Brasil Design Awards 2021", detail: "Silver, Category Digital" },
+  ],
+};
 
 const polarCaseVideo: ProjectVideo = {
   kind: "video",
@@ -373,7 +395,9 @@ const fallbackProjects: Project[] = [
   },
 ];
 
+const cmsHome = await getPortfolioHome();
 const cmsProjects = await getPortfolioProjects();
+const home = cmsHome ?? fallbackHome;
 const projects: Project[] = cmsProjects ?? fallbackProjects;
 
 if (!cmsProjects) {
@@ -442,38 +466,30 @@ const pageTitle = initialTab === "design"
     <section class:list={["tab", "home-panel", { active: initialTab === "home" }]} data-home-panel aria-label="Página inicial">
       <div class="tab-head home-head">
         <header class="site-header">
-          <a href="/" class="brand" data-home-toggle>FELIPE BARBOSA</a>
+          <a href="/" class="brand" data-home-toggle>{home.brand}</a>
         </header>
       </div>
 
       <div class="tab-content home-content" data-home-content>
         <div class="home-inner">
           <div class="home-copy">
-            <p>
-              I'm Felipe, a graphic designer with artistic and technical influences dedicated to developing design solutions guided by a strategic digital approach. My contributions go beyond creating modern and creative visual solutions for clients. I also approach design with a systematic and strategic mindset to simplify processes and scaling these solutions. I see design as a tool that helps individuals and brands in their daily lives, enhancing our ability to face the challenges of today's world.
-            </p>
-            <p>
-              I collaborated with teams from studios such as HardCuore in Rio de Janeiro, Hardy in Minas Gerais and Polar, Ltda in São Paulo, and worked on projects for clients such as Instituto Moreira Salles, Museu de Arte do Rio, Aliança Francesa, Revista Amarello, Vox Capital, Nubank, Daily Paper and much more.
-            </p>
+            {home.intro.map((paragraph) => <p>{paragraph}</p>)}
 
             <div class="home-list">
               <div class="home-list-label"><p><i>Pratice</i></p></div>
               <div class="home-list-items">
-                <p>Latin American Design Awards 2024<br /><i>Silver, Category Digital</i></p>
-                <p>Awwwards 2022<br /><i>Honor Mention</i></p>
-                <p>Brasil Design Awards 2021<br /><i>Silver, Category Digital</i></p>
+                {home.practice.map((item) => (
+                  <p>{item.title}<br /><i>{item.detail}</i></p>
+                ))}
               </div>
             </div>
 
             <div class="home-list">
               <div class="home-list-label"><p><i>Mentions &amp; Awards</i></p></div>
               <div class="home-list-items">
-                <p>Latin American Design Awards 2026<br /><i>Gold, Category Digital</i></p>
-                <p>Latin American Design Awards 2026<br /><i>2x Silver, Category Digital</i></p>
-                <p>14th Brazilian Design Biennial<br /><i>Category Digital</i></p>
-                <p>Latin American Design Awards 2024<br /><i>Silver, Category Digital</i></p>
-                <p>Awwwards 2022<br /><i>Honor Mention</i></p>
-                <p>Brasil Design Awards 2021<br /><i>Silver, Category Digital</i></p>
+                {home.mentionsAwards.map((item) => (
+                  <p>{item.title}<br /><i>{item.detail}</i></p>
+                ))}
               </div>
             </div>
           </div>

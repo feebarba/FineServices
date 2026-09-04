@@ -29,3 +29,14 @@ O Structure Tool apresenta três entradas para o tipo `project`:
 - `Todos os projetos`: mostra o acervo completo.
 
 Dentro de cada projeto, use `Exibir na aba` para definir onde o conteúdo aparece. As galerias são independentes: `Galeria de Photography` aceita imagens e `Mídias de Design` aceita imagens ou vídeos.
+
+## Migração inicial
+
+Para reimportar o conteúdo atual do layout no projeto `btfiysbs`:
+
+```bash
+cd /Users/felipebarbosa/Documents/Codex/2026-08-03/ol
+PATH=/Users/felipebarbosa/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin:$PATH node sanity/scripts/migrate-portfolio.mjs
+```
+
+O script é idempotente para os documentos e reutiliza assets já encontrados pelo nome original do arquivo.
