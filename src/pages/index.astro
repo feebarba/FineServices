@@ -768,7 +768,7 @@ const pageTitle = initialTab === "design"
   if (brandTypewriter && !window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
     const primaryText = brandTypewriter.dataset.primaryBrand?.trim() || "Felipe Barbosa";
     const secondaryText = brandTypewriter.dataset.secondaryBrand?.trim() || "Fine Services";
-    const holdDuration = 6000;
+    const holdDuration = 10000;
     const eraseDelay = 60;
     const typeDelay = 84;
     let nextText = secondaryText;
