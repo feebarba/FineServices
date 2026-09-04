@@ -138,13 +138,13 @@ p { margin: 0; font-family: var(--garamono); font-size: 11px; font-weight: 500; 
 .project-year-cell { width: 50px; justify-self: end; text-align: right; }
 .project-year { font-style: normal; font-weight: 600; font-variant-numeric: proportional-nums oldstyle-nums; font-feature-settings: "pnum" 1, "onum" 1; }
 
-.gallery-scroll { --photo-height: 224.4px; --photo-max-height: none; width: auto; margin-inline: calc(var(--shell-gutter) * -1); overflow-x: auto; overflow-y: visible; overscroll-behavior-x: contain; -webkit-overflow-scrolling: touch; scrollbar-width: none; outline: none; cursor: pointer; touch-action: pan-x pan-y; }
+.gallery-scroll { --gallery-gutter: var(--shell-gutter); --photo-height: 224.4px; --photo-max-height: none; width: auto; margin-inline: calc(var(--gallery-gutter) * -1); overflow-x: auto; overflow-y: visible; overscroll-behavior-x: contain; -webkit-overflow-scrolling: touch; scrollbar-width: none; outline: none; cursor: pointer; touch-action: pan-x pan-y; }
 .gallery-scroll::-webkit-scrollbar { display: none; }
 .gallery-scroll:focus-visible { outline: 1px solid var(--ink); outline-offset: 3px; }
 .gallery-scroll.is-dragging { cursor: pointer; user-select: none; }
 .gallery-scroll.is-dragging .photo-placeholder { pointer-events: none; }
 .gallery-scroll.is-expanded { --photo-height: 489.6px; }
-.gallery-track { display: flex; gap: 2px; width: max-content; min-width: 100%; padding-inline: var(--shell-gutter); overflow: visible; }
+.gallery-track { display: flex; gap: 2px; width: max-content; min-width: 100%; padding-inline: var(--gallery-gutter); overflow: visible; }
 .photo { flex: 0 0 auto; height: var(--photo-height); max-height: var(--photo-max-height); margin: 0; overflow: visible; background: transparent; transition: height 550ms cubic-bezier(0.22, 1, 0.36, 1), max-height 550ms cubic-bezier(0.22, 1, 0.36, 1); }
 .design-content .photo, .collection-content .photo { flex: 0 0 auto; width: auto; aspect-ratio: var(--media-ratio); }
 .photo-frame { width: 100%; height: 100%; overflow: visible; opacity: 0; background: #d1d1d1; }
@@ -181,6 +181,8 @@ p { margin: 0; font-family: var(--garamono); font-size: 11px; font-weight: 500; 
   .portfolio-shell { padding: 0; }
   .site-header .brand { transform: translateY(-5px); }
   .site-header, .collection-heading { font-size: 9px; }
+  .tab-heading, .collection-heading { padding-inline: 10px; }
+  .design-panel .tab-content, .collection-content { --gallery-gutter: 10px; padding-inline: 10px; }
   .project-list { margin-top: 80px; }
   .project + .project { margin-top: 80px; }
   .project-meta { display: flex; justify-content: space-between; align-items: baseline; gap: 0; padding-bottom: 7px; white-space: nowrap; }
