@@ -1,0 +1,8 @@
+[build]
+  command = "pnpm build"
+  publish = "dist"
+
+[build.environment]
+  PUBLIC_SANITY_PROJECT_ID = "btfiysbs"
+  PUBLIC_SANITY_DATASET = "production"
+  PUBLIC_SANITY_API_VERSION = "2025-01-01"
