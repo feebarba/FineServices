@@ -181,7 +181,6 @@ p { margin: 0; font-family: var(--garamono); font-size: 11px; font-weight: 500; 
   .portfolio-shell { padding: 0; }
   .site-header .brand { transform: translateY(-5px); }
   .site-header, .collection-heading { font-size: 9px; }
-  .tab-heading, .collection-heading { padding-inline: 10px; }
   .design-panel .tab-content, .collection-content { --gallery-gutter: 10px; padding-inline: 10px; }
   .project-list { margin-top: 80px; }
   .project + .project { margin-top: 80px; }
