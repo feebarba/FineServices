@@ -19,9 +19,10 @@ const client = projectId
       projectId,
       dataset,
       apiVersion: import.meta.env.PUBLIC_SANITY_API_VERSION ?? "2025-01-01",
-      // Keep local CMS previews fresh. Production remains CDN-backed while
-      // each static build still fetches the latest published content.
-      useCdn: import.meta.env.PROD,
+      // The site is statically generated, so the build must always read the
+      // latest published document instead of a potentially stale CDN result.
+      useCdn: false,
+      perspective: "published",
     })
   : null;
 
