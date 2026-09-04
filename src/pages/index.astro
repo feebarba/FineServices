@@ -1,48 +1,15 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
+import { getPortfolioProjects } from "../lib/sanity";
+import type {
+  DesignCredit,
+  PhotoOrientation,
+  PortfolioProject as Project,
+  ProjectMedia,
+  ProjectPhoto,
+  ProjectVideo,
+} from "../lib/portfolio-types";
 import "../styles/global.css";
-
-type PhotoOrientation = "horizontal" | "vertical";
-type PhotoPalette = "black-and-white" | "color";
-
-type ProjectPhoto = {
-  kind?: "image";
-  src: string;
-  alt: string;
-  orientation: PhotoOrientation;
-  palette: PhotoPalette;
-  width: number;
-  height: number;
-};
-
-type ProjectVideo = {
-  kind: "video";
-  src: string;
-  alt: string;
-  orientation: PhotoOrientation;
-  width: number;
-  height: number;
-};
-
-type ProjectMedia = ProjectPhoto | ProjectVideo;
-
-type DesignCredit = {
-  category: string;
-  name: string;
-};
-
-type Project = {
-  title: string;
-  designType: string;
-  info: string;
-  credits: DesignCredit[];
-  location: string;
-  medium: string;
-  year: string;
-  photoCount: number;
-  photos?: ProjectPhoto[];
-  designMedia?: ProjectMedia[];
-};
 
 const defaultDesignInfo = "A creative digital identity positioned directly within the acidity of Brazilian Design. Three years after its first launch, we have developed a new website for the Polar portfolio. Accessible buttons, to the content classification through filters and different types of visualization, the interface design.";
 
@@ -336,7 +303,7 @@ const quietStructuresPhotos: ProjectPhoto[] = [
   },
 ].reverse();
 
-const projects: Project[] = [
+const fallbackProjects: Project[] = [
   {
     title: "Enchanted feelings",
     designType: "Visual identity",
@@ -406,19 +373,29 @@ const projects: Project[] = [
   },
 ];
 
-projects.push(
-  ...projects.slice(1).map((project) => ({
-    ...project,
-    photos: project.photos ? [...project.photos] : undefined,
-  })),
-);
+const cmsProjects = await getPortfolioProjects();
+const projects: Project[] = cmsProjects ?? fallbackProjects;
 
-const designProjects = projects.slice(0, -1);
+if (!cmsProjects) {
+  projects.push(
+    ...projects.slice(1).map((project) => ({
+      ...project,
+      photos: project.photos ? [...project.photos] : undefined,
+    })),
+  );
+}
+
+const designProjects = cmsProjects
+  ? projects.filter((project) => project.sections?.includes("design") ?? true)
+  : projects.slice(0, -1);
+const photographyProjects = cmsProjects
+  ? projects.filter((project) => project.sections?.includes("photography") ?? true)
+  : projects;
 const designMediaByProject: ProjectMedia[][] = designProjects.map(
   (project) => project.designMedia ?? project.photos ?? [],
 );
 
-const orientationsByProject: PhotoOrientation[][] = projects.map(({ photoCount, photos }) => {
+const orientationsByProject: PhotoOrientation[][] = photographyProjects.map(({ photoCount, photos }) => {
   if (photos) {
     return photos.map(({ orientation }) => orientation);
   }
@@ -442,7 +419,7 @@ const designOrientationsByProject = designMediaByProject.map((media) =>
   media.map(({ orientation }) => orientation),
 );
 
-const totalPhotoCount = projects.reduce((total, project) => total + project.photoCount, 0);
+const totalPhotoCount = photographyProjects.reduce((total, project) => total + project.photoCount, 0);
 type PortfolioTab = "home" | "design" | "photography";
 const normalizedPath = Astro.url.pathname.replace(/\/+$/, "") || "/";
 const initialTab: PortfolioTab = normalizedPath === "/design"
@@ -691,7 +668,7 @@ const pageTitle = initialTab === "design"
       <div class="collection-content" id="photography-content" data-photography-content aria-hidden={String(initialTab !== "photography")}>
 
         <div class="project-list">
-          {projects.map((project, projectIndex) => (
+          {photographyProjects.map((project, projectIndex) => (
             <article class="project">
               <div class="project-meta">
                 <h2>
