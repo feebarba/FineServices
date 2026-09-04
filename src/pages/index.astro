@@ -1261,6 +1261,20 @@ const pageTitle = initialTab === "design"
   const photographyPanel = document.querySelector<HTMLElement>("[data-photography-panel]");
   const photographyContent = document.querySelector<HTMLElement>("[data-photography-content]");
   const photographyToggle = document.querySelector<HTMLAnchorElement>("[data-photography-toggle]");
+
+  [[designPanel, designToggle], [photographyPanel, photographyToggle]].forEach(([panel, toggle]) => {
+    if (!panel || !toggle) return;
+
+    const clearPressedState = () => panel.classList.remove("is-pressed");
+
+    toggle.addEventListener("pointerdown", (event) => {
+      if (event.pointerType === "touch") panel.classList.add("is-pressed");
+    });
+    toggle.addEventListener("pointerup", clearPressedState);
+    toggle.addEventListener("pointercancel", clearPressedState);
+    toggle.addEventListener("pointerleave", clearPressedState);
+  });
+
   const tabTransitionDuration = 600;
   type PortfolioTab = "home" | "design" | "photography";
   type HistoryMode = "push" | "replace" | "none";
