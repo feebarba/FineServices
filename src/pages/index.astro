@@ -934,6 +934,31 @@ const pageTitle = initialTab === "design"
     });
   };
 
+  let galleryObserver: IntersectionObserver | null = null;
+
+  const resetGalleryReveal = (gallery: HTMLElement) => {
+    gallery.classList.remove("is-images-ready");
+    gallery.querySelectorAll<HTMLElement>(".photo-frame").forEach((frame) => {
+      frame.classList.remove("is-media-ready", "is-revealed");
+    });
+  };
+
+  const replayLoadedGallery = (gallery: HTMLElement) => {
+    resetGalleryReveal(gallery);
+
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        if (gallery.dataset.replayPending !== "true") return;
+
+        gallery.querySelectorAll<HTMLElement>(".photo-frame").forEach((frame) => {
+          frame.classList.add("is-media-ready");
+        });
+        gallery.classList.add("is-images-ready");
+        delete gallery.dataset.replayPending;
+      });
+    });
+  };
+
   const replayGalleryReveal = (tab: GalleryTab) => {
     const readyGalleries = galleries.filter((gallery) =>
       gallery.dataset.tabGallery === tab &&
@@ -943,39 +968,34 @@ const pageTitle = initialTab === "design"
     if (readyGalleries.length === 0) return;
 
     readyGalleries.forEach((gallery) => {
-      gallery.classList.remove("is-images-ready");
-      gallery.querySelectorAll<HTMLElement>(".photo-frame").forEach((frame) => {
-        frame.classList.remove("is-media-ready", "is-revealed");
-      });
+      gallery.dataset.replayPending = "true";
+      resetGalleryReveal(gallery);
+      galleryObserver?.observe(gallery);
     });
 
-    requestAnimationFrame(() => {
-      requestAnimationFrame(() => {
-        readyGalleries.forEach((gallery) => {
-          gallery.querySelectorAll<HTMLElement>(".photo-frame").forEach((frame) => {
-            frame.classList.add("is-media-ready");
-          });
-          gallery.classList.add("is-images-ready");
-        });
-      });
-    });
+    if (!galleryObserver) {
+      readyGalleries.forEach(replayLoadedGallery);
+    }
   };
 
   if ("IntersectionObserver" in window) {
-    const galleryObserver = new IntersectionObserver(
+    galleryObserver = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
           if (!entry.isIntersecting) return;
 
           const gallery = entry.target as HTMLElement;
           loadGalleryMedia(gallery);
-          galleryObserver.unobserve(gallery);
+          if (gallery.dataset.replayPending === "true") {
+            replayLoadedGallery(gallery);
+          }
+          galleryObserver?.unobserve(gallery);
         });
       },
       { threshold: 0.01 },
     );
 
-    galleries.forEach((gallery) => galleryObserver.observe(gallery));
+    galleries.forEach((gallery) => galleryObserver?.observe(gallery));
   } else {
     galleries.forEach(loadGalleryMedia);
   }
