@@ -197,22 +197,32 @@ const replayLoadedGallery = (gallery: HTMLElement) => {
 };
 
 const replayGalleryReveal = (tab: GalleryTab) => {
-  const readyGalleries = galleries.filter((gallery) =>
+  const pendingGalleries = galleries.filter((gallery) =>
     gallery.dataset.tabGallery === tab &&
-    gallery.classList.contains("is-images-ready"),
+    gallery.dataset.replayPending === "true",
   );
 
-  if (readyGalleries.length === 0) return;
-
-  readyGalleries.forEach((gallery) => {
-    gallery.dataset.replayPending = "true";
-    resetGalleryReveal(gallery);
-    galleryObserver?.observe(gallery);
-  });
+  if (pendingGalleries.length === 0) return;
 
   if (!galleryObserver) {
-    readyGalleries.forEach(replayLoadedGallery);
+    pendingGalleries.forEach(replayLoadedGallery);
+    return;
   }
+
+  pendingGalleries.forEach((gallery) => galleryObserver?.observe(gallery));
+};
+
+const prepareGalleryReveal = (tab: GalleryTab) => {
+  galleries
+    .filter((gallery) =>
+      gallery.dataset.tabGallery === tab &&
+      gallery.classList.contains("is-images-ready"),
+    )
+    .forEach((gallery) => {
+      gallery.dataset.replayPending = "true";
+      resetGalleryReveal(gallery);
+      galleryObserver?.unobserve(gallery);
+    });
 };
 
 const cancelPendingGalleryLoad = (gallery: HTMLElement) => {
@@ -245,11 +255,24 @@ const scheduleGalleryLoad = (gallery: HTMLElement) => {
   pendingGalleryLoads.set(gallery, timer);
 };
 
+const isGalleryTabActive = (gallery: HTMLElement) => {
+  const panelSelector = gallery.dataset.tabGallery === "design"
+    ? "[data-design-panel]"
+    : "[data-photography-panel]";
+  return document.querySelector<HTMLElement>(panelSelector)?.classList.contains("active") ?? false;
+};
+
 if ("IntersectionObserver" in window) {
   galleryObserver = new IntersectionObserver(
     (entries) => {
       entries.forEach((entry) => {
         const gallery = entry.target as HTMLElement;
+        if (!isGalleryTabActive(gallery)) {
+          intersectingGalleries.delete(gallery);
+          cancelPendingGalleryLoad(gallery);
+          return;
+        }
+
         if (!entry.isIntersecting) {
           intersectingGalleries.delete(gallery);
           cancelPendingGalleryLoad(gallery);
@@ -733,6 +756,7 @@ const setActiveTab = (nextTab: PortfolioTab, historyMode: HistoryMode = "push") 
   if (nextTab === "design" || nextTab === "photography") {
     const content = nextTab === "design" ? designContent : photographyContent;
     content?.scrollTo({ top: 0, behavior: "auto" });
+    prepareGalleryReveal(nextTab);
     galleryRevealTimer = window.setTimeout(() => {
       galleryRevealTimer = null;
       if (activeTab === nextTab) replayGalleryReveal(nextTab);
@@ -758,12 +782,12 @@ homeToggle?.addEventListener("click", (event) => {
 
 designToggle?.addEventListener("click", (event) => {
   event.preventDefault();
-  setActiveTab(activeTab === "design" ? "home" : "design");
+  setActiveTab(activeTab === "design" ? "photography" : "design");
 });
 
 photographyToggle?.addEventListener("click", (event) => {
   event.preventDefault();
-  setActiveTab(activeTab === "photography" ? "home" : "photography");
+  setActiveTab(activeTab === "photography" ? "design" : "photography");
 });
 
 window.addEventListener("popstate", () => {
