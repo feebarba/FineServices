@@ -2,6 +2,8 @@
 
 Este Studio está conectado ao projeto `btfiysbs`, no dataset `production`.
 
+O Studio publicado está disponível em [fine-services.sanity.studio](https://fine-services.sanity.studio/).
+
 ## Comandos
 
 ```bash
