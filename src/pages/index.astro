@@ -826,10 +826,15 @@ const pageTitle = initialTab === "design"
 
     const settledMedia = new Set<HTMLImageElement | HTMLVideoElement>();
 
+    const revealMediaFrame = (media: HTMLImageElement | HTMLVideoElement) => {
+      media.closest<HTMLElement>(".photo-frame")?.classList.add("is-media-ready");
+    };
+
     const markMediaSettled = (media: HTMLImageElement | HTMLVideoElement) => {
       if (settledMedia.has(media)) return;
 
       settledMedia.add(media);
+      revealMediaFrame(media);
 
       if (settledMedia.size === galleryMedia.length) {
         gallery.classList.add("is-images-ready");
