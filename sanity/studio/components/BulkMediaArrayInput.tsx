@@ -25,9 +25,34 @@ const filenameToAlt = (filename: string) => filename.replace(/\.[^/.]+$/, '').re
 
 const RenderItemsOnly = ({children}: {children?: ReactNode}) => <>{children}</>
 
-const getDimensions = (asset: UploadedAsset) => {
-  const width = asset.metadata?.dimensions?.width ?? 1
-  const height = asset.metadata?.dimensions?.height ?? 1
+const getVideoDimensions = (file: File): Promise<AssetDimensions> =>
+  new Promise((resolve) => {
+    const video = document.createElement('video')
+    const objectUrl = URL.createObjectURL(file)
+    let settled = false
+
+    const finish = (dimensions: AssetDimensions) => {
+      if (settled) return
+      settled = true
+      URL.revokeObjectURL(objectUrl)
+      video.removeAttribute('src')
+      video.load()
+      resolve(dimensions)
+    }
+
+    video.preload = 'metadata'
+    video.addEventListener(
+      'loadedmetadata',
+      () => finish({width: video.videoWidth, height: video.videoHeight}),
+      {once: true},
+    )
+    video.addEventListener('error', () => finish({}), {once: true})
+    video.src = objectUrl
+  })
+
+const getDimensions = (asset: UploadedAsset, fileDimensions?: AssetDimensions) => {
+  const width = fileDimensions?.width || asset.metadata?.dimensions?.width || 1
+  const height = fileDimensions?.height || asset.metadata?.dimensions?.height || 1
 
   return {
     width,
@@ -36,9 +61,14 @@ const getDimensions = (asset: UploadedAsset) => {
   }
 }
 
-const createMediaItem = (asset: UploadedAsset, file: File, mode: BulkMediaMode) => {
+const createMediaItem = (
+  asset: UploadedAsset,
+  file: File,
+  mode: BulkMediaMode,
+  fileDimensions?: AssetDimensions,
+) => {
   const kind = file.type.startsWith('video/') ? 'video' : 'image'
-  const dimensions = getDimensions(asset)
+  const dimensions = getDimensions(asset, fileDimensions)
   const base = {
     _key: makeKey(),
     alt: filenameToAlt(file.name),
@@ -95,12 +125,18 @@ function BulkMediaArrayInput(
       const items = []
 
       for (const file of files) {
-        const assetType = file.type.startsWith('video/') ? 'file' : 'image'
-        const asset = (await client.assets.upload(assetType, file, {
-          filename: file.name,
-        })) as UploadedAsset
+        const isVideo = file.type.startsWith('video/')
+        const assetType = isVideo ? 'file' : 'image'
+        const dimensionsPromise = isVideo
+          ? getVideoDimensions(file)
+          : Promise.resolve<AssetDimensions | undefined>(undefined)
+        const [uploadedAsset, fileDimensions] = await Promise.all([
+          client.assets.upload(assetType, file, {filename: file.name}),
+          dimensionsPromise,
+        ])
+        const asset = uploadedAsset as UploadedAsset
 
-        items.push(createMediaItem(asset, file, mode))
+        items.push(createMediaItem(asset, file, mode, fileDimensions))
         setProgress((current) => ({...current, completed: current.completed + 1}))
       }
 

@@ -861,6 +861,19 @@ const pageTitle = initialTab === "design"
         playback?.catch(() => undefined);
       };
 
+      const syncIntrinsicDimensions = () => {
+        const width = video.videoWidth;
+        const height = video.videoHeight;
+        const photo = video.closest<HTMLElement>(".photo");
+
+        if (!photo || width <= 0 || height <= 0) return;
+
+        photo.style.setProperty("--media-ratio", String(width / height));
+        video.width = width;
+        video.height = height;
+      };
+
+      video.addEventListener("loadedmetadata", syncIntrinsicDimensions, { once: true });
       video.addEventListener("loadeddata", () => {
         markMediaSettled(video);
         startPlayback();
