@@ -4,6 +4,7 @@ import { media } from "./media";
 import { photoMedia } from "./photoMedia";
 import { credit } from "./credit";
 import { homeListItem } from "./homeListItem";
+import { homeListBlock } from "./homeListBlock";
 import { siteSettings } from "./siteSettings";
 
 export const schemaTypes = [
@@ -13,5 +14,6 @@ export const schemaTypes = [
   photoMedia,
   credit,
   homeListItem,
+  homeListBlock,
   siteSettings,
 ];

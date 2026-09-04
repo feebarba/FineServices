@@ -3,6 +3,7 @@ import type {
   DesignCredit,
   PhotoOrientation,
   PhotoPalette,
+  HomeListBlock,
   PortfolioHome,
   PortfolioProject,
   PortfolioSection,
@@ -52,8 +53,10 @@ type RawProject = {
 type RawHome = {
   brand?: string;
   intro?: string[];
-  practice?: Array<{ title?: string; detail?: string }>;
-  mentionsAwards?: Array<{ title?: string; detail?: string }>;
+  lists?: Array<{
+    title?: string;
+    items?: Array<{ title?: string; detail?: string }>;
+  }>;
 };
 
 const MEDIA_PROJECTION = `{
@@ -105,8 +108,10 @@ const PORTFOLIO_HOME_QUERY = `
   *[_type == "siteSettings" && _id == "siteSettings"][0] {
     brand,
     intro,
-    practice[]{title, detail},
-    mentionsAwards[]{title, detail}
+    lists[]{
+      title,
+      items[]{title, detail}
+    }
   }
 `;
 
@@ -159,12 +164,15 @@ const normalizeProject = (project: RawProject): PortfolioProject => {
 const normalizeHome = (home: RawHome): PortfolioHome => ({
   brand: home.brand ?? "FELIPE BARBOSA",
   intro: home.intro?.filter(Boolean) ?? [],
-  practice: home.practice
-    ?.filter((item) => item.title && item.detail)
-    .map((item) => ({title: item.title!, detail: item.detail!})) ?? [],
-  mentionsAwards: home.mentionsAwards
-    ?.filter((item) => item.title && item.detail)
-    .map((item) => ({title: item.title!, detail: item.detail!})) ?? [],
+  lists: home.lists
+    ?.filter((list) => list.title)
+    .map((list): HomeListBlock => ({
+      title: list.title!,
+      items:
+        list.items
+          ?.filter((item) => item.title && item.detail)
+          .map((item) => ({ title: item.title!, detail: item.detail! })) ?? [],
+    })) ?? [],
 });
 
 /**

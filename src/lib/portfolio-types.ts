@@ -33,11 +33,15 @@ export type HomeListItem = {
   detail: string;
 };
 
+export type HomeListBlock = {
+  title: string;
+  items: HomeListItem[];
+};
+
 export type PortfolioHome = {
   brand: string;
   intro: string[];
-  practice: HomeListItem[];
-  mentionsAwards: HomeListItem[];
+  lists: HomeListBlock[];
 };
 
 export type PortfolioProject = {

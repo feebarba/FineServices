@@ -536,8 +536,19 @@ const documents = [
     _type: 'siteSettings',
     brand: 'FELIPE BARBOSA',
     intro,
-    practice: practice.map((item, index) => ({...item, _key: `practice-${index}`, _type: 'homeListItem'})),
-    mentionsAwards: mentionsAwards.map((item, index) => ({...item, _key: `award-${index}`, _type: 'homeListItem'})),
+    lists: [
+      {title: 'Pratice', items: practice},
+      {title: 'Mentions & Awards', items: mentionsAwards},
+    ].map((list, listIndex) => ({
+      _key: `home-list-${listIndex}`,
+      _type: 'homeListBlock',
+      title: list.title,
+      items: list.items.map((item, itemIndex) => ({
+        ...item,
+        _key: `home-list-${listIndex}-item-${itemIndex}`,
+        _type: 'homeListItem',
+      })),
+    })),
   },
   ...designProjects.map(toDesignProjectDocument),
   ...photographyProjects.map(toPhotographyProjectDocument),

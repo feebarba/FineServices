@@ -19,16 +19,12 @@ export const siteSettings = {
       validation: (Rule: any) => Rule.min(1),
     },
     {
-      name: "practice",
-      title: "Pratice",
+      name: "lists",
+      title: "Blocos de listas",
+      description: "Edite os títulos e adicione quantos blocos de lista quiser.",
       type: "array",
-      of: [{ type: "homeListItem" }],
-    },
-    {
-      name: "mentionsAwards",
-      title: "Mentions & Awards",
-      type: "array",
-      of: [{ type: "homeListItem" }],
+      of: [{ type: "homeListBlock" }],
+      validation: (Rule: any) => Rule.min(1),
     },
   ],
   preview: {
