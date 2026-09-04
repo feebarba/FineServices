@@ -15,6 +15,10 @@ Design e Photography são coleções independentes no CMS. A Home possui a
 introdução e blocos de listas editáveis; as configurações gerais controlam
 favicon, metadados e informações de compartilhamento.
 
+Imagens publicadas no Sanity usam o CDN responsivo com negociação automática
+de formato e qualidade. Vídeos só entram no DOM quando a galeria chega ao
+viewport e recebem um poster JPEG leve gerado pelo uploader.
+
 ## Desenvolvimento local
 
 Requer Node.js 22 ou superior.

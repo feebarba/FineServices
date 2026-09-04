@@ -50,6 +50,58 @@ const getVideoDimensions = (file: File): Promise<AssetDimensions> =>
     video.src = objectUrl
   })
 
+const getVideoPoster = (file: File): Promise<Blob | undefined> =>
+  new Promise((resolve) => {
+    const video = document.createElement('video')
+    const objectUrl = URL.createObjectURL(file)
+    let settled = false
+    let drawStarted = false
+    const timeout = window.setTimeout(() => finish(), 10000)
+
+    const finish = (poster?: Blob) => {
+      if (settled) return
+      settled = true
+      window.clearTimeout(timeout)
+      URL.revokeObjectURL(objectUrl)
+      video.removeAttribute('src')
+      video.load()
+      resolve(poster)
+    }
+
+    const drawPoster = () => {
+      if (drawStarted || video.videoWidth <= 0 || video.videoHeight <= 0) return
+      drawStarted = true
+
+      const scale = Math.min(1, 1280 / video.videoWidth)
+      const canvas = document.createElement('canvas')
+      canvas.width = Math.max(1, Math.round(video.videoWidth * scale))
+      canvas.height = Math.max(1, Math.round(video.videoHeight * scale))
+      const context = canvas.getContext('2d')
+
+      if (!context) {
+        finish()
+        return
+      }
+
+      context.drawImage(video, 0, 0, canvas.width, canvas.height)
+      canvas.toBlob((poster) => finish(poster ?? undefined), 'image/jpeg', 0.78)
+    }
+
+    video.preload = 'metadata'
+    video.muted = true
+    video.playsInline = true
+    video.addEventListener('loadeddata', drawPoster, {once: true})
+    video.addEventListener('seeked', drawPoster, {once: true})
+    video.addEventListener('loadedmetadata', () => {
+      if (Number.isFinite(video.duration) && video.duration > 0) {
+        video.currentTime = Math.min(0.1, video.duration)
+      }
+    }, {once: true})
+    video.addEventListener('error', () => finish(), {once: true})
+    video.src = objectUrl
+    video.load()
+  })
+
 const getDimensions = (asset: UploadedAsset, fileDimensions?: AssetDimensions) => {
   const width = fileDimensions?.width || asset.metadata?.dimensions?.width || 1
   const height = fileDimensions?.height || asset.metadata?.dimensions?.height || 1
@@ -66,6 +118,7 @@ const createMediaItem = (
   file: File,
   mode: BulkMediaMode,
   fileDimensions?: AssetDimensions,
+  posterAsset?: UploadedAsset,
 ) => {
   const kind = file.type.startsWith('video/') ? 'video' : 'image'
   const dimensions = getDimensions(asset, fileDimensions)
@@ -84,6 +137,9 @@ const createMediaItem = (
           _type: 'media',
           kind: 'video',
           video: {_type: 'file', asset: {_type: 'reference', _ref: asset._id}},
+          ...(posterAsset
+            ? {poster: {_type: 'image', asset: {_type: 'reference', _ref: posterAsset._id}}}
+            : {}),
         }
       : {
           ...base,
@@ -130,13 +186,20 @@ function BulkMediaArrayInput(
         const dimensionsPromise = isVideo
           ? getVideoDimensions(file)
           : Promise.resolve<AssetDimensions | undefined>(undefined)
-        const [uploadedAsset, fileDimensions] = await Promise.all([
+        const posterPromise = isVideo ? getVideoPoster(file) : Promise.resolve<Blob | undefined>(undefined)
+        const [uploadedAsset, fileDimensions, posterBlob] = await Promise.all([
           client.assets.upload(assetType, file, {filename: file.name}),
           dimensionsPromise,
+          posterPromise,
         ])
         const asset = uploadedAsset as UploadedAsset
+        const posterAsset = posterBlob
+          ? (await client.assets.upload('image', posterBlob, {
+              filename: `${file.name.replace(/\.[^/.]+$/, '')}-poster.jpg`,
+            })) as UploadedAsset
+          : undefined
 
-        items.push(createMediaItem(asset, file, mode, fileDimensions))
+        items.push(createMediaItem(asset, file, mode, fileDimensions, posterAsset))
         setProgress((current) => ({...current, completed: current.completed + 1}))
       }
 

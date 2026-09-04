@@ -32,6 +32,14 @@ export const media = {
       hidden: ({ parent }: any) => parent?.kind !== "video",
     },
     {
+      name: "poster",
+      title: "Poster do vídeo",
+      description: "Quadro de capa gerado automaticamente pelo uploader.",
+      type: "image",
+      options: { hotspot: true },
+      hidden: ({ parent }: any) => parent?.kind !== "video",
+    },
+    {
       name: "alt",
       title: "Texto alternativo",
       type: "string",

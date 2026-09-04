@@ -29,6 +29,9 @@ const client = projectId
 type RawMedia = {
   kind?: "image" | "video";
   src?: string;
+  posterUrl?: string;
+  posterWidth?: number;
+  posterHeight?: number;
   assetWidth?: number;
   assetHeight?: number;
   alt?: string;
@@ -81,6 +84,9 @@ const MEDIA_PROJECTION = `{
   width,
   height,
   "src": select(kind == "video" => video.asset->url, image.asset->url),
+  "posterUrl": select(kind == "video" => poster.asset->url),
+  "posterWidth": select(kind == "video" => poster.asset->metadata.dimensions.width),
+  "posterHeight": select(kind == "video" => poster.asset->metadata.dimensions.height),
   "assetWidth": select(kind == "video" => video.asset->metadata.dimensions.width, image.asset->metadata.dimensions.width),
   "assetHeight": select(kind == "video" => video.asset->metadata.dimensions.height, image.asset->metadata.dimensions.height)
 }`;
@@ -158,7 +164,13 @@ const normalizeMedia = (media: RawMedia): ProjectMedia | null => {
   };
 
   if (media.kind === "video") {
-    return { kind: "video", ...baseMedia };
+    return {
+      kind: "video",
+      ...baseMedia,
+      ...(media.posterUrl ? { posterUrl: media.posterUrl } : {}),
+      ...(media.posterWidth ? { posterWidth: media.posterWidth } : {}),
+      ...(media.posterHeight ? { posterHeight: media.posterHeight } : {}),
+    };
   }
 
   return {

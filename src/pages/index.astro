@@ -10,6 +10,7 @@ import type {
   ProjectVideo,
   PortfolioHome,
 } from "../lib/portfolio-types";
+import { getImageSrcSet, getOptimizedImageUrl } from "../lib/media";
 import "../styles/global.css";
 
 const defaultDesignInfo = "A creative digital identity positioned directly within the acidity of Brazilian Design. Three years after its first launch, we have developed a new website for the Polar portfolio. Accessible buttons, to the content classification through filters and different types of visualization, the interface design.";
@@ -643,6 +644,7 @@ const pageTitle = initialTab === "design"
                             <video
                               class="project-video"
                               data-src={media.src}
+                              data-poster-src={media.posterUrl ? getOptimizedImageUrl(media.posterUrl, { width: Math.min(media.posterWidth ?? 1280, 1280), quality: 78 }) : undefined}
                               aria-label={media.alt}
                               width={media.width}
                               height={media.height}
@@ -657,11 +659,13 @@ const pageTitle = initialTab === "design"
                           ) : media ? (
                             <img
                               class="project-image"
-                              data-src={media.src}
+                              data-src={getOptimizedImageUrl(media.src, { width: Math.min(media.width, 1280) })}
+                              data-srcset={getImageSrcSet(media.src, media.width)}
+                              data-sizes="(max-width: 768px) 90vw, 60vw"
                               alt={media.alt}
                               width={media.width}
                               height={media.height}
-                              loading="eager"
+                              loading="lazy"
                               decoding="async"
                               draggable="false"
                             />
@@ -732,11 +736,13 @@ const pageTitle = initialTab === "design"
                           {photo ? (
                             <img
                               class="project-image"
-                              data-src={photo.src}
+                              data-src={getOptimizedImageUrl(photo.src, { width: Math.min(photo.width, 1280) })}
+                              data-srcset={getImageSrcSet(photo.src, photo.width)}
+                              data-sizes="(max-width: 768px) 90vw, 60vw"
                               alt={photo.alt}
                               width={photo.width}
                               height={photo.height}
-                              loading="eager"
+                              loading="lazy"
                               decoding="async"
                               draggable="false"
                             />
@@ -840,8 +846,14 @@ const pageTitle = initialTab === "design"
 
       image.addEventListener("load", () => markMediaSettled(image), { once: true });
       image.addEventListener("error", () => markMediaSettled(image), { once: true });
+      const sourceSet = image.dataset.srcset;
+      if (sourceSet) image.srcset = sourceSet;
+      const sizes = image.dataset.sizes;
+      if (sizes) image.sizes = sizes;
       image.src = source;
       image.removeAttribute("data-src");
+      image.removeAttribute("data-srcset");
+      image.removeAttribute("data-sizes");
 
       if (image.complete) {
         markMediaSettled(image);
@@ -881,6 +893,11 @@ const pageTitle = initialTab === "design"
       video.addEventListener("error", () => markMediaSettled(video), { once: true });
       video.src = source;
       video.removeAttribute("data-src");
+      const posterSource = video.dataset.posterSrc;
+      if (posterSource) {
+        video.poster = posterSource;
+        video.removeAttribute("data-poster-src");
+      }
       video.load();
       startPlayback();
 

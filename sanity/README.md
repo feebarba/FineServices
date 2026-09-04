@@ -13,6 +13,11 @@ O front já está conectado ao Sanity em build time. Quando `PUBLIC_SANITY_PROJE
 
 Os projetos de Design e Photography são independentes. Design possui tipo, Info, créditos, ano e uma única galeria `gallery`, que aceita imagem ou vídeo. Photography possui local, meio/filme, ano e uma galeria `photos` somente de imagens. Não existe campo de seção compartilhado entre as abas. A Home possui a lista `lists`, formada por blocos com título editável e itens próprios; novos blocos podem ser adicionados no Studio. As configurações gerais públicas são resolvidas pelo GROQ no build; credenciais de SSO não são expostas no navegador.
 
+Imagens do Sanity usam `auto=format`, `fit=max`, qualidade 82 e `srcset`
+responsivo. Vídeos são carregados apenas quando entram no viewport e recebem
+um poster JPEG leve gerado pelo uploader. A transcodificação completa do
+arquivo de vídeo exige um pipeline específico e não é feita pelo CDN do Sanity.
+
 ## Studio
 
 Este repositório contém os schemas compartilhados, mas não um Studio isolado. Se o Studio estiver em outro diretório, importe `sanity/schemaTypes/index.ts` na configuração dele. O site só precisa das variáveis de leitura listadas em `.env.example`.

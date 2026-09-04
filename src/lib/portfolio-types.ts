@@ -19,6 +19,9 @@ export type ProjectVideo = {
   orientation: PhotoOrientation;
   width: number;
   height: number;
+  posterUrl?: string;
+  posterWidth?: number;
+  posterHeight?: number;
 };
 
 export type ProjectMedia = ProjectPhoto | ProjectVideo;

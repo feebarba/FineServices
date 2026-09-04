@@ -34,6 +34,11 @@ Os projetos são independentes e não possuem o campo `Exibir na aba`. Projetos 
 
 As duas galerias têm apenas o botão de upload múltiplo. Selecione vários arquivos na mesma janela para adicioná-los de uma vez; o nome do arquivo é usado como texto alternativo inicial e cada item pode ser aberto depois para ajustar alt, orientação, paleta e dimensões.
 
+Para vídeos, o uploader também lê `videoWidth` e `videoHeight` antes de salvar
+o item e gera automaticamente um poster JPEG de até 1280 px. O vídeo original
+continua preservado; compressão/transcodificação completa requer um pipeline
+próprio de vídeo.
+
 Cada item das listas da Home também possui um campo opcional de `Link externo`, validado para URLs `http` e `https`.
 
 ## Migração inicial
