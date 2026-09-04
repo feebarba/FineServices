@@ -483,7 +483,13 @@ const pageTitle = initialTab === "design"
     <section class:list={["tab", "home-panel", { active: initialTab === "home" }]} data-home-panel aria-label="Página inicial">
       <div class="tab-head home-head">
         <header class="site-header">
-          <a href="/" class="brand" data-home-toggle>{home.brand}</a>
+          <a href="/" class="brand" data-home-toggle>
+            <span
+              data-brand-typewriter
+              data-primary-brand={home.brand}
+              data-secondary-brand="Fine Services"
+            >{home.brand}</span>
+          </a>
         </header>
       </div>
 
@@ -757,6 +763,47 @@ const pageTitle = initialTab === "design"
 </BaseLayout>
 
 <script>
+  const brandTypewriter = document.querySelector<HTMLElement>("[data-brand-typewriter]");
+
+  if (brandTypewriter && !window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+    const primaryText = brandTypewriter.dataset.primaryBrand?.trim() || "Felipe Barbosa";
+    const secondaryText = brandTypewriter.dataset.secondaryBrand?.trim() || "Fine Services";
+    const holdDuration = 6000;
+    const eraseDelay = 48;
+    const typeDelay = 68;
+    let nextText = secondaryText;
+    let timer: number | null = null;
+
+    const typeText = (text: string, index = 0) => {
+      if (index >= text.length) {
+        timer = window.setTimeout(() => animateTo(nextText), holdDuration);
+        return;
+      }
+
+      brandTypewriter.textContent = text.slice(0, index + 1);
+      timer = window.setTimeout(() => typeText(text, index + 1), typeDelay);
+    };
+
+    const eraseText = (onComplete: () => void) => {
+      const currentText = brandTypewriter.textContent ?? "";
+
+      if (!currentText) {
+        onComplete();
+        return;
+      }
+
+      brandTypewriter.textContent = currentText.slice(0, -1);
+      timer = window.setTimeout(() => eraseText(onComplete), eraseDelay);
+    };
+
+    const animateTo = (text: string) => {
+      eraseText(() => typeText(text));
+      nextText = text === primaryText ? secondaryText : primaryText;
+    };
+
+    timer = window.setTimeout(() => animateTo(secondaryText), holdDuration);
+  }
+
   const galleries = Array.from(
     document.querySelectorAll<HTMLElement>("[data-gallery-scroll]"),
   );
