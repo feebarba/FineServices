@@ -815,61 +815,83 @@ const pageTitle = initialTab === "design"
     if (gallery.dataset.loadStarted === "true") return;
     gallery.dataset.loadStarted = "true";
 
-    const galleryImages = Array.from(gallery.querySelectorAll<HTMLImageElement>(".project-image"));
-    const galleryVideos = Array.from(gallery.querySelectorAll<HTMLVideoElement>(".project-video"));
-    const galleryMedia = [...galleryImages, ...galleryVideos];
+    type GalleryMedia = HTMLImageElement | HTMLVideoElement;
+    type GalleryEntry = { frame: HTMLElement; media: GalleryMedia | null };
 
-    if (galleryMedia.length === 0) {
+    const galleryEntries = Array.from(gallery.querySelectorAll<HTMLElement>(".photo-frame")).map((frame) => ({
+      frame,
+      media: frame.querySelector<GalleryMedia>(".project-image, .project-video"),
+    }));
+
+    if (galleryEntries.length === 0) {
       requestAnimationFrame(() => gallery.classList.add("is-images-ready"));
       return;
     }
 
-    const settledMedia = new Set<HTMLImageElement | HTMLVideoElement>();
+    const settledEntries = new Set<GalleryEntry>();
+    let nextRevealIndex = 0;
 
-    const revealMediaFrame = (media: HTMLImageElement | HTMLVideoElement) => {
-      media.closest<HTMLElement>(".photo-frame")?.classList.add("is-media-ready");
+    const revealReadyFramesInOrder = () => {
+      while (nextRevealIndex < galleryEntries.length) {
+        const entry = galleryEntries[nextRevealIndex];
+
+        if (!settledEntries.has(entry)) break;
+
+        entry.frame.classList.add("is-media-ready");
+        nextRevealIndex += 1;
+      }
     };
 
-    const markMediaSettled = (media: HTMLImageElement | HTMLVideoElement) => {
-      if (settledMedia.has(media)) return;
+    const markEntrySettled = (entry: GalleryEntry) => {
+      if (settledEntries.has(entry)) return;
 
-      settledMedia.add(media);
-      revealMediaFrame(media);
+      settledEntries.add(entry);
+      revealReadyFramesInOrder();
 
-      if (settledMedia.size === galleryMedia.length) {
+      if (settledEntries.size === galleryEntries.length) {
         gallery.classList.add("is-images-ready");
       }
     };
 
-    galleryImages.forEach((image) => {
-      const source = image.dataset.src;
+    galleryEntries.forEach((entry) => {
+      const media = entry.media;
 
-      if (!source) {
-        markMediaSettled(image);
+      if (!media) {
+        markEntrySettled(entry);
         return;
       }
 
-      image.addEventListener("load", () => markMediaSettled(image), { once: true });
-      image.addEventListener("error", () => markMediaSettled(image), { once: true });
-      const sourceSet = image.dataset.srcset;
-      if (sourceSet) image.srcset = sourceSet;
-      const sizes = image.dataset.sizes;
-      if (sizes) image.sizes = sizes;
-      image.src = source;
-      image.removeAttribute("data-src");
-      image.removeAttribute("data-srcset");
-      image.removeAttribute("data-sizes");
+      if (media instanceof HTMLImageElement) {
+        const image = media;
+        const source = image.dataset.src;
 
-      if (image.complete) {
-        markMediaSettled(image);
+        if (!source) {
+          markEntrySettled(entry);
+          return;
+        }
+
+        image.addEventListener("load", () => markEntrySettled(entry), { once: true });
+        image.addEventListener("error", () => markEntrySettled(entry), { once: true });
+        const sourceSet = image.dataset.srcset;
+        if (sourceSet) image.srcset = sourceSet;
+        const sizes = image.dataset.sizes;
+        if (sizes) image.sizes = sizes;
+        image.src = source;
+        image.removeAttribute("data-src");
+        image.removeAttribute("data-srcset");
+        image.removeAttribute("data-sizes");
+
+        if (image.complete) {
+          markEntrySettled(entry);
+        }
+        return;
       }
-    });
 
-    galleryVideos.forEach((video) => {
+      const video = media;
       const source = video.dataset.src;
 
       if (!source) {
-        markMediaSettled(video);
+        markEntrySettled(entry);
         return;
       }
 
@@ -892,10 +914,10 @@ const pageTitle = initialTab === "design"
 
       video.addEventListener("loadedmetadata", syncIntrinsicDimensions, { once: true });
       video.addEventListener("loadeddata", () => {
-        markMediaSettled(video);
+        markEntrySettled(entry);
         startPlayback();
       }, { once: true });
-      video.addEventListener("error", () => markMediaSettled(video), { once: true });
+      video.addEventListener("error", () => markEntrySettled(entry), { once: true });
       video.src = source;
       video.removeAttribute("data-src");
       const posterSource = video.dataset.posterSrc;
@@ -907,7 +929,7 @@ const pageTitle = initialTab === "design"
       startPlayback();
 
       if (video.readyState >= HTMLMediaElement.HAVE_CURRENT_DATA) {
-        markMediaSettled(video);
+        markEntrySettled(entry);
       }
     });
   };
