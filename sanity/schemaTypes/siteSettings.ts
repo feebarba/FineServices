@@ -11,6 +11,14 @@ export const siteSettings = {
       validation: (Rule: any) => Rule.required(),
     },
     {
+      name: "brandAnimation",
+      title: "Animar nome da marca",
+      description:
+        "Ative para alternar entre o nome cadastrado e Fine Services com efeito de typewriting.",
+      type: "boolean",
+      initialValue: false,
+    },
+    {
       name: "intro",
       title: "Apresentação",
       description: "Cada item corresponde a um parágrafo da introdução.",

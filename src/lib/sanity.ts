@@ -56,6 +56,7 @@ type RawProject = {
 
 type RawHome = {
   brand?: string;
+  brandAnimation?: boolean;
   intro?: string[];
   lists?: Array<{
     title?: string;
@@ -122,6 +123,7 @@ const PORTFOLIO_PHOTOGRAPHY_QUERY = `
 const PORTFOLIO_HOME_QUERY = `
   *[_type == "siteSettings" && _id == "siteSettings"][0] {
     brand,
+    brandAnimation,
     intro,
     lists[]{
       title,
@@ -191,6 +193,7 @@ const normalizeProject = (project: RawProject): PortfolioProject => {
 
 const normalizeHome = (home: RawHome): PortfolioHome => ({
   brand: home.brand ?? "FELIPE BARBOSA",
+  brandAnimation: home.brandAnimation ?? false,
   intro: home.intro?.filter(Boolean) ?? [],
   lists: home.lists
     ?.filter((list) => list.title)

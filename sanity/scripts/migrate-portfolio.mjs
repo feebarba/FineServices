@@ -543,6 +543,7 @@ const documents = [
     _id: 'siteSettings',
     _type: 'siteSettings',
     brand: 'FELIPE BARBOSA',
+    brandAnimation: false,
     intro,
     lists: [
       {title: 'Pratice', items: practice},

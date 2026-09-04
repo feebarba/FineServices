@@ -41,6 +41,7 @@ export type HomeListBlock = {
 
 export type PortfolioHome = {
   brand: string;
+  brandAnimation: boolean;
   intro: string[];
   lists: HomeListBlock[];
 };

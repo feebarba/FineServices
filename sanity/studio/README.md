@@ -30,7 +30,7 @@ O Structure Tool apresenta duas entradas independentes:
 
 Os projetos são independentes e não possuem o campo `Exibir na aba`. Projetos de Design têm uma única `Galeria de Design`, com imagens ou vídeos, além de tipo, Info, créditos e ano. Projetos de Photography têm `Galeria de Photography`, somente com imagens, além de local, meio/filme e ano.
 
-`Home` concentra a apresentação e os blocos de listas da página inicial. Cada bloco tem um título editável e sua própria lista de itens; use `Adicionar item` para criar novos blocos além de `Pratice` e `Mentions & Awards`, ou edite esses títulos diretamente.
+`Home` concentra a apresentação, os blocos de listas da página inicial e o toggle `Animar nome da marca`. Cada bloco tem um título editável e sua própria lista de itens; use `Adicionar item` para criar novos blocos além de `Pratice` e `Mentions & Awards`, ou edite esses títulos diretamente.
 
 As duas galerias têm apenas o botão de upload múltiplo. Selecione vários arquivos na mesma janela para adicioná-los de uma vez; o nome do arquivo é usado como texto alternativo inicial e cada item pode ser aberto depois para ajustar alt, orientação, paleta e dimensões.
 
