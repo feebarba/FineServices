@@ -19,7 +19,9 @@ const client = projectId
       projectId,
       dataset,
       apiVersion: import.meta.env.PUBLIC_SANITY_API_VERSION ?? "2025-01-01",
-      useCdn: true,
+      // Keep local CMS previews fresh. Production remains CDN-backed while
+      // each static build still fetches the latest published content.
+      useCdn: import.meta.env.PROD,
     })
   : null;
 
@@ -122,7 +124,7 @@ const PORTFOLIO_HOME_QUERY = `
     intro,
     lists[]{
       title,
-      items[]{title, detail}
+      items[]{title, detail, link}
     }
   }
 `;
