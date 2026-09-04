@@ -29,6 +29,8 @@ O Structure Tool apresenta duas entradas independentes:
 
 Os projetos são independentes e não possuem o campo `Exibir na aba`. Projetos de Design têm uma única `Galeria de Design`, com imagens ou vídeos, além de tipo, Info, créditos e ano. Projetos de Photography têm `Galeria de Photography`, somente com imagens, além de local, meio/filme e ano.
 
+As duas galerias têm um botão de upload múltiplo. Selecione vários arquivos na mesma janela para adicioná-los de uma vez; o nome do arquivo é usado como texto alternativo inicial e cada item pode ser aberto depois para ajustar alt, orientação, paleta e dimensões.
+
 ## Migração inicial
 
 Para reimportar o conteúdo atual do layout no projeto `btfiysbs`:

@@ -1,3 +1,5 @@
+import {BulkPhotographyMediaInput} from '../studio/components/BulkMediaArrayInput'
+
 export const photographyProject = {
   name: "photographyProject",
   title: "Projeto de Photography",
@@ -41,6 +43,7 @@ export const photographyProject = {
       title: "Galeria de Photography",
       type: "array",
       of: [{ type: "photoMedia" }],
+      components: {input: BulkPhotographyMediaInput},
     },
   ],
   preview: {
