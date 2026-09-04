@@ -225,6 +225,19 @@ const prepareGalleryReveal = (tab: GalleryTab) => {
     });
 };
 
+const resetTabRevealState = (tab: GalleryTab) => {
+  galleries
+    .filter((gallery) =>
+      gallery.dataset.tabGallery === tab &&
+      gallery.dataset.loadStarted === "true",
+    )
+    .forEach((gallery) => {
+      gallery.dataset.replayPending = "true";
+      resetGalleryReveal(gallery);
+      galleryObserver?.unobserve(gallery);
+    });
+};
+
 const cancelPendingGalleryLoad = (gallery: HTMLElement) => {
   const timer = pendingGalleryLoads.get(gallery);
   if (timer === undefined) return;
@@ -695,6 +708,7 @@ const resetTabState = (tab: PortfolioTab) => {
     resetGalleryStates
       .filter(({ tab: galleryTab }) => galleryTab === tab)
       .forEach(({ reset }) => reset());
+    resetTabRevealState(tab);
     if (tab === "design") {
       designAccordionResetters.forEach((reset) => reset());
     }
@@ -782,7 +796,7 @@ homeToggle?.addEventListener("click", (event) => {
 
 designToggle?.addEventListener("click", (event) => {
   event.preventDefault();
-  setActiveTab(activeTab === "design" ? "photography" : "design");
+  setActiveTab(activeTab === "design" ? "home" : "design");
 });
 
 photographyToggle?.addEventListener("click", (event) => {
