@@ -142,12 +142,12 @@ p { margin: 0; font-family: var(--garamono); font-size: 11px; font-weight: 500; 
 .project-year-cell { width: 50px; justify-self: end; text-align: right; }
 .project-year { font-style: normal; font-weight: 600; font-variant-numeric: proportional-nums oldstyle-nums; font-feature-settings: "pnum" 1, "onum" 1; }
 
-.gallery-scroll { --photo-width: clamp(231px, 22vw, 334.4px); --photo-height: clamp(156.2px, 14.74vw, 224.4px); --photo-vertical-width: clamp(104.13px, 9.83vw, 149.6px); --photo-vertical-height: clamp(156.2px, 14.74vw, 224.4px); --photo-max-height: none; --photo-vertical-max-height: none; width: auto; margin-inline: calc(var(--shell-gutter) * -1); overflow-x: auto; overflow-y: visible; overscroll-behavior-x: contain; -webkit-overflow-scrolling: touch; scrollbar-width: none; outline: none; cursor: pointer; touch-action: pan-x pan-y; }
+.gallery-scroll { --photo-width: 334.4px; --photo-height: 224.4px; --photo-vertical-width: 149.6px; --photo-vertical-height: 224.4px; --photo-max-height: none; --photo-vertical-max-height: none; width: auto; margin-inline: calc(var(--shell-gutter) * -1); overflow-x: auto; overflow-y: visible; overscroll-behavior-x: contain; -webkit-overflow-scrolling: touch; scrollbar-width: none; outline: none; cursor: pointer; touch-action: pan-x pan-y; }
 .gallery-scroll::-webkit-scrollbar { display: none; }
 .gallery-scroll:focus-visible { outline: 1px solid var(--ink); outline-offset: 3px; }
 .gallery-scroll.is-dragging { cursor: pointer; user-select: none; }
 .gallery-scroll.is-dragging .photo-placeholder { pointer-events: none; }
-.gallery-scroll.is-expanded { --photo-width: clamp(504px, 48vw, 729.6px); --photo-height: clamp(340.8px, 32.16vw, 489.6px); --photo-vertical-width: clamp(227.2px, 21.44vw, 326.4px); --photo-vertical-height: clamp(340.8px, 32.16vw, 489.6px); }
+.gallery-scroll.is-expanded { --photo-width: 729.6px; --photo-height: 489.6px; --photo-vertical-width: 326.4px; --photo-vertical-height: 489.6px; }
 .gallery-track { display: flex; gap: 2px; width: max-content; min-width: 100%; padding-inline: var(--shell-gutter); overflow: visible; }
 .photo { flex: 0 0 auto; width: var(--photo-width); height: var(--photo-height); max-height: var(--photo-max-height); margin: 0; overflow: visible; background: transparent; transition: width 550ms cubic-bezier(0.22, 1, 0.36, 1), height 550ms cubic-bezier(0.22, 1, 0.36, 1), max-height 550ms cubic-bezier(0.22, 1, 0.36, 1); }
 .photo[data-orientation="vertical"] { width: var(--photo-vertical-width); height: var(--photo-vertical-height); max-height: var(--photo-vertical-max-height); }
