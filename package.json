@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "astro dev",
     "build": "astro build",
+    "build:production": "pnpm build && node scripts/strip-local-fallback-assets.mjs",
     "preview": "astro preview"
   },
   "dependencies": {

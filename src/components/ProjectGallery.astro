@@ -1,0 +1,85 @@
+---
+import { getImageSrcSet, getOptimizedImageUrl } from "../lib/media";
+import type {
+  PhotoOrientation,
+  ProjectMedia,
+  ProjectPhoto,
+} from "../lib/portfolio-types";
+
+interface Props {
+  projectTitle: string;
+  variant: "design" | "photography";
+  media?: ProjectMedia[];
+  photos?: ProjectPhoto[];
+  photoCount: number;
+  orientations: PhotoOrientation[];
+}
+
+const {
+  projectTitle,
+  variant,
+  media = [],
+  photos,
+  photoCount,
+  orientations,
+} = Astro.props;
+
+const galleryItems = variant === "design"
+  ? media
+  : Array.from({ length: photoCount }, (_, photoIndex) => photos?.[photoIndex]);
+---
+
+<div
+  class="gallery-scroll"
+  data-gallery-scroll
+  data-tab-gallery={variant}
+  tabindex="0"
+  aria-expanded="false"
+  aria-label={`Imagens do projeto ${projectTitle}, rolagem horizontal`}
+>
+  <div class="gallery-track">
+    {galleryItems.map((item, photoIndex) => (
+      <figure
+        class="photo"
+        data-photo={photoIndex + 1}
+        data-orientation={orientations[photoIndex]}
+        style={`--reveal-delay: ${photoIndex * 150}ms; --media-ratio: ${item ? item.width / item.height : orientations[photoIndex] === "vertical" ? 2 / 3 : 3 / 2}`}
+      >
+        <div class:list={["photo-frame", { "has-image": Boolean(item) }]}>
+          {item?.kind === "video" ? (
+            <video
+              class="project-video"
+              data-src={item.src}
+              data-poster-src={item.posterUrl ? getOptimizedImageUrl(item.posterUrl, { width: Math.min(item.posterWidth ?? 1280, 1280), quality: 78 }) : undefined}
+              aria-label={item.alt}
+              width={item.width}
+              height={item.height}
+              autoplay
+              loop
+              muted
+              playsinline
+              preload="none"
+              disablepictureinpicture
+              disableremoteplayback
+            ></video>
+          ) : item ? (
+            <img
+              class="project-image"
+              data-src={getOptimizedImageUrl(item.src, { width: Math.min(item.width, 1280) })}
+              data-srcset={getImageSrcSet(item.src, item.width)}
+              data-sizes="(max-width: 768px) 90vw, 60vw"
+              alt={item.alt}
+              width={item.width}
+              height={item.height}
+              loading="lazy"
+              decoding="async"
+              draggable="false"
+            />
+          ) : (
+            <span class="photo-placeholder"></span>
+          )}
+        </div>
+      </figure>
+    ))}
+  </div>
+</div>

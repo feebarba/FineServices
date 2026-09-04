@@ -6,7 +6,7 @@ conteúdo editorial gerenciado no Sanity.
 ## Estrutura
 
 - `src/`: páginas, componentes de conteúdo e estilos do site.
-- `public/`: fontes, ícones e mídia local usada como fallback.
+- `public/`: fontes, ícones e mídia local usada como fallback durante o desenvolvimento.
 - `sanity/`: schemas, migração de conteúdo e o Studio do Sanity.
 - `.fine-services/hosting.json`: configurações locais opcionais do projeto.
 - `netlify.toml`: configuração de build e variáveis públicas do deploy.
@@ -44,5 +44,8 @@ pnpm dev
 ## Deploy
 
 O repositório está conectado ao Netlify. Cada push na branch `main` executa
-`pnpm build` e publica a pasta `dist/`. A atualização do conteúdo publicado no
-Sanity dispara um novo deploy por meio do webhook configurado no projeto.
+`pnpm build:production` e publica a pasta `dist/`. Quando as páginas geradas
+estão usando mídia do Sanity, o build remove de `dist/` as cópias locais de
+fallback; se o CMS não estiver disponível, elas são mantidas para evitar um
+deploy incompleto. A atualização do conteúdo publicado no Sanity dispara um
+novo deploy por meio do webhook configurado no projeto.

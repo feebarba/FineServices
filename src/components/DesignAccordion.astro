@@ -1,0 +1,74 @@
+---
+import type { PortfolioProject as Project } from "../lib/portfolio-types";
+
+interface Props {
+  project: Project;
+  projectIndex: number;
+  kind: "info" | "credits";
+}
+
+const { project, projectIndex, kind } = Astro.props;
+const isInfo = kind === "info";
+const label = isInfo ? "Info" : "Credits";
+const accordionClass = isInfo ? "design-info-accordion" : "design-credits-accordion";
+const panelClass = isInfo ? "design-info-panel" : "design-credits-panel";
+const iconName = isInfo ? "info" : "credits";
+const toggleId = `design-${kind}-toggle-${projectIndex}`;
+const panelId = `design-${kind}-panel-${projectIndex}`;
+const credits = project.credits ?? [];
+---
+
+<div class:list={["design-accordion", accordionClass]} data-design-accordion>
+  <button
+    class="design-accordion-toggle"
+    id={toggleId}
+    type="button"
+    data-design-accordion-toggle
+    aria-expanded="false"
+    aria-controls={panelId}
+  >
+    <span>{label}</span>
+    <img
+      class="design-accordion-arrow"
+      src={`/icons/${iconName}-arrow-down.svg`}
+      data-closed-src={`/icons/${iconName}-arrow-down.svg`}
+      data-open-src={`/icons/${iconName}-arrow-up.svg`}
+      alt=""
+      width="8"
+      height="8"
+    />
+  </button>
+  <div
+    class:list={["design-accordion-panel", panelClass]}
+    id={panelId}
+    data-design-accordion-panel
+    role="region"
+    aria-labelledby={toggleId}
+    aria-hidden="true"
+  >
+    {isInfo ? (
+      <div class="design-info-details">
+        <p>{project.info}</p>
+        <div class="design-mobile-credits">
+          <div class="design-credits-list">
+            {credits.map((credit) => (
+              <div class="design-credit">
+                <p class="design-credit-category">{credit.category}</p>
+                <p class="design-credit-name">{credit.name}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    ) : (
+      <div class="design-credits-list">
+        {credits.map((credit) => (
+          <div class="design-credit">
+            <p class="design-credit-category">{credit.category}</p>
+            <p class="design-credit-name">{credit.name}</p>
+          </div>
+        ))}
+      </div>
+    )}
+  </div>
+</div>

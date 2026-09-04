@@ -1,0 +1,37 @@
+---
+import DesignAccordion from "./DesignAccordion.astro";
+import type { PortfolioProject as Project } from "../lib/portfolio-types";
+
+interface Props {
+  project: Project;
+  projectIndex: number;
+  variant: "design" | "photography";
+}
+
+const { project, projectIndex, variant } = Astro.props;
+const projectNumber = String(projectIndex + 1).padStart(2, "0");
+---
+
+<div class:list={["project-meta", { "design-project-meta": variant === "design" }]}>
+  <h2>
+    <span class="project-number">{projectNumber}.</span>{" "}
+    <span class="project-title">{project.title}</span>
+  </h2>
+
+  {variant === "design" ? (
+    <>
+      <span class="design-project-type">{project.designType}</span>
+      <DesignAccordion project={project} projectIndex={projectIndex} kind="info" />
+      <DesignAccordion project={project} projectIndex={projectIndex} kind="credits" />
+    </>
+  ) : (
+    <>
+      <span class="project-location">{project.location}</span>
+      <span class="project-medium">{project.medium}</span>
+    </>
+  )}
+
+  <div class="project-year-cell">
+    <span class="project-year">{project.year}</span>
+  </div>
+</div>
