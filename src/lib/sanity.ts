@@ -36,8 +36,8 @@ type RawMedia = {
 };
 
 type RawProject = {
+  section?: PortfolioSection;
   title?: string;
-  sections?: PortfolioSection[];
   designType?: string;
   info?: string;
   credits?: DesignCredit[];
@@ -46,7 +46,7 @@ type RawProject = {
   year?: string | number;
   photoCount?: number;
   photos?: RawMedia[];
-  designMedia?: RawMedia[];
+  gallery?: RawMedia[];
 };
 
 type RawHome = {
@@ -56,38 +56,47 @@ type RawHome = {
   mentionsAwards?: Array<{ title?: string; detail?: string }>;
 };
 
-const PORTFOLIO_PROJECTS_QUERY = `
-  *[_type == "project" && defined(title)] | order(coalesce(order, 9999) asc, year desc) {
+const MEDIA_PROJECTION = `{
+  kind,
+  alt,
+  orientation,
+  palette,
+  width,
+  height,
+  "src": select(kind == "video" => video.asset->url, image.asset->url),
+  "assetWidth": select(kind == "video" => video.asset->metadata.dimensions.width, image.asset->metadata.dimensions.width),
+  "assetHeight": select(kind == "video" => video.asset->metadata.dimensions.height, image.asset->metadata.dimensions.height)
+}`;
+
+const PORTFOLIO_DESIGN_QUERY = `
+  *[_type == "designProject" && defined(title)] | order(coalesce(order, 9999) asc, year desc) {
+    "section": "design",
     title,
-    sections,
     designType,
     info,
     credits[]{category, name},
+    year,
+    "gallery": gallery[]${MEDIA_PROJECTION}
+  }
+`;
+
+const PORTFOLIO_PHOTOGRAPHY_QUERY = `
+  *[_type == "photographyProject" && defined(title)] | order(coalesce(order, 9999) asc, year desc) {
+    "section": "photography",
+    title,
     location,
     medium,
     year,
     "photoCount": count(photos),
     "photos": photos[]{
-      kind,
       alt,
       orientation,
       palette,
       width,
       height,
-      "src": select(kind == "video" => video.asset->url, image.asset->url),
-      "assetWidth": select(kind == "video" => video.asset->metadata.dimensions.width, image.asset->metadata.dimensions.width),
-      "assetHeight": select(kind == "video" => video.asset->metadata.dimensions.height, image.asset->metadata.dimensions.height)
-    },
-    "designMedia": designMedia[]{
-      kind,
-      alt,
-      orientation,
-      palette,
-      width,
-      height,
-      "src": select(kind == "video" => video.asset->url, image.asset->url),
-      "assetWidth": select(kind == "video" => video.asset->metadata.dimensions.width, image.asset->metadata.dimensions.width),
-      "assetHeight": select(kind == "video" => video.asset->metadata.dimensions.height, image.asset->metadata.dimensions.height)
+      "src": image.asset->url,
+      "assetWidth": image.asset->metadata.dimensions.width,
+      "assetHeight": image.asset->metadata.dimensions.height
     }
   }
 `;
@@ -128,20 +137,20 @@ const normalizeMedia = (media: RawMedia): ProjectMedia | null => {
 
 const normalizeProject = (project: RawProject): PortfolioProject => {
   const photos = project.photos?.map(normalizeMedia).filter(Boolean) as PortfolioProject["photos"];
-  const designMedia = project.designMedia
+  const designMedia = project.gallery
     ?.map(normalizeMedia)
     .filter(Boolean) as PortfolioProject["designMedia"];
 
   return {
+    section: project.section,
     title: project.title ?? "Untitled project",
-    designType: project.designType ?? "",
-    info: project.info ?? "",
-    credits: project.credits ?? [],
-    location: project.location ?? "",
-    medium: project.medium ?? "",
+    designType: project.designType,
+    info: project.info,
+    credits: project.credits,
+    location: project.location,
+    medium: project.medium,
     year: String(project.year ?? ""),
     photoCount: project.photoCount ?? photos?.length ?? 0,
-    sections: project.sections,
     photos: photos?.length ? photos : undefined,
     designMedia: designMedia?.length ? designMedia : undefined,
   };
@@ -167,7 +176,11 @@ export async function getPortfolioProjects(): Promise<PortfolioProject[] | null>
   if (!client) return null;
 
   try {
-    const projects = await client.fetch<RawProject[]>(PORTFOLIO_PROJECTS_QUERY);
+    const [designProjects, photographyProjects] = await Promise.all([
+      client.fetch<RawProject[]>(PORTFOLIO_DESIGN_QUERY),
+      client.fetch<RawProject[]>(PORTFOLIO_PHOTOGRAPHY_QUERY),
+    ]);
+    const projects = [...designProjects, ...photographyProjects];
     if (!projects.length) return null;
     return projects.map(normalizeProject);
   } catch {

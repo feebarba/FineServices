@@ -1,6 +1,6 @@
-export const project = {
-  name: "project",
-  title: "Projeto do portfólio",
+export const designProject = {
+  name: "designProject",
+  title: "Projeto de Design",
   type: "document",
   fields: [
     {
@@ -22,27 +22,10 @@ export const project = {
       options: { source: "title", maxLength: 96 },
     },
     {
-      name: "sections",
-      title: "Exibir na aba",
-      type: "array",
-      initialValue: ["design", "photography"],
-      of: [
-        {
-          type: "string",
-          options: {
-            list: [
-              { title: "Design", value: "design" },
-              { title: "Photography", value: "photography" },
-            ],
-          },
-        },
-      ],
-      validation: (Rule: any) => Rule.unique().min(1),
-    },
-    {
       name: "designType",
       title: "Tipo de projeto",
       type: "string",
+      validation: (Rule: any) => Rule.required(),
     },
     {
       name: "info",
@@ -57,29 +40,13 @@ export const project = {
       of: [{ type: "credit" }],
     },
     {
-      name: "location",
-      title: "Local",
-      type: "string",
-    },
-    {
-      name: "medium",
-      title: "Meio / filme",
-      type: "string",
-    },
-    {
       name: "year",
       title: "Ano",
       type: "string",
     },
     {
-      name: "photos",
-      title: "Galeria de Photography",
-      type: "array",
-      of: [{ type: "media" }],
-    },
-    {
-      name: "designMedia",
-      title: "Mídias de Design",
+      name: "gallery",
+      title: "Galeria de Design",
       type: "array",
       of: [{ type: "media" }],
     },
@@ -88,7 +55,7 @@ export const project = {
     select: {
       title: "title",
       subtitle: "year",
-      media: "designMedia.0.image",
+      media: "gallery.0.image",
     },
   },
 };

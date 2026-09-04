@@ -471,27 +471,64 @@ const toMedia = (filename, keyPrefix) => {
   return mediaValue
 }
 
-const toProjectDocument = (project, index) => {
-  const number = String(index + 1).padStart(2, '0')
-  const slug = `${number}-${project.title.toLowerCase().replace(/[^a-z0-9]+/g, '-')}`.replace(/-+$/g, '')
+const toPhotoMedia = (filename, keyPrefix) => {
+  const media = mediaCatalog[filename]
+  if (media.kind !== 'image') {
+    throw new Error(`A galeria de Photography aceita apenas imagens: ${filename}`)
+  }
 
   return {
-    _id: `project-${number}`,
-    _type: 'project',
+    _key: `${keyPrefix}-${filename.replace(/[^a-z0-9]/gi, '-')}`,
+    _type: 'photoMedia',
+    alt: media.alt,
+    orientation: media.orientation,
+    palette: media.palette,
+    width: media.width,
+    height: media.height,
+    image: {_type: 'image', asset: {_type: 'reference', _ref: assetIds[filename]}},
+  }
+}
+
+const toSlug = (project, index) => {
+  const number = String(index + 1).padStart(2, '0')
+  return `${number}-${project.title.toLowerCase().replace(/[^a-z0-9]+/g, '-')}`.replace(/-+$/g, '')
+}
+
+const toDesignProjectDocument = (project, index) => {
+  const number = String(index + 1).padStart(2, '0')
+
+  return {
+    _id: `design-project-${number}`,
+    _type: 'designProject',
     order: index + 1,
     title: project.title,
-    slug: {_type: 'slug', current: slug},
-    sections: project.sections,
+    slug: {_type: 'slug', current: toSlug(project, index)},
     designType: project.designType,
     info: defaultInfo,
     credits: defaultCredits.map((credit, creditIndex) => ({...credit, _key: `credit-${creditIndex}`})),
+    year: project.year,
+    gallery: project.designMedia.map((filename, mediaIndex) => toMedia(filename, `design-${mediaIndex}`)),
+  }
+}
+
+const toPhotographyProjectDocument = (project, index) => {
+  const number = String(index + 1).padStart(2, '0')
+
+  return {
+    _id: `photography-project-${number}`,
+    _type: 'photographyProject',
+    order: index + 1,
+    title: project.title,
+    slug: {_type: 'slug', current: toSlug(project, index)},
     location: project.location,
     medium: project.medium,
     year: project.year,
-    photos: project.photos.map((filename, mediaIndex) => toMedia(filename, `photo-${mediaIndex}`)),
-    designMedia: project.designMedia.map((filename, mediaIndex) => toMedia(filename, `design-${mediaIndex}`)),
+    photos: project.photos.map((filename, mediaIndex) => toPhotoMedia(filename, `photo-${mediaIndex}`)),
   }
 }
+
+const designProjects = projects.filter((project) => project.sections.includes('design'))
+const photographyProjects = projects.filter((project) => project.sections.includes('photography'))
 
 const documents = [
   {
@@ -502,7 +539,8 @@ const documents = [
     practice: practice.map((item, index) => ({...item, _key: `practice-${index}`, _type: 'homeListItem'})),
     mentionsAwards: mentionsAwards.map((item, index) => ({...item, _key: `award-${index}`, _type: 'homeListItem'})),
   },
-  ...projects.map(toProjectDocument),
+  ...designProjects.map(toDesignProjectDocument),
+  ...photographyProjects.map(toPhotographyProjectDocument),
 ]
 
 const temporaryDirectory = mkdtempSync(join(tmpdir(), 'fine-sanity-migration-'))
@@ -511,10 +549,12 @@ const documentsFile = join(temporaryDirectory, 'documents.json')
 try {
   writeFileSync(documentsFile, JSON.stringify(documents, null, 2))
   runSanity(['documents', 'create', documentsFile, '--replace'])
-  const count = parseJsonOutput(runSanity(['documents', 'query', 'count(*[_type == "project"])']))
+  const designCount = parseJsonOutput(runSanity(['documents', 'query', 'count(*[_type == "designProject"])']))
+  const photographyCount = parseJsonOutput(runSanity(['documents', 'query', 'count(*[_type == "photographyProject"])']))
   const home = parseJsonOutput(runSanity(['documents', 'query', '*[_id == "siteSettings"][0]{_id, _type}']))
 
-  console.log(`✓ ${count} projetos migrados`)
+  console.log(`✓ ${designCount} projetos de Design migrados`)
+  console.log(`✓ ${photographyCount} projetos de Photography migrados`)
   console.log(`✓ Home migrada: ${home?._id === 'siteSettings' ? 'sim' : 'não'}`)
 } finally {
   rmSync(temporaryDirectory, {recursive: true, force: true})

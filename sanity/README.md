@@ -1,15 +1,15 @@
 # Conteúdo do portfólio no Sanity
 
-O front já está conectado ao Sanity em build time. Quando `PUBLIC_SANITY_PROJECT_ID` estiver configurado, a página consulta documentos `project` publicados; sem essa variável, o conteúdo local continua sendo usado como fallback.
+O front já está conectado ao Sanity em build time. Quando `PUBLIC_SANITY_PROJECT_ID` estiver configurado, a página consulta os documentos independentes `designProject` e `photographyProject`; sem essa variável, o conteúdo local continua sendo usado como fallback.
 
 ## Configuração
 
 1. Crie ou abra um projeto em [sanity.io/manage](https://www.sanity.io/manage) e copie o Project ID.
 2. Duplique `.env.example` para `.env` e preencha `PUBLIC_SANITY_PROJECT_ID`. O dataset padrão é `production`.
 3. O Studio conectado ao projeto está em `sanity/studio`; os tipos são registrados por `sanity/schemaTypes/index.ts`.
-4. Publique documentos do tipo `project`.
+4. Publique documentos dos tipos `designProject` ou `photographyProject`.
 
-Cada projeto pode ser exibido em `design`, `photography` ou nas duas abas. As galerias usam o objeto `media`, que aceita imagem ou vídeo, texto alternativo, orientação, paleta e dimensões originais. A URL dos assets é resolvida pelo GROQ no build, sem colocar tokens de escrita no navegador.
+Os projetos de Design e Photography são independentes. Design possui tipo, Info, créditos, ano e uma única galeria `gallery`, que aceita imagem ou vídeo. Photography possui local, meio/filme, ano e uma galeria `photos` somente de imagens. Não existe campo de seção compartilhado entre as abas. A URL dos assets é resolvida pelo GROQ no build, sem colocar tokens de escrita no navegador.
 
 ## Studio
 

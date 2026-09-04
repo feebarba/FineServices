@@ -42,14 +42,14 @@ export type PortfolioHome = {
 
 export type PortfolioProject = {
   title: string;
-  designType: string;
-  info: string;
-  credits: DesignCredit[];
-  location: string;
-  medium: string;
+  section?: PortfolioSection;
+  designType?: string;
+  info?: string;
+  credits?: DesignCredit[];
+  location?: string;
+  medium?: string;
   year: string;
   photoCount: number;
-  sections?: PortfolioSection[];
   photos?: ProjectPhoto[];
   designMedia?: ProjectMedia[];
 };

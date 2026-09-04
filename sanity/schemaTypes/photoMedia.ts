@@ -1,35 +1,14 @@
-export const media = {
-  name: "media",
-  title: "Mídia de Design",
+export const photoMedia = {
+  name: "photoMedia",
+  title: "Imagem de Photography",
   type: "object",
   fields: [
-    {
-      name: "kind",
-      title: "Tipo",
-      type: "string",
-      initialValue: "image",
-      options: {
-        list: [
-          { title: "Imagem", value: "image" },
-          { title: "Vídeo", value: "video" },
-        ],
-        layout: "radio",
-      },
-      validation: (Rule: any) => Rule.required(),
-    },
     {
       name: "image",
       title: "Imagem",
       type: "image",
       options: { hotspot: true },
-      hidden: ({ parent }: any) => parent?.kind !== "image",
-    },
-    {
-      name: "video",
-      title: "Vídeo",
-      type: "file",
-      options: { accept: "video/*" },
-      hidden: ({ parent }: any) => parent?.kind !== "video",
+      validation: (Rule: any) => Rule.required(),
     },
     {
       name: "alt",
@@ -77,6 +56,6 @@ export const media = {
     },
   ],
   preview: {
-    select: { title: "alt", subtitle: "kind", media: "image" },
+    select: { title: "alt", subtitle: "orientation", media: "image" },
   },
 };

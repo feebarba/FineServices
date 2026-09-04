@@ -22,13 +22,12 @@ Os schemas usados pelo Studio vêm de `sanity/schemaTypes/index.ts`, que é comp
 
 ## Organização do conteúdo
 
-O Structure Tool apresenta três entradas para o tipo `project`:
+O Structure Tool apresenta duas entradas independentes:
 
-- `Design`: mostra apenas projetos marcados para a aba Design.
-- `Photography`: mostra apenas projetos marcados para a aba Photography.
-- `Todos os projetos`: mostra o acervo completo.
+- `Design`: mostra documentos do tipo `designProject`.
+- `Photography`: mostra documentos do tipo `photographyProject`.
 
-Dentro de cada projeto, use `Exibir na aba` para definir onde o conteúdo aparece. As galerias são independentes: `Galeria de Photography` aceita imagens e `Mídias de Design` aceita imagens ou vídeos.
+Os projetos são independentes e não possuem o campo `Exibir na aba`. Projetos de Design têm uma única `Galeria de Design`, com imagens ou vídeos, além de tipo, Info, créditos e ano. Projetos de Photography têm `Galeria de Photography`, somente com imagens, além de local, meio/filme e ano.
 
 ## Migração inicial
 

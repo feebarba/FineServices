@@ -410,10 +410,10 @@ if (!cmsProjects) {
 }
 
 const designProjects = cmsProjects
-  ? projects.filter((project) => project.sections?.includes("design") ?? true)
+  ? projects.filter((project) => project.section === "design")
   : projects.slice(0, -1);
 const photographyProjects = cmsProjects
-  ? projects.filter((project) => project.sections?.includes("photography") ?? true)
+  ? projects.filter((project) => project.section === "photography")
   : projects;
 const designMediaByProject: ProjectMedia[][] = designProjects.map(
   (project) => project.designMedia ?? project.photos ?? [],
@@ -552,7 +552,7 @@ const pageTitle = initialTab === "design"
                       <p>{project.info}</p>
                       <div class="design-mobile-credits">
                         <div class="design-credits-list">
-                          {project.credits.map((credit) => (
+                          {(project.credits ?? []).map((credit) => (
                             <div class="design-credit">
                               <p class="design-credit-category">{credit.category}</p>
                               <p class="design-credit-name">{credit.name}</p>
@@ -593,7 +593,7 @@ const pageTitle = initialTab === "design"
                     aria-hidden="true"
                   >
                     <div class="design-credits-list">
-                      {project.credits.map((credit) => (
+                      {(project.credits ?? []).map((credit) => (
                         <div class="design-credit">
                           <p class="design-credit-category">{credit.category}</p>
                           <p class="design-credit-name">{credit.name}</p>
