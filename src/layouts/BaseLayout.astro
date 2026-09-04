@@ -47,6 +47,34 @@ const canonical = canonicalUrl
     <meta name="twitter:description" content={shareDescription} />
     {shareImageUrl ? <meta name="twitter:image" content={shareImageUrl} /> : null}
     <title>{title}</title>
+    <script is:inline>
+      (() => {
+        const revealPage = () => document.documentElement.classList.add("fonts-ready");
+
+        const loadPortfolioFonts = async () => {
+          if (!document.fonts) {
+            revealPage();
+            return;
+          }
+
+          try {
+            await Promise.all([
+              document.fonts.load('400 18px "WT Garamono"'),
+              document.fonts.load('italic 400 11px "WT Garamono"'),
+              document.fonts.load('400 10px "KMR Melange Grotesk"'),
+            ]);
+          } finally {
+            revealPage();
+          }
+        };
+
+        if (document.readyState === "loading") {
+          document.addEventListener("DOMContentLoaded", loadPortfolioFonts, { once: true });
+        } else {
+          loadPortfolioFonts();
+        }
+      })();
+    </script>
   </head>
   <body>
     <slot />
