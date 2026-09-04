@@ -881,9 +881,7 @@ const pageTitle = initialTab === "design"
     let isDragging = false;
     let hasDragged = false;
     let dragStartX = 0;
-    let dragStartY = 0;
     let dragStartScrollLeft = 0;
-    let dragAxis: "pending" | "horizontal" | "vertical" = "horizontal";
     let dragSamples: Array<{ x: number; time: number }> = [];
     let momentumFrame: number | null = null;
     let expansionSyncFrame: number | null = null;
@@ -905,7 +903,6 @@ const pageTitle = initialTab === "design"
       cancelExpansionSync();
       isDragging = false;
       hasDragged = false;
-      dragAxis = "horizontal";
       dragSamples = [];
       gallery.classList.remove("is-dragging", "is-expanded");
       gallery.setAttribute("aria-expanded", "false");
@@ -965,6 +962,7 @@ const pageTitle = initialTab === "design"
     };
 
     gallery.addEventListener("pointerdown", (event) => {
+      if (event.pointerType === "touch") return;
       if (event.pointerType === "mouse" && event.button !== 0) return;
 
       cancelMomentum();
@@ -972,9 +970,7 @@ const pageTitle = initialTab === "design"
       isDragging = true;
       hasDragged = false;
       dragStartX = event.clientX;
-      dragStartY = event.clientY;
       dragStartScrollLeft = gallery.scrollLeft;
-      dragAxis = event.pointerType === "touch" ? "pending" : "horizontal";
       dragSamples = [{ x: event.clientX, time: performance.now() }];
       gallery.classList.add("is-dragging");
       gallery.setPointerCapture(event.pointerId);
@@ -985,29 +981,6 @@ const pageTitle = initialTab === "design"
 
       const now = performance.now();
       const distance = event.clientX - dragStartX;
-      const verticalDistance = event.clientY - dragStartY;
-
-      if (dragAxis === "pending") {
-        if (Math.max(Math.abs(distance), Math.abs(verticalDistance)) < 4) return;
-
-        dragAxis = Math.abs(distance) > Math.abs(verticalDistance)
-          ? "horizontal"
-          : "vertical";
-
-        if (dragAxis === "vertical") {
-          hasDragged = true;
-          isDragging = false;
-          gallery.classList.remove("is-dragging");
-
-          if (gallery.hasPointerCapture(event.pointerId)) {
-            gallery.releasePointerCapture(event.pointerId);
-          }
-
-          return;
-        }
-      }
-
-      if (dragAxis !== "horizontal") return;
 
       dragSamples.push({ x: event.clientX, time: now });
       while (dragSamples.length > 1 && now - dragSamples[0].time > 120) {
@@ -1023,7 +996,7 @@ const pageTitle = initialTab === "design"
         0,
         Math.min(maxScroll, dragStartScrollLeft - distance),
       );
-    }, { passive: false });
+    });
 
     const stopDragging = (event: PointerEvent) => {
       if (!isDragging) return;

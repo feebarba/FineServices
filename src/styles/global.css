@@ -141,7 +141,7 @@ p { margin: 0; font-family: var(--garamono); font-size: 11px; font-weight: 500; 
 .project-year-cell { width: 50px; justify-self: end; text-align: right; }
 .project-year { font-style: normal; font-weight: 600; font-variant-numeric: proportional-nums oldstyle-nums; font-feature-settings: "pnum" 1, "onum" 1; }
 
-.gallery-scroll { --photo-width: clamp(231px, 22vw, 334.4px); --photo-height: clamp(156.2px, 14.74vw, 224.4px); --photo-vertical-width: clamp(104.13px, 9.83vw, 149.6px); --photo-vertical-height: clamp(156.2px, 14.74vw, 224.4px); --photo-max-height: none; --photo-vertical-max-height: none; width: auto; margin-inline: calc(var(--shell-gutter) * -1); overflow-x: auto; overflow-y: visible; overscroll-behavior-x: contain; -webkit-overflow-scrolling: touch; scrollbar-width: none; outline: none; cursor: pointer; touch-action: pan-y; }
+.gallery-scroll { --photo-width: clamp(231px, 22vw, 334.4px); --photo-height: clamp(156.2px, 14.74vw, 224.4px); --photo-vertical-width: clamp(104.13px, 9.83vw, 149.6px); --photo-vertical-height: clamp(156.2px, 14.74vw, 224.4px); --photo-max-height: none; --photo-vertical-max-height: none; width: auto; margin-inline: calc(var(--shell-gutter) * -1); overflow-x: auto; overflow-y: visible; overscroll-behavior-x: contain; -webkit-overflow-scrolling: touch; scrollbar-width: none; outline: none; cursor: pointer; touch-action: pan-x pan-y; }
 .gallery-scroll::-webkit-scrollbar { display: none; }
 .gallery-scroll:focus-visible { outline: 1px solid var(--ink); outline-offset: 3px; }
 .gallery-scroll.is-dragging { cursor: pointer; user-select: none; }
