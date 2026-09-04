@@ -578,6 +578,17 @@ const photographyPanel = document.querySelector<HTMLElement>("[data-photography-
 const photographyContent = document.querySelector<HTMLElement>("[data-photography-content]");
 const photographyToggle = document.querySelector<HTMLAnchorElement>("[data-photography-toggle]");
 
+const syncTabBlur = (content: HTMLElement, panel: HTMLElement) => {
+  panel.classList.toggle("has-scroll", content.scrollTop > 0);
+};
+
+[[designContent, designPanel], [photographyContent, photographyPanel]].forEach(([content, panel]) => {
+  if (!content || !panel) return;
+  const sync = () => syncTabBlur(content, panel);
+  content.addEventListener("scroll", sync, { passive: true });
+  sync();
+});
+
 [[designPanel, designToggle], [photographyPanel, photographyToggle]].forEach(([panel, toggle]) => {
   if (!panel || !toggle) return;
 
