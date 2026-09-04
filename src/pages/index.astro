@@ -736,7 +736,7 @@ const pageTitle = initialTab === "design"
                         class="photo"
                         data-photo={photoIndex + 1}
                         data-orientation={orientationsByProject[projectIndex][photoIndex]}
-                        style={`--reveal-delay: ${photoIndex * 150}ms`}
+                        style={`--reveal-delay: ${photoIndex * 150}ms; --media-ratio: ${photo ? photo.width / photo.height : orientationsByProject[projectIndex][photoIndex] === "vertical" ? 2 / 3 : 3 / 2}`}
                       >
                         <div class:list={["photo-frame", { "has-image": Boolean(photo) }]}> 
                           {photo ? (
