@@ -1094,8 +1094,39 @@ const pageTitle = initialTab === "design"
     const toggle = accordion.querySelector<HTMLButtonElement>("[data-design-accordion-toggle]");
     const panel = accordion.querySelector<HTMLElement>("[data-design-accordion-panel]");
     const arrow = accordion.querySelector<HTMLImageElement>(".design-accordion-arrow");
+    const designMeta = accordion.closest<HTMLElement>(".design-project-meta");
+    const isMobileInfoAccordion = accordion.classList.contains("design-info-accordion");
+    let mobileMetaBaseHeight: number | null = null;
+    let mobileMetaCleanupTimer: number | null = null;
 
     if (!toggle || !panel || !arrow) return;
+
+    const isMobileLayout = () => window.matchMedia("(max-width: 760px)").matches;
+
+    const clearMobileInfoLayout = () => {
+      if (!isMobileInfoAccordion || !designMeta) return;
+
+      if (mobileMetaCleanupTimer !== null) {
+        window.clearTimeout(mobileMetaCleanupTimer);
+        mobileMetaCleanupTimer = null;
+      }
+
+      designMeta.style.removeProperty("height");
+      accordion.style.removeProperty("--mobile-info-left");
+      mobileMetaBaseHeight = null;
+    };
+
+    const syncMobileInfoHeight = (accordionHeight: number) => {
+      if (
+        !isMobileInfoAccordion ||
+        !designMeta ||
+        !isMobileLayout() ||
+        !accordion.classList.contains("is-open")
+      ) return;
+
+      const paddingBottom = Number.parseFloat(getComputedStyle(designMeta).paddingBottom) || 0;
+      designMeta.style.height = `${accordionHeight + paddingBottom}px`;
+    };
 
     const getNaturalHeight = () => {
       const previousMaxHeight = accordion.style.maxHeight;
@@ -1106,6 +1137,24 @@ const pageTitle = initialTab === "design"
     };
 
     const setExpanded = (expanded: boolean) => {
+      if (isMobileInfoAccordion && designMeta && isMobileLayout()) {
+        if (mobileMetaCleanupTimer !== null) {
+          window.clearTimeout(mobileMetaCleanupTimer);
+          mobileMetaCleanupTimer = null;
+        }
+
+        if (expanded) {
+          const metaRect = designMeta.getBoundingClientRect();
+          const accordionRect = accordion.getBoundingClientRect();
+          mobileMetaBaseHeight ??= metaRect.height;
+          accordion.style.setProperty(
+            "--mobile-info-left",
+            `${accordionRect.left - metaRect.left}px`,
+          );
+          designMeta.style.height = `${metaRect.height}px`;
+        }
+      }
+
       const currentHeight = accordion.getBoundingClientRect().height;
       accordion.style.maxHeight = `${currentHeight}px`;
       accordion.classList.toggle("is-open", expanded);
@@ -1118,6 +1167,22 @@ const pageTitle = initialTab === "design"
       void accordion.offsetHeight;
       const targetHeight = expanded ? getNaturalHeight() : 20;
 
+      if (isMobileInfoAccordion && designMeta && isMobileLayout()) {
+        if (expanded) {
+          syncMobileInfoHeight(targetHeight);
+        } else {
+          const targetMetaHeight = mobileMetaBaseHeight ?? designMeta.getBoundingClientRect().height;
+          requestAnimationFrame(() => {
+            designMeta.style.height = `${targetMetaHeight}px`;
+          });
+          mobileMetaCleanupTimer = window.setTimeout(() => {
+            if (!accordion.classList.contains("is-open")) {
+              clearMobileInfoLayout();
+            }
+          }, 350);
+        }
+      }
+
       requestAnimationFrame(() => {
         accordion.style.maxHeight = `${targetHeight}px`;
       });
@@ -1125,7 +1190,9 @@ const pageTitle = initialTab === "design"
 
     const updateExpandedHeight = () => {
       if (!accordion.classList.contains("is-open")) return;
-      accordion.style.maxHeight = `${getNaturalHeight()}px`;
+      const naturalHeight = getNaturalHeight();
+      accordion.style.maxHeight = `${naturalHeight}px`;
+      syncMobileInfoHeight(naturalHeight);
     };
 
     if ("ResizeObserver" in window) {
