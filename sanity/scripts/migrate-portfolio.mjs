@@ -536,6 +536,7 @@ const documents = [
     _type: 'siteConfig',
     siteTitle: 'Felipe Barbosa',
     siteDescription: 'Portfólio de design e fotografia de Felipe Barbosa.',
+    canonicalUrl: 'https://felipebarbosa.work',
     shareTitle: 'Felipe Barbosa',
     shareDescription: 'Portfólio de design e fotografia de Felipe Barbosa.',
   },

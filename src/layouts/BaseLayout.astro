@@ -37,6 +37,7 @@ const canonical = canonicalUrl
     <meta property="og:title" content={shareTitle} />
     <meta property="og:description" content={shareDescription} />
     <meta property="og:type" content="website" />
+    <meta property="og:url" content={canonical} />
     {shareImageUrl ? <meta property="og:image" content={shareImageUrl} /> : null}
     <meta name="twitter:card" content={shareImageUrl ? "summary_large_image" : "summary"} />
     <meta name="twitter:title" content={shareTitle} />

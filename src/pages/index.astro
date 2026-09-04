@@ -945,13 +945,18 @@ const pageTitle = initialTab === "design"
     readyGalleries.forEach((gallery) => {
       gallery.classList.remove("is-images-ready");
       gallery.querySelectorAll<HTMLElement>(".photo-frame").forEach((frame) => {
-        frame.classList.remove("is-revealed");
+        frame.classList.remove("is-media-ready", "is-revealed");
       });
     });
 
     requestAnimationFrame(() => {
       requestAnimationFrame(() => {
-        readyGalleries.forEach((gallery) => gallery.classList.add("is-images-ready"));
+        readyGalleries.forEach((gallery) => {
+          gallery.querySelectorAll<HTMLElement>(".photo-frame").forEach((frame) => {
+            frame.classList.add("is-media-ready");
+          });
+          gallery.classList.add("is-images-ready");
+        });
       });
     });
   };
