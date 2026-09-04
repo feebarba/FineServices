@@ -25,7 +25,7 @@ const filenameToAlt = (filename: string) => filename.replace(/\.[^/.]+$/, '').re
 
 const RenderItemsOnly = ({children}: {children?: ReactNode}) => <>{children}</>
 
-const getDimensions = (asset: UploadedAsset, file: File) => {
+const getDimensions = (asset: UploadedAsset) => {
   const width = asset.metadata?.dimensions?.width ?? 1
   const height = asset.metadata?.dimensions?.height ?? 1
 
@@ -38,7 +38,7 @@ const getDimensions = (asset: UploadedAsset, file: File) => {
 
 const createMediaItem = (asset: UploadedAsset, file: File, mode: BulkMediaMode) => {
   const kind = file.type.startsWith('video/') ? 'video' : 'image'
-  const dimensions = getDimensions(asset, file)
+  const dimensions = getDimensions(asset)
   const base = {
     _key: makeKey(),
     alt: filenameToAlt(file.name),

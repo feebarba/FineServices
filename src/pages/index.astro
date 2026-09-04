@@ -434,19 +434,9 @@ const orientationsByProject: PhotoOrientation[][] = photographyProjects.map(({ p
     return photos.map(({ orientation }) => orientation);
   }
 
-  const orientations = Array.from({ length: photoCount }, () =>
-    Math.random() < 0.5 ? "horizontal" : "vertical",
+  return Array.from({ length: photoCount }, (_, photoIndex) =>
+    photoIndex % 2 === 0 ? "vertical" : "horizontal",
   );
-
-  if (orientations.every((orientation) => orientation === "horizontal")) {
-    orientations[0] = "vertical";
-  }
-
-  if (orientations.every((orientation) => orientation === "vertical")) {
-    orientations[0] = "horizontal";
-  }
-
-  return orientations;
 });
 
 const designOrientationsByProject = designMediaByProject.map((media) =>
@@ -518,7 +508,7 @@ const pageTitle = initialTab === "design"
       </div>
     </section>
 
-    <section class:list={["tab", "design-panel", "off", { active: initialTab === "design", inactive: initialTab === "photography" }]} data-design-panel aria-label="Design">
+    <section class:list={["tab", "design-panel", { active: initialTab === "design", inactive: initialTab === "photography" }]} data-design-panel aria-label="Design">
       <a
         class="tab-heading design-toggle"
         href="/design"
@@ -690,7 +680,7 @@ const pageTitle = initialTab === "design"
       </div>
     </section>
 
-    <section class:list={["tab", "collection", "photography-panel", "off", { active: initialTab === "photography" }]} id="photography-panel" data-photography-panel aria-labelledby="collection-title">
+    <section class:list={["tab", "collection", "photography-panel", { active: initialTab === "photography" }]} id="photography-panel" data-photography-panel aria-labelledby="collection-title">
       <a
         class="collection-heading collection-toggle"
         href="/photography"
@@ -887,7 +877,7 @@ const pageTitle = initialTab === "design"
     });
   };
 
-  const restartGalleryLoading = (tab: GalleryTab) => {
+  const replayGalleryReveal = (tab: GalleryTab) => {
     const readyGalleries = galleries.filter((gallery) =>
       gallery.dataset.tabGallery === tab &&
       gallery.classList.contains("is-images-ready"),
@@ -1156,7 +1146,7 @@ const pageTitle = initialTab === "design"
 
     if (!toggle || !panel || !arrow) return;
 
-    const isMobileLayout = () => window.matchMedia("(max-width: 760px)").matches;
+    const isMobileLayout = () => window.matchMedia("(max-width: 743px)").matches;
 
     const clearMobileInfoLayout = () => {
       if (!isMobileInfoAccordion || !designMeta) return;
@@ -1306,9 +1296,7 @@ const pageTitle = initialTab === "design"
       return;
     }
 
-    const content = (tab === "design" ? designPanel : homePanel)?.querySelector<HTMLElement>(
-      ".tab-content",
-    );
+    const content = homePanel?.querySelector<HTMLElement>(".tab-content");
     content?.scrollTo({ top: 0, left: 0, behavior: "auto" });
   };
 
@@ -1323,6 +1311,7 @@ const pageTitle = initialTab === "design"
 
     if (tabTransitionTimer !== null) {
       window.clearTimeout(tabTransitionTimer);
+      tabTransitionTimer = null;
     }
 
     if (historyMode !== "none") {
@@ -1337,6 +1326,9 @@ const pageTitle = initialTab === "design"
         : photographyPanel;
 
     portfolioShell.classList.add("is-tab-transitioning");
+    [homePanel, designPanel, photographyPanel].forEach((panel) => {
+      panel.classList.remove("is-closing");
+    });
     previousPanel.classList.add("is-closing");
     homePanel.classList.toggle("active", nextTab === "home");
     designPanel.classList.toggle("active", nextTab === "design");
@@ -1351,7 +1343,7 @@ const pageTitle = initialTab === "design"
     if (nextTab === "design" || nextTab === "photography") {
       const content = nextTab === "design" ? designContent : photographyContent;
       content?.scrollTo({ top: 0, behavior: "auto" });
-      restartGalleryLoading(nextTab);
+      replayGalleryReveal(nextTab);
     }
 
     tabTransitionTimer = window.setTimeout(() => {

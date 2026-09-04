@@ -26,8 +26,6 @@ const client = projectId
     })
   : null;
 
-export const sanityConfigured = Boolean(client);
-
 type RawMedia = {
   kind?: "image" | "video";
   src?: string;
