@@ -1,13 +1,12 @@
 {
-  "name": "felipe-portfolio",
+  "name": "fine-services",
   "version": "0.1.0",
   "private": true,
   "type": "module",
   "scripts": {
     "dev": "astro dev",
     "build": "astro build",
-    "preview": "astro preview",
-    "check": "astro check"
+    "preview": "astro preview"
   },
   "dependencies": {
     "@sanity/client": "^7.11.0",
