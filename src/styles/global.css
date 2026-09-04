@@ -110,8 +110,8 @@ p { margin: 0; font-family: var(--garamono); font-size: 11px; font-weight: 500; 
   .portfolio-shell:has(.photography-panel:hover) .design-panel.inactive { bottom: calc(100dvh - 112px); }
   .portfolio-shell:has(.photography-panel:hover) .collection:not(.active) { height: 82px; }
 }
-.project-list { margin-top: clamp(57.6px, 6.8vw, 104px); }
-.project + .project { margin-top: clamp(57.6px, 6.8vw, 104px); }
+.project-list { margin-top: 104px; }
+.project + .project { margin-top: 104px; }
 .project-meta { grid-template-columns: repeat(3, minmax(0, 1fr)) 50px; gap: 18px; min-height: 20px; padding: 0 0 5px; font-size: 11px; font-weight: 600; line-height: 1.1; white-space: nowrap; }
 .design-project-meta { grid-template-columns: repeat(4, minmax(0, 1fr)) 50px; align-items: start; padding-bottom: 0; }
 .project-meta h2 { margin: 0; font: inherit; font-weight: 600; }
