@@ -173,6 +173,12 @@ p { margin: 0; font-family: var(--garamono); font-size: 11px; font-weight: 500; 
   to { opacity: 1; filter: blur(0); }
 }
 
+/* Keep the desktop layout on tablet widths, but use the mobile gallery scale. */
+@media (max-width: 768px) {
+  .gallery-scroll { --photo-width: 58.1647vw; --photo-height: 39.031575vw; --photo-vertical-width: min(26.02105vw, 127.551848px); --photo-vertical-height: min(39.031575vw, 191.33125px); --photo-max-height: 191.33125px; --photo-vertical-max-height: none; }
+  .gallery-scroll.is-expanded { --photo-width: 126.9048vw; --photo-height: 85.1598vw; --photo-vertical-width: min(56.7732vw, 278.3px); --photo-vertical-height: min(85.1598vw, 417.45px); --photo-max-height: 417.45px; --photo-vertical-max-height: none; }
+}
+
 @media (max-width: 760px) {
   :root { --shell-gutter: 20px; }
   :root { --shell-bottom-space: 0px; }
@@ -208,8 +214,6 @@ p { margin: 0; font-family: var(--garamono); font-size: 11px; font-weight: 500; 
   .design-accordion-panel { overflow-wrap: anywhere; }
   .gallery-scroll { overflow-x: scroll; overscroll-behavior-x: none; }
   .gallery-track { min-width: 0; }
-  .gallery-scroll { --photo-width: 58.1647vw; --photo-height: 39.031575vw; --photo-vertical-width: min(26.02105vw, 127.551848px); --photo-vertical-height: min(39.031575vw, 191.33125px); --photo-max-height: 191.33125px; --photo-vertical-max-height: none; }
-  .gallery-scroll.is-expanded { --photo-width: 126.9048vw; --photo-height: 85.1598vw; --photo-vertical-width: min(56.7732vw, 278.3px); --photo-vertical-height: min(85.1598vw, 417.45px); --photo-max-height: 417.45px; --photo-vertical-max-height: none; }
 }
 
 @media (prefers-reduced-motion: reduce) {
