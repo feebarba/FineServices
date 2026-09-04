@@ -6,7 +6,7 @@ O front já está conectado ao Sanity em build time. Quando `PUBLIC_SANITY_PROJE
 
 1. Crie ou abra um projeto em [sanity.io/manage](https://www.sanity.io/manage) e copie o Project ID.
 2. Duplique `.env.example` para `.env` e preencha `PUBLIC_SANITY_PROJECT_ID`. O dataset padrão é `production`.
-3. Ao criar o Sanity Studio, registre os tipos exportados por `sanity/schemaTypes/index.ts`.
+3. O Studio conectado ao projeto está em `sanity/studio`; os tipos são registrados por `sanity/schemaTypes/index.ts`.
 4. Publique documentos do tipo `project`.
 
 Cada projeto pode ser exibido em `design`, `photography` ou nas duas abas. As galerias usam o objeto `media`, que aceita imagem ou vídeo, texto alternativo, orientação, paleta e dimensões originais. A URL dos assets é resolvida pelo GROQ no build, sem colocar tokens de escrita no navegador.
