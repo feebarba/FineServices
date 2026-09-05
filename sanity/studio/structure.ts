@@ -1,22 +1,22 @@
 import type {StructureResolver} from 'sanity/structure'
+import {orderableDocumentListDeskItem} from '@sanity/orderable-document-list'
 
 const projectList = (
   S: any,
+  context: any,
   id: string,
   title: string,
   schemaType: 'designProject' | 'photographyProject',
 ) =>
-  S.documentList()
-    .id(id)
-    .title(title)
-    .schemaType(schemaType)
-    .filter(`_type == "${schemaType}"`)
-    .defaultOrdering([
-      {field: 'order', direction: 'asc'},
-      {field: 'year', direction: 'desc'},
-    ])
+  orderableDocumentListDeskItem({
+    S,
+    context,
+    id,
+    title,
+    type: schemaType,
+  })
 
-export const structure: StructureResolver = (S) =>
+export const structure: StructureResolver = (S, context) =>
   S.list()
     .title('Portfólio')
     .items([
@@ -28,17 +28,12 @@ export const structure: StructureResolver = (S) =>
         .title('Home')
         .child(S.document().schemaType('siteSettings').documentId('siteSettings')),
       S.divider(),
-      S.listItem()
-        .title('Design')
-        .child(projectList(S, 'design-projects', 'Projetos de Design', 'designProject')),
-      S.listItem()
-        .title('Photography')
-        .child(
-          projectList(
-            S,
-            'photography-projects',
-            'Projetos de Photography',
-            'photographyProject',
-          ),
-        ),
+      projectList(S, context, 'design-projects', 'Projetos de Design', 'designProject'),
+      projectList(
+        S,
+        context,
+        'photography-projects',
+        'Projetos de Photography',
+        'photographyProject',
+      ),
     ])

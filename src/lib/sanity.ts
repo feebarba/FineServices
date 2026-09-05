@@ -92,7 +92,7 @@ const MEDIA_PROJECTION = `{
 }`;
 
 const PORTFOLIO_DESIGN_QUERY = `
-  *[_type == "designProject" && defined(title)] | order(coalesce(order, 9999) asc, year desc) {
+  *[_type == "designProject" && defined(title)] | order(coalesce(orderRank, "zzzzzzzzzzzzzzzzzz") asc, coalesce(order, 9999) asc, year desc) {
     "section": "design",
     title,
     designType,
@@ -104,7 +104,7 @@ const PORTFOLIO_DESIGN_QUERY = `
 `;
 
 const PORTFOLIO_PHOTOGRAPHY_QUERY = `
-  *[_type == "photographyProject" && defined(title)] | order(coalesce(order, 9999) asc, year desc) {
+  *[_type == "photographyProject" && defined(title)] | order(coalesce(orderRank, "zzzzzzzzzzzzzzzzzz") asc, coalesce(order, 9999) asc, year desc) {
     "section": "photography",
     title,
     location,

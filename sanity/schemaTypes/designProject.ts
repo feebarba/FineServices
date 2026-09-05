@@ -1,16 +1,13 @@
+import {orderRankField, orderRankOrdering} from '../studio/node_modules/@sanity/orderable-document-list'
 import {BulkDesignMediaInput} from '../studio/components/BulkMediaArrayInput'
 
 export const designProject = {
   name: "designProject",
   title: "Projeto de Design",
   type: "document",
+  orderings: [orderRankOrdering],
   fields: [
-    {
-      name: "order",
-      title: "Ordem de exibição",
-      type: "number",
-      validation: (Rule: any) => Rule.integer().min(0),
-    },
+    orderRankField({type: "designProject", newItemPosition: "before"}),
     {
       name: "title",
       title: "Nome do projeto",
