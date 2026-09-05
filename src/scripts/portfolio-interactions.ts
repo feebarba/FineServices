@@ -667,6 +667,7 @@ window.addEventListener("resize", () => {
 const portfolioShell = document.querySelector<HTMLElement>(".portfolio-shell");
 const homePanel = document.querySelector<HTMLElement>("[data-home-panel]");
 const homeToggle = document.querySelector<HTMLAnchorElement>("[data-home-toggle]");
+const homeReturnArea = document.querySelector<HTMLElement>("[data-home-return-area]");
 const designToggle = document.querySelector<HTMLAnchorElement>("[data-design-toggle]");
 const designPanel = document.querySelector<HTMLElement>("[data-design-panel]");
 const designContent = document.querySelector<HTMLElement>("[data-design-content]");
@@ -798,10 +799,13 @@ const setActiveTab = (nextTab: PortfolioTab, historyMode: HistoryMode = "push") 
   }, tabTransitionDuration);
 };
 
-homeToggle?.addEventListener("click", (event) => {
+const returnHome = (event: Event) => {
   event.preventDefault();
   setActiveTab("home");
-});
+};
+
+homeToggle?.addEventListener("click", returnHome);
+homeReturnArea?.addEventListener("click", returnHome);
 
 designToggle?.addEventListener("click", (event) => {
   event.preventDefault();

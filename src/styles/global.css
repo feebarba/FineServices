@@ -66,6 +66,9 @@ p { margin: 0; font-family: var(--garamono); font-size: 11px; font-weight: 500; 
 .home-panel .home-content { opacity: 1; }
 .home-panel:not(.active) .home-content { pointer-events: none; }
 .home-head { height: 50px; }
+.home-head .site-header { position: relative; z-index: 1; }
+.home-return-hit-area { position: fixed; z-index: 20; top: 0; right: 0; left: 0; height: 68px; pointer-events: none; cursor: pointer; }
+.portfolio-shell:has(.home-panel:not(.active)) .home-return-hit-area { pointer-events: auto; }
 .home-content { padding-bottom: 500px; }
 .home-inner { width: calc(100% - 40px); margin: 0 auto; padding-top: 50px; }
 .home-copy { width: 473px; max-width: 100%; }
@@ -105,8 +108,8 @@ p { margin: 0; font-family: var(--garamono); font-size: 11px; font-weight: 500; 
 .collection.is-closing { background: #f4ffee; }
 .collection.is-closing .collection-heading { background: #f4ffee; }
 @media (hover: hover) and (pointer: fine) {
-  .portfolio-shell:has(.home-panel:hover) .design-panel.active { bottom: 42px; }
-  .portfolio-shell:has(.home-panel:hover) .design-panel.inactive { bottom: calc(100dvh - 132px); }
+  .portfolio-shell:has(.home-panel:hover, .home-return-hit-area:hover) .design-panel.active { bottom: 42px; }
+  .portfolio-shell:has(.home-panel:hover, .home-return-hit-area:hover) .design-panel.inactive { bottom: calc(100dvh - 132px); }
   .portfolio-shell:has(.design-panel:hover) .design-panel.inactive { bottom: calc(100dvh - 132px); }
   .portfolio-shell:has(.design-panel:hover) .collection.active { bottom: -20px; }
   .portfolio-shell:has(.photography-panel:hover) .design-panel:not(.active) { bottom: 82px; }
