@@ -482,7 +482,6 @@ export const initializeGallerySystem = (
     let momentumFrame: number | null = null;
     let expansionSyncTimer: number | null = null;
     let expansionScrollRatio: number | null = null;
-    const galleryFrames = Array.from(gallery.querySelectorAll<HTMLElement>(".photo-frame"));
     const galleryTrack = gallery.querySelector<HTMLElement>(".gallery-track");
     const getMaxScroll = () => Math.max(0, gallery.scrollWidth - gallery.clientWidth);
 
@@ -654,8 +653,6 @@ export const initializeGallerySystem = (
     const toggleExpanded = () => {
       cancelMomentum();
       cancelExpansionSync();
-
-      galleryFrames.forEach((frame) => frame.classList.add("is-revealed"));
 
       const initialMaxScroll = getMaxScroll();
       const scrollProgress = initialMaxScroll > 0 ? gallery.scrollLeft / initialMaxScroll : 0;
