@@ -3,6 +3,7 @@ const SANITY_IMAGE_HOST = "cdn.sanity.io";
 type ImageTransformOptions = {
   width?: number;
   quality?: number;
+  blur?: number;
 };
 
 const isSanityImageUrl = (src: string) => {
@@ -19,7 +20,7 @@ const isSanityImageUrl = (src: string) => {
  */
 export const getOptimizedImageUrl = (
   src: string,
-  { width, quality = 82 }: ImageTransformOptions = {},
+  { width, quality = 82, blur }: ImageTransformOptions = {},
 ) => {
   if (!isSanityImageUrl(src)) return src;
 
@@ -32,7 +33,26 @@ export const getOptimizedImageUrl = (
     url.searchParams.set("w", String(Math.max(1, Math.round(width))));
   }
 
+  if (blur) {
+    url.searchParams.set("blur", String(Math.max(0, Math.round(blur))));
+  }
+
   return url.toString();
+};
+
+/**
+ * Returns a tiny blurred Sanity image used while the final media is loading.
+ * Local fallback assets intentionally return undefined so they are not
+ * downloaded twice during local development.
+ */
+export const getLowQualityImageUrl = (src: string) => {
+  if (!isSanityImageUrl(src)) return undefined;
+
+  return getOptimizedImageUrl(src, {
+    width: 48,
+    quality: 35,
+    blur: 12,
+  });
 };
 
 /**
