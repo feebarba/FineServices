@@ -171,12 +171,20 @@ p { margin: 0; font-family: var(--garamono); font-size: 11px; font-weight: 500; 
 .gallery-scroll .photo-frame.has-media-error .project-image,
 .gallery-scroll .photo-frame.has-media-error .project-video { opacity: 0 !important; visibility: hidden; }
 .gallery-scroll .photo-frame.has-media-error .media-placeholder { opacity: 1; }
+.gallery-scroll .photo-frame.is-slow-loading .media-placeholder { opacity: 1; transition-delay: 0ms; }
+.gallery-scroll .photo-frame.is-autoplay-blocked .project-video { opacity: 0; visibility: hidden; }
+.gallery-scroll .photo-frame.is-autoplay-blocked .media-placeholder { opacity: 1; transition-delay: 0ms; }
 .gallery-scroll .photo-frame.is-revealed { opacity: 1; filter: none; animation: none; }
 .project-image, .project-video, .media-placeholder { display: block; width: 100%; height: 100%; border: 0; outline: 0; object-fit: cover; user-select: none; pointer-events: none; }
 .media-viewport { position: absolute; z-index: 1; inset: 0; overflow: hidden; border-radius: inherit; }
 .project-image, .project-video { position: absolute; z-index: 1; inset: 0; opacity: 1; visibility: hidden; border-radius: inherit; }
 .media-placeholder { position: absolute; z-index: 0; inset: 0; opacity: 0; filter: blur(12px); transform: scaleY(1.08); transform-origin: center; clip-path: inset(-5px 0); transition: opacity 300ms ease; }
 .project-video { transform: translateZ(0) scale(1.015); transform-origin: center top; backface-visibility: hidden; }
+.project-video::-webkit-media-controls { display: none !important; -webkit-appearance: none; }
+.project-video::-webkit-media-controls-enclosure { display: none !important; -webkit-appearance: none; }
+.project-video::-webkit-media-controls-panel { display: none !important; -webkit-appearance: none; }
+.project-video::-webkit-media-controls-play-button { display: none !important; -webkit-appearance: none; }
+.project-video::-webkit-media-controls-start-playback-button { display: none !important; -webkit-appearance: none; }
 .design-content .photo-frame.has-image { border-radius: 3px; }
 .design-content .gallery-scroll.is-expanded .photo-frame.has-image { border-radius: 5px; }
 .photo-placeholder { display: block; width: 100%; height: 100%; background: transparent; }

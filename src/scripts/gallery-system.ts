@@ -12,6 +12,7 @@ export const initializeGallerySystem = (
   const galleryLoadDelay = 150;
   const galleryRevealStep = 150;
   const galleryExpansionDuration = 550;
+  const slowLoadFallbackDelay = 2000;
   const resetGalleryStates: GalleryReset[] = [];
   type GalleryMedia = HTMLImageElement | HTMLVideoElement;
   type GalleryEntry = {
@@ -24,6 +25,8 @@ export const initializeGallerySystem = (
     hasStartedMedia: boolean;
     hasPlaceholder: boolean;
     placeholderReady: boolean;
+    slowLoadElapsed: boolean;
+    slowLoadTimer: number | null;
   };
   type GalleryLoaderState = {
     entries: GalleryEntry[];
@@ -43,6 +46,28 @@ export const initializeGallerySystem = (
   const galleryLoaders = new Map<HTMLElement, GalleryLoaderState>();
   const loadedVideos = new Set<HTMLVideoElement>();
 
+  const revealSlowLoadingPlaceholder = (entry: GalleryEntry) => {
+    if (
+      !entry.slowLoadElapsed ||
+      !entry.hasPlaceholder ||
+      !entry.placeholderReady ||
+      entry.frame.classList.contains("is-media-settled") ||
+      !entry.frame.classList.contains("is-placeholder-ready")
+    ) return;
+
+    entry.frame.classList.add("is-slow-loading");
+  };
+
+  const scheduleSlowLoadingFallback = (entry: GalleryEntry) => {
+    if (!entry.placeholder || entry.slowLoadTimer !== null || entry.slowLoadElapsed) return;
+
+    entry.slowLoadTimer = window.setTimeout(() => {
+      entry.slowLoadTimer = null;
+      entry.slowLoadElapsed = true;
+      revealSlowLoadingPlaceholder(entry);
+    }, slowLoadFallbackDelay);
+  };
+
   const isElementInViewport = (element: HTMLElement) => {
     const rect = element.getBoundingClientRect();
     return rect.bottom > 0 && rect.right > 0 && rect.top < window.innerHeight && rect.left < window.innerWidth;
@@ -53,14 +78,41 @@ export const initializeGallerySystem = (
     return gallery ? isGalleryTabActive(gallery) : false;
   };
 
+  const suppressNativeVideoControls = (video: HTMLVideoElement) => {
+    video.autoplay = false;
+    video.controls = false;
+    video.removeAttribute("autoplay");
+    video.removeAttribute("controls");
+    video.setAttribute("playsinline", "");
+    video.setAttribute("webkit-playsinline", "");
+  };
+
+  const setAutoplayBlockedState = (video: HTMLVideoElement, isBlocked: boolean) => {
+    const frame = video.closest<HTMLElement>(".photo-frame");
+    if (!frame) return;
+
+    const canShowPoster = Boolean(frame.querySelector(".media-placeholder"));
+    frame.classList.toggle("is-autoplay-blocked", isBlocked && canShowPoster);
+  };
+
   const playVideoIfVisible = (video: HTMLVideoElement) => {
+    suppressNativeVideoControls(video);
+
     if (!isVideoTabActive(video) || !isElementInViewport(video)) {
       video.pause();
       return;
     }
 
-    const playback = video.play();
-    playback?.catch(() => undefined);
+    try {
+      const playback = video.play();
+      playback?.then(() => setAutoplayBlockedState(video, false)).catch(() => {
+        if (isVideoTabActive(video) && isElementInViewport(video) && video.paused) {
+          setAutoplayBlockedState(video, true);
+        }
+      });
+    } catch {
+      setAutoplayBlockedState(video, true);
+    }
   };
 
   let videoVisibilityObserver: IntersectionObserver | null = null;
@@ -69,12 +121,12 @@ export const initializeGallerySystem = (
       (entries) => {
         entries.forEach((entry) => {
           const video = entry.target as HTMLVideoElement;
-          if (entry.isIntersecting && isVideoTabActive(video)) {
-            const playback = video.play();
-            playback?.catch(() => undefined);
-          } else {
+          if (!entry.isIntersecting || !isVideoTabActive(video)) {
             video.pause();
+            return;
           }
+
+          playVideoIfVisible(video);
         });
       },
       { threshold: 0.01 },
@@ -114,6 +166,7 @@ export const initializeGallerySystem = (
 
       nextEntry.frame.style.setProperty("--reveal-delay", "0ms");
       nextEntry.frame.classList.add("is-placeholder-ready");
+      revealSlowLoadingPlaceholder(nextEntry);
       state.nextPlaceholderIndex += 1;
       state.lastPlaceholderRevealAt = performance.now();
       schedulePlaceholderReveal(state);
@@ -131,6 +184,7 @@ export const initializeGallerySystem = (
       if (!nextEntry.frame.classList.contains("is-media-settled")) return;
 
       nextEntry.frame.style.setProperty("--reveal-delay", "0ms");
+      nextEntry.frame.classList.remove("is-slow-loading");
       nextEntry.frame.classList.add("is-media-ready");
       if (!nextEntry.frame.classList.contains("is-placeholder-ready")) {
         nextEntry.placeholderReady = true;
@@ -145,6 +199,10 @@ export const initializeGallerySystem = (
   const markEntrySettled = (state: GalleryLoaderState, entry: GalleryEntry) => {
     if (entry.frame.classList.contains("is-media-settled")) return;
 
+    if (entry.slowLoadTimer !== null) {
+      window.clearTimeout(entry.slowLoadTimer);
+      entry.slowLoadTimer = null;
+    }
     entry.frame.classList.add("is-media-settled");
     schedulePlaceholderReveal(state);
     scheduleMediaReveal(state);
@@ -217,6 +275,7 @@ export const initializeGallerySystem = (
     };
 
     video.addEventListener("loadedmetadata", syncIntrinsicDimensions, { once: true });
+    video.addEventListener("playing", () => setAutoplayBlockedState(video, false));
     video.addEventListener("loadeddata", () => {
       markEntrySettled(state, entry);
       observeVideoPlayback(video);
@@ -225,6 +284,7 @@ export const initializeGallerySystem = (
       entry.frame.classList.add("has-media-error");
       markEntrySettled(state, entry);
     }, { once: true });
+    suppressNativeVideoControls(video);
     video.preload = "auto";
     video.src = source;
     video.removeAttribute("data-src");
@@ -245,6 +305,7 @@ export const initializeGallerySystem = (
       return;
     }
     entry.hasStarted = true;
+    scheduleSlowLoadingFallback(entry);
 
     const startMediaAfterPlaceholder = () => {
       if (entry.media instanceof HTMLVideoElement && !entry.isVisible) return;
@@ -339,6 +400,8 @@ export const initializeGallerySystem = (
       hasStartedMedia: false,
       hasPlaceholder: false,
       placeholderReady: false,
+      slowLoadElapsed: false,
+      slowLoadTimer: null,
     }));
 
     const state: GalleryLoaderState = {
