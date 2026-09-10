@@ -25,6 +25,11 @@ const filenameToAlt = (filename: string) => filename.replace(/\.[^/.]+$/, '').re
 
 const RenderItemsOnly = ({children}: {children?: ReactNode}) => <>{children}</>
 
+const isImageFile = (file: File) => file.type.startsWith('image/')
+
+const isMp4File = (file: File) =>
+  file.type === 'video/mp4' || /\.mp4$/i.test(file.name)
+
 const getVideoDimensions = (file: File): Promise<AssetDimensions> =>
   new Promise((resolve) => {
     const video = document.createElement('video')
@@ -120,7 +125,7 @@ const createMediaItem = (
   fileDimensions?: AssetDimensions,
   posterAsset?: UploadedAsset,
 ) => {
-  const kind = file.type.startsWith('video/') ? 'video' : 'image'
+  const kind = isMp4File(file) ? 'video' : 'image'
   const dimensions = getDimensions(asset, fileDimensions)
   const base = {
     _key: makeKey(),
@@ -173,6 +178,20 @@ function BulkMediaArrayInput(
     event.target.value = ''
     if (!files.length) return
 
+    const unsupportedFiles = files.filter((file) =>
+      mode === 'design' ? !isImageFile(file) && !isMp4File(file) : !isImageFile(file),
+    )
+
+    if (unsupportedFiles.length) {
+      const filenames = unsupportedFiles.map((file) => file.name).join(', ')
+      setError(
+        mode === 'design'
+          ? `Formato não aceito: ${filenames}. Para vídeos, use somente arquivos MP4.`
+          : `Formato não aceito: ${filenames}. Esta galeria aceita apenas imagens.`,
+      )
+      return
+    }
+
     setError(null)
     setUploading(true)
     setProgress({completed: 0, total: files.length})
@@ -181,7 +200,7 @@ function BulkMediaArrayInput(
       const items = []
 
       for (const file of files) {
-        const isVideo = file.type.startsWith('video/')
+        const isVideo = isMp4File(file)
         const assetType = isVideo ? 'file' : 'image'
         const dimensionsPromise = isVideo
           ? getVideoDimensions(file)
@@ -214,8 +233,8 @@ function BulkMediaArrayInput(
     }
   }
 
-  const accept = mode === 'design' ? 'image/*,video/*' : 'image/*'
-  const buttonText = mode === 'design' ? 'Adicionar imagens ou vídeos' : 'Adicionar imagens'
+  const accept = mode === 'design' ? 'image/*,video/mp4,.mp4' : 'image/*'
+  const buttonText = mode === 'design' ? 'Adicionar imagens ou vídeos MP4' : 'Adicionar imagens'
 
   return (
     <Stack gap={3}>
@@ -237,7 +256,9 @@ function BulkMediaArrayInput(
           onClick={() => inputRef.current?.click()}
         />
         <Text size={1} muted>
-          Selecione vários arquivos de uma vez. Depois, abra cada item para ajustar alt, orientação e demais dados.
+          {mode === 'design'
+            ? 'Selecione várias imagens ou vídeos MP4. Depois, abra cada item para ajustar alt, orientação e demais dados.'
+            : 'Selecione várias imagens. Depois, abra cada item para ajustar alt, orientação e demais dados.'}
         </Text>
         {error ? <Text size={1} muted>{error}</Text> : null}
       </Stack>

@@ -26,10 +26,21 @@ export const media = {
     },
     {
       name: "video",
-      title: "Vídeo",
+      title: "Vídeo MP4",
       type: "file",
-      options: { accept: "video/*" },
+      options: { accept: "video/mp4,.mp4" },
       hidden: ({ parent }: any) => parent?.kind !== "video",
+      validation: (Rule: any) =>
+        Rule.custom((value: any, context: any) => {
+          if (context.parent?.kind !== "video") return true
+
+          const assetReference = value?.asset?._ref
+          if (!assetReference) return "Adicione um vídeo MP4."
+
+          return assetReference.endsWith("-mp4")
+            ? true
+            : "Use um arquivo no formato MP4."
+        }),
     },
     {
       name: "poster",
