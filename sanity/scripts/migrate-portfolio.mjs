@@ -545,6 +545,8 @@ const documents = [
     _type: 'siteSettings',
     brand: 'FELIPE BARBOSA',
     brandAnimation: false,
+    contactCta: 'Say hi!',
+    contactEmail: 'Hello@felipebarbosa.work',
     intro,
     lists: [
       {title: 'Pratice', items: practice},

@@ -2,6 +2,13 @@ export const siteSettings = {
   name: "siteSettings",
   title: "Home",
   type: "document",
+  fieldsets: [
+    {
+      name: "contact",
+      title: "Contato",
+      options: { collapsible: true, collapsed: false },
+    },
+  ],
   fields: [
     {
       name: "brand",
@@ -33,6 +40,37 @@ export const siteSettings = {
       type: "array",
       of: [{ type: "homeListBlock" }],
       validation: (Rule: any) => Rule.min(1),
+    },
+    {
+      name: "contactCta",
+      title: "CTA Say hi!",
+      description: "Texto exibido acima do e-mail no componente de contato.",
+      type: "string",
+      fieldset: "contact",
+      initialValue: "Say hi!",
+      validation: (Rule: any) => Rule.required(),
+    },
+    {
+      name: "contactEmail",
+      title: "E-mail",
+      type: "string",
+      fieldset: "contact",
+      initialValue: "Hello@felipebarbosa.work",
+      validation: (Rule: any) => Rule.required().email(),
+    },
+    {
+      name: "contactLinkedinUrl",
+      title: "Link do LinkedIn",
+      type: "url",
+      fieldset: "contact",
+      validation: (Rule: any) => Rule.uri({ scheme: ["http", "https"] }),
+    },
+    {
+      name: "contactInstagramUrl",
+      title: "Link do Instagram",
+      type: "url",
+      fieldset: "contact",
+      validation: (Rule: any) => Rule.uri({ scheme: ["http", "https"] }),
     },
   ],
   preview: {

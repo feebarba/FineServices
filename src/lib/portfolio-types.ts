@@ -47,6 +47,10 @@ export type PortfolioHome = {
   brandAnimation: boolean;
   intro: string[];
   lists: HomeListBlock[];
+  contactCta: string;
+  contactEmail: string;
+  contactLinkedinUrl?: string;
+  contactInstagramUrl?: string;
 };
 
 export type PortfolioSiteConfig = {

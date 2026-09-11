@@ -1,5 +1,6 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
+import HomeContact from "../components/HomeContact.astro";
 import ProjectGallery from "../components/ProjectGallery.astro";
 import ProjectMeta from "../components/ProjectMeta.astro";
 import { getFallbackProjects, fallbackHome } from "../data/fallback";
@@ -104,6 +105,13 @@ const pageTitle = initialTab === "design"
             ))}
           </div>
         </div>
+
+        <HomeContact
+          cta={home.contactCta}
+          email={home.contactEmail}
+          linkedinUrl={home.contactLinkedinUrl}
+          instagramUrl={home.contactInstagramUrl}
+        />
       </div>
     </section>
 

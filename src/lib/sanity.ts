@@ -59,6 +59,10 @@ type RawHome = {
   brand?: string;
   brandAnimation?: boolean;
   intro?: string[];
+  contactCta?: string;
+  contactEmail?: string;
+  contactLinkedinUrl?: string;
+  contactInstagramUrl?: string;
   lists?: Array<{
     title?: string;
     items?: Array<{ title?: string; detail?: string; link?: string }>;
@@ -129,6 +133,10 @@ const PORTFOLIO_HOME_QUERY = `
     brand,
     brandAnimation,
     intro,
+    contactCta,
+    contactEmail,
+    contactLinkedinUrl,
+    contactInstagramUrl,
     lists[]{
       title,
       items[]{title, detail, link}
@@ -204,6 +212,10 @@ const normalizeProject = (project: RawProject): PortfolioProject => {
 const normalizeHome = (home: RawHome): PortfolioHome => ({
   brand: home.brand ?? "FELIPE BARBOSA",
   brandAnimation: home.brandAnimation ?? false,
+  contactCta: home.contactCta ?? "Say hi!",
+  contactEmail: home.contactEmail ?? "Hello@felipebarbosa.work",
+  contactLinkedinUrl: home.contactLinkedinUrl,
+  contactInstagramUrl: home.contactInstagramUrl,
   intro: home.intro?.filter(Boolean) ?? [],
   lists: home.lists
     ?.filter((list) => list.title)

@@ -1,0 +1,34 @@
+---
+interface Props {
+  cta: string;
+  email: string;
+  instagramUrl?: string;
+  linkedinUrl?: string;
+}
+
+const { cta, email, instagramUrl, linkedinUrl } = Astro.props;
+const [emailName, emailDomain] = email.split("@");
+const socialLinks = [
+  { label: "Linkedin", href: linkedinUrl },
+  { label: "Instagram", href: instagramUrl },
+];
+---
+
+<section class="home-contact" aria-label="Contact">
+  <div class="home-contact-primary">
+    <p>{cta}</p>
+    <a class="home-contact-email" href={`mailto:${email}`}>
+      <span>{emailName}</span><span class="home-contact-at">@</span><span>{emailDomain}</span>
+    </a>
+  </div>
+
+  <div class="home-contact-socials">
+    {socialLinks.map(({ label, href }) => (
+      href ? (
+        <a href={href} target="_blank" rel="noreferrer">{label}</a>
+      ) : (
+        <span>{label}</span>
+      )
+    ))}
+  </div>
+</section>

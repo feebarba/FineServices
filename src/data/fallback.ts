@@ -19,6 +19,8 @@ const defaultDesignCredits: DesignCredit[] = [
 export const fallbackHome: PortfolioHome = {
   brand: "FELIPE BARBOSA",
   brandAnimation: false,
+  contactCta: "Say hi!",
+  contactEmail: "Hello@felipebarbosa.work",
   intro: [
     "I'm Felipe, a graphic designer with artistic and technical influences dedicated to developing design solutions guided by a strategic digital approach. My contributions go beyond creating modern and creative visual solutions for clients. I also approach design with a systematic and strategic mindset to simplify processes and scaling these solutions. I see design as a tool that helps individuals and brands in their daily lives, enhancing our ability to face the challenges of today's world.",
     "I collaborated with teams from studios such as HardCuore in Rio de Janeiro, Hardy in Minas Gerais and Polar, Ltda in São Paulo, and worked on projects for clients such as Instituto Moreira Salles, Museu de Arte do Rio, Aliança Francesa, Revista Amarello, Vox Capital, Nubank, Daily Paper and much more.",
