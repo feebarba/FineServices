@@ -19,6 +19,12 @@ const defaultDesignCredits: DesignCredit[] = [
 export const fallbackHome: PortfolioHome = {
   brand: "FELIPE BARBOSA",
   brandAnimation: false,
+  media: {
+    enabled: true,
+    type: "iframe",
+    src: "https://watch-move.netlify.app/",
+    description: "Relógio interativo",
+  },
   contactCta: "Say hi!",
   contactEmail: "Hello@felipebarbosa.work",
   intro: [

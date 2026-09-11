@@ -1,6 +1,7 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
 import HomeContact from "../components/HomeContact.astro";
+import HomeEmbed from "../components/HomeEmbed.astro";
 import ProjectGallery from "../components/ProjectGallery.astro";
 import ProjectMeta from "../components/ProjectMeta.astro";
 import { getFallbackProjects, fallbackHome } from "../data/fallback";
@@ -117,6 +118,14 @@ const pageTitle = initialTab === "design"
               </div>
             ))}
           </div>
+
+          {home.media.enabled && home.media.src && (
+            <HomeEmbed
+              type={home.media.type}
+              src={home.media.src}
+              description={home.media.description}
+            />
+          )}
         </div>
 
         <HomeContact

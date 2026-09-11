@@ -42,11 +42,19 @@ export type HomeListBlock = {
   items: HomeListItem[];
 };
 
+export type HomeMedia = {
+  enabled: boolean;
+  type: "iframe" | "image" | "video";
+  src?: string;
+  description: string;
+};
+
 export type PortfolioHome = {
   brand: string;
   brandAnimation: boolean;
   intro: string[];
   lists: HomeListBlock[];
+  media: HomeMedia;
   contactCta: string;
   contactEmail: string;
   contactLinkedinUrl?: string;

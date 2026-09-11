@@ -59,6 +59,12 @@ type RawHome = {
   brand?: string;
   brandAnimation?: boolean;
   intro?: string[];
+  homeMediaEnabled?: boolean;
+  homeMediaType?: "iframe" | "image" | "video";
+  homeMediaEmbedUrl?: string;
+  homeMediaImageUrl?: string;
+  homeMediaVideoUrl?: string;
+  homeMediaDescription?: string;
   contactCta?: string;
   contactEmail?: string;
   contactLinkedinUrl?: string;
@@ -133,6 +139,12 @@ const PORTFOLIO_HOME_QUERY = `
     brand,
     brandAnimation,
     intro,
+    homeMediaEnabled,
+    homeMediaType,
+    homeMediaEmbedUrl,
+    "homeMediaImageUrl": homeMediaImage.asset->url,
+    "homeMediaVideoUrl": homeMediaVideo.asset->url,
+    homeMediaDescription,
     contactCta,
     contactEmail,
     contactLinkedinUrl,
@@ -212,6 +224,17 @@ const normalizeProject = (project: RawProject): PortfolioProject => {
 const normalizeHome = (home: RawHome): PortfolioHome => ({
   brand: home.brand ?? "FELIPE BARBOSA",
   brandAnimation: home.brandAnimation ?? false,
+  media: {
+    enabled: home.homeMediaEnabled ?? true,
+    type: home.homeMediaType ?? "iframe",
+    src:
+      home.homeMediaType === "image"
+        ? home.homeMediaImageUrl
+        : home.homeMediaType === "video"
+          ? home.homeMediaVideoUrl
+          : home.homeMediaEmbedUrl ?? "https://watch-move.netlify.app/",
+    description: home.homeMediaDescription ?? "Relógio interativo",
+  },
   contactCta: home.contactCta ?? "Say hi!",
   contactEmail: home.contactEmail ?? "Hello@felipebarbosa.work",
   contactLinkedinUrl: home.contactLinkedinUrl,

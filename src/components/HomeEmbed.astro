@@ -1,0 +1,33 @@
+---
+interface Props {
+  type: "iframe" | "image" | "video";
+  src: string;
+  description: string;
+}
+
+const { type, src, description } = Astro.props;
+---
+
+<div class="home-embed">
+  {type === "iframe" ? (
+    <iframe
+      src={src}
+      title={description}
+      loading="lazy"
+      allow="fullscreen"
+      referrerpolicy="strict-origin-when-cross-origin"
+    ></iframe>
+  ) : type === "video" ? (
+    <video
+      src={src}
+      aria-label={description}
+      autoplay
+      muted
+      loop
+      playsinline
+      preload="metadata"
+    ></video>
+  ) : (
+    <img src={src} alt={description} loading="lazy" decoding="async" />
+  )}
+</div>
