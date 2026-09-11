@@ -98,7 +98,20 @@ const pageTitle = initialTab === "design"
                 <div class="home-list-label"><p><i>{list.title}</i></p></div>
                 <div class="home-list-items">
                   {list.items.map((item) => (
-                    <p>{item.title}<br /><i>{item.detail}</i></p>
+                    <p>
+                      {item.link ? (
+                        <a
+                          class="home-list-item-link"
+                          href={item.link}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                        >
+                          {item.title}<br /><i>{item.detail}</i>
+                        </a>
+                      ) : (
+                        <>{item.title}<br /><i>{item.detail}</i></>
+                      )}
+                    </p>
                   ))}
                 </div>
               </div>
