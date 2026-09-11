@@ -27,6 +27,7 @@ export const initializeGallerySystem = (
     placeholderReady: boolean;
     slowLoadElapsed: boolean;
     slowLoadTimer: number | null;
+    hasReleased: boolean;
   };
   type GalleryLoaderState = {
     entries: GalleryEntry[];
@@ -46,25 +47,21 @@ export const initializeGallerySystem = (
   const galleryLoaders = new Map<HTMLElement, GalleryLoaderState>();
   const loadedVideos = new Set<HTMLVideoElement>();
 
-  const revealSlowLoadingPlaceholder = (entry: GalleryEntry) => {
-    if (
-      !entry.slowLoadElapsed ||
-      !entry.hasPlaceholder ||
-      !entry.placeholderReady ||
-      entry.frame.classList.contains("is-media-settled") ||
-      !entry.frame.classList.contains("is-placeholder-ready")
-    ) return;
+  const canReleaseWithPlaceholder = (entry: GalleryEntry) => (
+    entry.slowLoadElapsed &&
+    entry.hasPlaceholder &&
+    entry.placeholderReady &&
+    !entry.frame.classList.contains("is-media-settled") &&
+    entry.frame.classList.contains("is-placeholder-ready")
+  );
 
-    entry.frame.classList.add("is-slow-loading");
-  };
-
-  const scheduleSlowLoadingFallback = (entry: GalleryEntry) => {
+  const scheduleSlowLoadingFallback = (state: GalleryLoaderState, entry: GalleryEntry) => {
     if (!entry.placeholder || entry.slowLoadTimer !== null || entry.slowLoadElapsed) return;
 
     entry.slowLoadTimer = window.setTimeout(() => {
       entry.slowLoadTimer = null;
       entry.slowLoadElapsed = true;
-      revealSlowLoadingPlaceholder(entry);
+      scheduleMediaReveal(state);
     }, slowLoadFallbackDelay);
   };
 
@@ -166,29 +163,40 @@ export const initializeGallerySystem = (
 
       nextEntry.frame.style.setProperty("--reveal-delay", "0ms");
       nextEntry.frame.classList.add("is-placeholder-ready");
-      revealSlowLoadingPlaceholder(nextEntry);
       state.nextPlaceholderIndex += 1;
       state.lastPlaceholderRevealAt = performance.now();
       schedulePlaceholderReveal(state);
+      scheduleMediaReveal(state);
     }, delay);
   };
 
   const scheduleMediaReveal = (state: GalleryLoaderState) => {
     const nextEntry = state.revealQueue[state.nextMediaIndex];
-    if (!nextEntry || !nextEntry.frame.classList.contains("is-media-settled") || state.mediaRevealTimer !== null) return;
+    const mediaIsSettled = nextEntry?.frame.classList.contains("is-media-settled") ?? false;
+    if (
+      !nextEntry ||
+      (!mediaIsSettled && !canReleaseWithPlaceholder(nextEntry)) ||
+      state.mediaRevealTimer !== null
+    ) return;
 
     const now = performance.now();
     const delay = Math.max(0, state.lastMediaRevealAt + galleryRevealStep - now);
     state.mediaRevealTimer = window.setTimeout(() => {
       state.mediaRevealTimer = null;
-      if (!nextEntry.frame.classList.contains("is-media-settled")) return;
+      const entryIsSettled = nextEntry.frame.classList.contains("is-media-settled");
+      if (!entryIsSettled && !canReleaseWithPlaceholder(nextEntry)) return;
 
       nextEntry.frame.style.setProperty("--reveal-delay", "0ms");
-      nextEntry.frame.classList.remove("is-slow-loading");
-      nextEntry.frame.classList.add("is-media-ready");
-      if (!nextEntry.frame.classList.contains("is-placeholder-ready")) {
-        nextEntry.placeholderReady = true;
+      if (entryIsSettled) {
+        nextEntry.frame.classList.remove("is-slow-loading");
+        nextEntry.frame.classList.add("is-media-ready");
+        if (!nextEntry.frame.classList.contains("is-placeholder-ready")) {
+          nextEntry.placeholderReady = true;
+        }
+      } else {
+        nextEntry.frame.classList.add("is-slow-loading");
       }
+      nextEntry.hasReleased = true;
       state.nextMediaIndex += 1;
       state.lastMediaRevealAt = performance.now();
       schedulePlaceholderReveal(state);
@@ -204,6 +212,15 @@ export const initializeGallerySystem = (
       entry.slowLoadTimer = null;
     }
     entry.frame.classList.add("is-media-settled");
+
+    if (entry.hasReleased) {
+      entry.frame.classList.remove("is-slow-loading");
+      if (!entry.frame.classList.contains("has-media-error")) {
+        entry.frame.classList.add("is-revealed", "is-media-ready");
+      }
+      return;
+    }
+
     schedulePlaceholderReveal(state);
     scheduleMediaReveal(state);
   };
@@ -305,7 +322,7 @@ export const initializeGallerySystem = (
       return;
     }
     entry.hasStarted = true;
-    scheduleSlowLoadingFallback(entry);
+    scheduleSlowLoadingFallback(state, entry);
 
     const startMediaAfterPlaceholder = () => {
       if (entry.media instanceof HTMLVideoElement && !entry.isVisible) return;
@@ -402,6 +419,7 @@ export const initializeGallerySystem = (
       placeholderReady: false,
       slowLoadElapsed: false,
       slowLoadTimer: null,
+      hasReleased: false,
     }));
 
     const state: GalleryLoaderState = {

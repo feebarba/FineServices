@@ -1,3 +1,5 @@
+import {VideoPosterInput} from "../studio/components/VideoPosterInput";
+
 export const media = {
   name: "media",
   title: "Mídia de Design",
@@ -48,6 +50,7 @@ export const media = {
       description: "Quadro de capa gerado automaticamente pelo uploader.",
       type: "image",
       options: { hotspot: true },
+      components: { input: VideoPosterInput },
       hidden: ({ parent }: any) => parent?.kind !== "video",
     },
     {

@@ -1,13 +1,11 @@
 import {Button, Stack, Text} from '@sanity/ui'
 import {insert, setIfMissing, type ArrayOfObjectsInputProps, useClient} from 'sanity'
 import {useRef, useState, type ChangeEvent, type ReactNode} from 'react'
+import {inspectVideo, type VideoDimensions} from './videoPoster'
 
 type BulkMediaMode = 'design' | 'photography'
 
-type AssetDimensions = {
-  width?: number
-  height?: number
-}
+type AssetDimensions = VideoDimensions
 
 type UploadedAsset = {
   _id: string
@@ -29,83 +27,6 @@ const isImageFile = (file: File) => file.type.startsWith('image/')
 
 const isMp4File = (file: File) =>
   file.type === 'video/mp4' || /\.mp4$/i.test(file.name)
-
-const getVideoDimensions = (file: File): Promise<AssetDimensions> =>
-  new Promise((resolve) => {
-    const video = document.createElement('video')
-    const objectUrl = URL.createObjectURL(file)
-    let settled = false
-
-    const finish = (dimensions: AssetDimensions) => {
-      if (settled) return
-      settled = true
-      URL.revokeObjectURL(objectUrl)
-      video.removeAttribute('src')
-      video.load()
-      resolve(dimensions)
-    }
-
-    video.preload = 'metadata'
-    video.addEventListener(
-      'loadedmetadata',
-      () => finish({width: video.videoWidth, height: video.videoHeight}),
-      {once: true},
-    )
-    video.addEventListener('error', () => finish({}), {once: true})
-    video.src = objectUrl
-  })
-
-const getVideoPoster = (file: File): Promise<Blob | undefined> =>
-  new Promise((resolve) => {
-    const video = document.createElement('video')
-    const objectUrl = URL.createObjectURL(file)
-    let settled = false
-    let drawStarted = false
-    const timeout = window.setTimeout(() => finish(), 10000)
-
-    const finish = (poster?: Blob) => {
-      if (settled) return
-      settled = true
-      window.clearTimeout(timeout)
-      URL.revokeObjectURL(objectUrl)
-      video.removeAttribute('src')
-      video.load()
-      resolve(poster)
-    }
-
-    const drawPoster = () => {
-      if (drawStarted || video.videoWidth <= 0 || video.videoHeight <= 0) return
-      drawStarted = true
-
-      const scale = Math.min(1, 1280 / video.videoWidth)
-      const canvas = document.createElement('canvas')
-      canvas.width = Math.max(1, Math.round(video.videoWidth * scale))
-      canvas.height = Math.max(1, Math.round(video.videoHeight * scale))
-      const context = canvas.getContext('2d')
-
-      if (!context) {
-        finish()
-        return
-      }
-
-      context.drawImage(video, 0, 0, canvas.width, canvas.height)
-      canvas.toBlob((poster) => finish(poster ?? undefined), 'image/jpeg', 0.78)
-    }
-
-    video.preload = 'metadata'
-    video.muted = true
-    video.playsInline = true
-    video.addEventListener('loadeddata', drawPoster, {once: true})
-    video.addEventListener('seeked', drawPoster, {once: true})
-    video.addEventListener('loadedmetadata', () => {
-      if (Number.isFinite(video.duration) && video.duration > 0) {
-        video.currentTime = Math.min(0.1, video.duration)
-      }
-    }, {once: true})
-    video.addEventListener('error', () => finish(), {once: true})
-    video.src = objectUrl
-    video.load()
-  })
 
 const getDimensions = (asset: UploadedAsset, fileDimensions?: AssetDimensions) => {
   const width = fileDimensions?.width || asset.metadata?.dimensions?.width || 1
@@ -202,23 +123,19 @@ function BulkMediaArrayInput(
       for (const file of files) {
         const isVideo = isMp4File(file)
         const assetType = isVideo ? 'file' : 'image'
-        const dimensionsPromise = isVideo
-          ? getVideoDimensions(file)
-          : Promise.resolve<AssetDimensions | undefined>(undefined)
-        const posterPromise = isVideo ? getVideoPoster(file) : Promise.resolve<Blob | undefined>(undefined)
-        const [uploadedAsset, fileDimensions, posterBlob] = await Promise.all([
+        const inspectionPromise = isVideo ? inspectVideo(file) : Promise.resolve(undefined)
+        const [uploadedAsset, inspection] = await Promise.all([
           client.assets.upload(assetType, file, {filename: file.name}),
-          dimensionsPromise,
-          posterPromise,
+          inspectionPromise,
         ])
         const asset = uploadedAsset as UploadedAsset
-        const posterAsset = posterBlob
-          ? (await client.assets.upload('image', posterBlob, {
+        const posterAsset = inspection?.poster
+          ? (await client.assets.upload('image', inspection.poster, {
               filename: `${file.name.replace(/\.[^/.]+$/, '')}-poster.jpg`,
             })) as UploadedAsset
           : undefined
 
-        items.push(createMediaItem(asset, file, mode, fileDimensions, posterAsset))
+        items.push(createMediaItem(asset, file, mode, inspection?.dimensions, posterAsset))
         setProgress((current) => ({...current, completed: current.completed + 1}))
       }
 
