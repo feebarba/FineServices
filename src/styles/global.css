@@ -205,6 +205,11 @@ p { margin: 0; font-family: var(--garamono); font-size: 11px; font-weight: 500; 
   :root { --shell-gutter: 20px; }
   .brand, .tab-heading, .collection-heading { -webkit-tap-highlight-color: transparent; }
   .portfolio-shell { padding: 0; }
+  @supports (height: 100lvh) {
+    .portfolio-shell:has(.collection.active) { height: 100lvh; }
+    .collection.active { height: calc(100lvh - 112px); bottom: calc(100dvh - 100lvh); }
+    .collection.active .collection-content { padding-bottom: calc(120px + env(safe-area-inset-bottom, 0px)); }
+  }
   .home-list { display: block; }
   .home-list-label, .home-list-items { width: 100%; }
   .home-list-items { padding-left: 10.1781vw; }
