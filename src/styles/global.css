@@ -78,7 +78,8 @@ p { margin: 0; font-family: var(--garamono); font-size: 11px; font-weight: 500; 
 .home-list-label, .home-list-items { width: 100%; }
 .home-list-items p:last-child { margin-bottom: 0; }
 .home-list-items i { color: #828282; }
-.home-contact { display: flex; align-items: flex-start; justify-content: space-between; width: 493px; max-width: calc(100% - 20px); height: 64px; margin-top: 100px; padding: 16px 20px 19px; word-break: break-word; background: #fffce4; border-top: 1px solid #dfdfdf; box-shadow: 0 -4px 5px rgba(0, 0, 0, .05); color: #000000; font-family: var(--garamono); font-size: 11px; font-style: normal; font-weight: 400; line-height: 15px; }
+.home-contact { position: relative; display: flex; align-items: flex-start; justify-content: space-between; width: 493px; max-width: calc(100% - 20px); height: 64px; margin-top: 100px; padding: 16px 20px 19px; word-break: break-word; background: #fffce4; border-top: 1px solid #dfdfdf; box-shadow: 0 -4px 5px rgba(0, 0, 0, .05); color: #000000; font-family: var(--garamono); font-size: 11px; font-style: normal; font-weight: 400; line-height: 15px; }
+.home-contact::after { content: ""; position: absolute; top: 100%; right: 0; left: 0; height: calc(var(--tab-height) * 2); pointer-events: none; background: #fffce4; }
 .home-contact p { font: inherit; }
 .home-contact-primary { display: flex; flex-direction: column; align-items: flex-start; justify-content: space-between; align-self: stretch; flex: 0 0 auto; min-height: 28px; }
 .home-contact-email { font-feature-settings: "onum" 1, "pnum" 1; text-box-trim: trim-both; text-box-edge: cap alphabetic; white-space: nowrap; }

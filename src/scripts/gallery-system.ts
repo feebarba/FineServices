@@ -392,7 +392,16 @@ export const initializeGallerySystem = (
     state.entries.forEach((entry) => {
       entry.isVisible = state.intersectingEntries.has(entry);
     });
-    const entriesToLoad = state.entries.slice(visibleEntries[0].index, lastVisibleIndex + 3);
+    const firstVisibleIndex = visibleEntries[0].index;
+    const firstUnqueuedIndex = state.entries.findIndex(
+      (entry) => !state.queuedEntries.has(entry),
+    );
+    const loadStartIndex = gallery.dataset.tabGallery === "photography" &&
+      firstUnqueuedIndex >= 0 &&
+      firstUnqueuedIndex < firstVisibleIndex
+      ? firstUnqueuedIndex
+      : firstVisibleIndex;
+    const entriesToLoad = state.entries.slice(loadStartIndex, lastVisibleIndex + 3);
     entriesToLoad
       .filter((entry) => !state.queuedEntries.has(entry))
       .sort((a, b) => a.index - b.index)
