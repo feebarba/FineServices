@@ -207,7 +207,7 @@ p { margin: 0; font-family: var(--garamono); font-size: 11px; font-weight: 500; 
   .portfolio-shell { padding: 0; }
   @supports (height: 100lvh) {
     .portfolio-shell { height: 100lvh; }
-    .collection { position: absolute; bottom: max(0px, calc(100lvh - 100dvh)); }
+    .collection { position: absolute; bottom: 0; height: calc(var(--tab-height) + max(0px, calc(100lvh - 100dvh))); }
     .collection.active { height: calc(100lvh - 112px); bottom: 0; }
     .collection.active .collection-content { padding-bottom: calc(120px + env(safe-area-inset-bottom, 0px)); }
   }
