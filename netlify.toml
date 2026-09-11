@@ -6,10 +6,3 @@
   PUBLIC_SANITY_PROJECT_ID = "btfiysbs"
   PUBLIC_SANITY_DATASET = "production"
   PUBLIC_SANITY_API_VERSION = "2025-01-01"
-
-# Existing pages and assets shadow this fallback. Only unknown paths redirect.
-[[redirects]]
-  from = "/*"
-  to = "/"
-  status = 302
-  force = false
