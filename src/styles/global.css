@@ -206,10 +206,10 @@ p { margin: 0; font-family: var(--garamono); font-size: 11px; font-weight: 500; 
   .brand, .tab-heading, .collection-heading { -webkit-tap-highlight-color: transparent; }
   .portfolio-shell { padding: 0; }
   @supports (height: 100lvh) {
-    .portfolio-shell { height: 100lvh; }
-    .collection { position: absolute; bottom: 0; height: calc(var(--tab-height) + max(0px, calc(100lvh - 100dvh))); }
-    .collection.active { height: calc(100lvh - 112px); bottom: 0; }
-    .collection.active .collection-content { padding-bottom: calc(120px + env(safe-area-inset-bottom, 0px)); }
+    .portfolio-shell { --mobile-browser-underlay: 96px; height: calc(100lvh + var(--mobile-browser-underlay)); }
+    .collection { position: absolute; bottom: 0; height: calc(var(--tab-height) + max(0px, calc(100lvh - 100dvh)) + var(--mobile-browser-underlay)); }
+    .collection.active { height: calc(100lvh - 112px + var(--mobile-browser-underlay)); bottom: 0; }
+    .collection.active .collection-content { padding-bottom: calc(120px + env(safe-area-inset-bottom, 0px) + var(--mobile-browser-underlay)); }
   }
   .home-list { display: block; }
   .home-list-label, .home-list-items { width: 100%; }
