@@ -55,100 +55,155 @@ export const siteSettings = {
       initialValue: true,
     },
     {
+      name: "homeMediaRandomize",
+      title: "Randomizar mídia a cada carregamento",
+      description:
+        "Quando desativado, o primeiro item da lista será exibido. Quando ativado, a mídia muda a cada carregamento sem repetir consecutivamente na mesma sessão.",
+      type: "boolean",
+      fieldset: "homeMedia",
+      initialValue: false,
+      hidden: ({ document }: any) => document?.homeMediaEnabled === false,
+    },
+    {
+      name: "homeMediaItems",
+      title: "Mídias",
+      description: "Adicione e ordene até quatro opções de mídia para o bloco da Home.",
+      type: "array",
+      fieldset: "homeMedia",
+      hidden: ({ document }: any) => document?.homeMediaEnabled === false,
+      of: [
+        {
+          name: "homeMediaItem",
+          title: "Mídia da Home",
+          type: "object",
+          fields: [
+            {
+              name: "type",
+              title: "Tipo de mídia",
+              type: "string",
+              initialValue: "iframe",
+              options: {
+                list: [
+                  { title: "Link incorporado (iframe)", value: "iframe" },
+                  { title: "Imagem", value: "image" },
+                  { title: "Vídeo MP4", value: "video" },
+                ],
+                layout: "radio",
+              },
+              validation: (Rule: any) => Rule.required(),
+            },
+            {
+              name: "embedUrl",
+              title: "Link do iframe",
+              type: "url",
+              hidden: ({ parent }: any) => parent?.type !== "iframe",
+              validation: (Rule: any) => Rule.uri({ scheme: ["http", "https"] }),
+            },
+            {
+              name: "image",
+              title: "Imagem",
+              type: "image",
+              options: { hotspot: true },
+              hidden: ({ parent }: any) => parent?.type !== "image",
+            },
+            {
+              name: "video",
+              title: "Vídeo MP4",
+              type: "file",
+              options: { accept: "video/mp4,.mp4" },
+              hidden: ({ parent }: any) => parent?.type !== "video",
+            },
+            {
+              name: "description",
+              title: "Descrição acessível",
+              description: "Descreva brevemente a imagem, o vídeo ou o conteúdo incorporado.",
+              type: "string",
+              validation: (Rule: any) => Rule.required(),
+            },
+          ],
+          validation: (Rule: any) =>
+            Rule.custom((item: any) => {
+              if (!item?.type) return "Escolha o tipo de mídia.";
+              if (item.type === "iframe" && !item.embedUrl) return "Adicione o link do iframe.";
+              if (item.type === "image" && !item.image?.asset?._ref) return "Adicione uma imagem.";
+              if (item.type === "video") {
+                const assetReference = item.video?.asset?._ref;
+                if (!assetReference) return "Adicione um vídeo MP4.";
+                if (!assetReference.endsWith("-mp4")) return "Use um arquivo no formato MP4.";
+              }
+              return true;
+            }),
+          preview: {
+            select: {
+              type: "type",
+              description: "description",
+              media: "image",
+            },
+            prepare({ type, description, media }: any) {
+              const labels: Record<string, string> = {
+                iframe: "Iframe",
+                image: "Imagem",
+                video: "Vídeo MP4",
+              };
+              return {
+                title: description || "Mídia sem descrição",
+                subtitle: labels[type] || "Escolha o tipo",
+                media,
+              };
+            },
+          },
+        },
+      ],
+      validation: (Rule: any) =>
+        Rule.max(4).custom((items: any[] | undefined, context: any) => {
+          const document = context.document;
+          const hasLegacyMedia = Boolean(
+            document?.homeMediaEmbedUrl ||
+              document?.homeMediaImage?.asset?._ref ||
+              document?.homeMediaVideo?.asset?._ref,
+          );
+          return document?.homeMediaEnabled === false || items?.length || hasLegacyMedia
+            ? true
+            : "Adicione ao menos uma mídia.";
+        }),
+    },
+    // Campos legados mantidos ocultos para preservar documentos já publicados.
+    {
       name: "homeMediaType",
-      title: "Tipo de mídia",
+      title: "Tipo de mídia legado",
       type: "string",
       fieldset: "homeMedia",
-      initialValue: "iframe",
-      options: {
-        list: [
-          { title: "Link incorporado (iframe)", value: "iframe" },
-          { title: "Imagem", value: "image" },
-          { title: "Vídeo MP4", value: "video" },
-        ],
-        layout: "radio",
-      },
-      hidden: ({ document }: any) => document?.homeMediaEnabled === false,
-      validation: (Rule: any) =>
-        Rule.custom((value: any, context: any) =>
-          context.document?.homeMediaEnabled === false || value
-            ? true
-            : "Escolha o tipo de mídia.",
-        ),
+      hidden: true,
     },
     {
       name: "homeMediaEmbedUrl",
-      title: "Link do iframe",
+      title: "Link do iframe legado",
       type: "url",
       fieldset: "homeMedia",
-      initialValue: "https://watch-move.netlify.app/",
-      hidden: ({ document }: any) =>
-        document?.homeMediaEnabled === false || document?.homeMediaType !== "iframe",
-      validation: (Rule: any) =>
-        Rule.uri({ scheme: ["http", "https"] }).custom((value: any, context: any) =>
-          context.document?.homeMediaEnabled === false ||
-          context.document?.homeMediaType !== "iframe" ||
-          value
-            ? true
-            : "Adicione o link que será incorporado.",
-        ),
+      hidden: true,
     },
     {
       name: "homeMediaImage",
-      title: "Imagem",
+      title: "Imagem legada",
       type: "image",
       fieldset: "homeMedia",
       options: { hotspot: true },
-      hidden: ({ document }: any) =>
-        document?.homeMediaEnabled === false || document?.homeMediaType !== "image",
-      validation: (Rule: any) =>
-        Rule.custom((value: any, context: any) =>
-          context.document?.homeMediaEnabled === false ||
-          context.document?.homeMediaType !== "image" ||
-          value?.asset?._ref
-            ? true
-            : "Adicione uma imagem.",
-        ),
+      hidden: true,
     },
     {
       name: "homeMediaVideo",
-      title: "Vídeo MP4",
+      title: "Vídeo MP4 legado",
       type: "file",
       fieldset: "homeMedia",
       options: { accept: "video/mp4,.mp4" },
-      hidden: ({ document }: any) =>
-        document?.homeMediaEnabled === false || document?.homeMediaType !== "video",
-      validation: (Rule: any) =>
-        Rule.custom((value: any, context: any) => {
-          if (
-            context.document?.homeMediaEnabled === false ||
-            context.document?.homeMediaType !== "video"
-          ) {
-            return true;
-          }
-
-          const assetReference = value?.asset?._ref;
-          if (!assetReference) return "Adicione um vídeo MP4.";
-
-          return assetReference.endsWith("-mp4")
-            ? true
-            : "Use um arquivo no formato MP4.";
-        }),
+      hidden: true,
     },
     {
       name: "homeMediaDescription",
-      title: "Descrição acessível",
-      description: "Descreva brevemente a imagem, o vídeo ou o conteúdo incorporado.",
+      title: "Descrição acessível legada",
       type: "string",
       fieldset: "homeMedia",
-      initialValue: "Relógio interativo",
-      hidden: ({ document }: any) => document?.homeMediaEnabled === false,
-      validation: (Rule: any) =>
-        Rule.custom((value: any, context: any) =>
-          context.document?.homeMediaEnabled === false || value
-            ? true
-            : "Adicione uma descrição acessível.",
-        ),
+      hidden: true,
     },
     {
       name: "contactCta",

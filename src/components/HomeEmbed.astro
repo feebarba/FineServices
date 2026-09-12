@@ -1,32 +1,83 @@
 ---
+import type { HomeMediaItem } from "../lib/portfolio-types";
+
 interface Props {
-  type: "iframe" | "image" | "video";
-  src: string;
-  description: string;
+  items: HomeMediaItem[];
+  randomize: boolean;
 }
 
-const { type, src, description } = Astro.props;
+const { items, randomize } = Astro.props;
 ---
 
-<div class="home-embed">
-  {type === "iframe" ? (
-    <iframe
-      src={src}
-      title={description}
-      allow="fullscreen"
-      referrerpolicy="strict-origin-when-cross-origin"
-    ></iframe>
-  ) : type === "video" ? (
-    <video
-      src={src}
-      aria-label={description}
-      autoplay
-      muted
-      loop
-      playsinline
-      preload="metadata"
-    ></video>
-  ) : (
-    <img src={src} alt={description} loading="lazy" decoding="async" />
-  )}
-</div>
+<div
+  class="home-embed"
+  data-home-media
+  data-home-media-items={JSON.stringify(items)}
+  data-home-media-randomize={String(randomize)}
+></div>
+
+<script is:inline>
+  (() => {
+    const host = document.currentScript?.previousElementSibling;
+    if (!(host instanceof HTMLElement) || !host.matches("[data-home-media]")) return;
+
+    let items = [];
+    try {
+      items = JSON.parse(host.dataset.homeMediaItems || "[]");
+    } catch {
+      return;
+    }
+    if (!Array.isArray(items) || items.length === 0) return;
+
+    const shouldRandomize = host.dataset.homeMediaRandomize === "true";
+    const storageKey = "fine-services:last-home-media";
+    let lastMediaId = null;
+    try {
+      lastMediaId = sessionStorage.getItem(storageKey);
+    } catch {
+      // Storage may be unavailable in privacy-restricted browsing contexts.
+    }
+
+    const availableItems = shouldRandomize && items.length > 1
+      ? items.filter((item) => item.id !== lastMediaId)
+      : items;
+    const selectedItem = shouldRandomize
+      ? availableItems[Math.floor(Math.random() * availableItems.length)]
+      : items[0];
+    if (!selectedItem?.src) return;
+
+    let media;
+    if (selectedItem.type === "video") {
+      media = document.createElement("video");
+      media.autoplay = true;
+      media.defaultMuted = true;
+      media.muted = true;
+      media.loop = true;
+      media.playsInline = true;
+      media.preload = "metadata";
+      media.setAttribute("aria-label", selectedItem.description || "Mídia da Home");
+    } else if (selectedItem.type === "image") {
+      media = document.createElement("img");
+      media.alt = selectedItem.description || "Mídia da Home";
+      media.loading = "lazy";
+      media.decoding = "async";
+    } else {
+      media = document.createElement("iframe");
+      media.title = selectedItem.description || "Mídia da Home";
+      media.allow = "fullscreen";
+      media.referrerPolicy = "strict-origin-when-cross-origin";
+    }
+
+    media.src = selectedItem.src;
+    host.dataset.homeMediaSelected = selectedItem.id;
+    host.replaceChildren(media);
+
+    if (shouldRandomize) {
+      try {
+        sessionStorage.setItem(storageKey, selectedItem.id);
+      } catch {
+        // The selection still works when storage is unavailable.
+      }
+    }
+  })();
+</script>

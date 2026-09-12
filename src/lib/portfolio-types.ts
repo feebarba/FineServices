@@ -42,11 +42,17 @@ export type HomeListBlock = {
   items: HomeListItem[];
 };
 
+export type HomeMediaItem = {
+  id: string;
+  type: "iframe" | "image" | "video";
+  src: string;
+  description: string;
+};
+
 export type HomeMedia = {
   enabled: boolean;
-  type: "iframe" | "image" | "video";
-  src?: string;
-  description: string;
+  randomize: boolean;
+  items: HomeMediaItem[];
 };
 
 export type PortfolioHome = {

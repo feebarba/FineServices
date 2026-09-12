@@ -4,6 +4,7 @@ import type {
   PhotoOrientation,
   PhotoPalette,
   HomeListBlock,
+  HomeMediaItem,
   PortfolioHome,
   PortfolioProject,
   PortfolioSiteConfig,
@@ -60,6 +61,15 @@ type RawHome = {
   brandAnimation?: boolean;
   intro?: string[];
   homeMediaEnabled?: boolean;
+  homeMediaRandomize?: boolean;
+  homeMediaItems?: Array<{
+    _key?: string;
+    type?: "iframe" | "image" | "video";
+    embedUrl?: string;
+    imageUrl?: string;
+    videoUrl?: string;
+    description?: string;
+  }>;
   homeMediaType?: "iframe" | "image" | "video";
   homeMediaEmbedUrl?: string;
   homeMediaImageUrl?: string;
@@ -140,6 +150,15 @@ const PORTFOLIO_HOME_QUERY = `
     brandAnimation,
     intro,
     homeMediaEnabled,
+    homeMediaRandomize,
+    homeMediaItems[]{
+      _key,
+      type,
+      embedUrl,
+      "imageUrl": image.asset->url,
+      "videoUrl": video.asset->url,
+      description
+    },
     homeMediaType,
     homeMediaEmbedUrl,
     "homeMediaImageUrl": homeMediaImage.asset->url,
@@ -221,39 +240,74 @@ const normalizeProject = (project: RawProject): PortfolioProject => {
   };
 };
 
-const normalizeHome = (home: RawHome): PortfolioHome => ({
-  brand: home.brand ?? "FELIPE BARBOSA",
-  brandAnimation: home.brandAnimation ?? false,
-  media: {
-    enabled: home.homeMediaEnabled ?? true,
-    type: home.homeMediaType ?? "iframe",
-    src:
-      home.homeMediaType === "image"
-        ? home.homeMediaImageUrl
-        : home.homeMediaType === "video"
-          ? home.homeMediaVideoUrl
-          : home.homeMediaEmbedUrl ?? "https://watch-move.netlify.app/",
-    description: home.homeMediaDescription ?? "Relógio interativo",
-  },
-  contactCta: home.contactCta ?? "Say hi!",
-  contactEmail: home.contactEmail ?? "Hello@felipebarbosa.work",
-  contactLinkedinUrl: home.contactLinkedinUrl,
-  contactInstagramUrl: home.contactInstagramUrl,
-  intro: home.intro?.filter(Boolean) ?? [],
-  lists: home.lists
-    ?.filter((list) => list.title)
-    .map((list): HomeListBlock => ({
-      title: list.title!,
-      items:
-        list.items
-          ?.filter((item) => item.title && item.detail)
-          .map((item) => ({
-            title: item.title!,
-            detail: item.detail!,
-            ...(item.link ? { link: item.link } : {}),
-          })) ?? [],
-    })) ?? [],
-});
+const normalizeHomeMediaItem = (
+  item: NonNullable<RawHome["homeMediaItems"]>[number],
+  index: number,
+): HomeMediaItem | null => {
+  const type = item.type ?? "iframe";
+  const src = type === "image" ? item.imageUrl : type === "video" ? item.videoUrl : item.embedUrl;
+  if (!src) return null;
+
+  return {
+    id: item._key ?? `home-media-${index}`,
+    type,
+    src,
+    description: item.description ?? "Mídia interativa",
+  };
+};
+
+const normalizeHome = (home: RawHome): PortfolioHome => {
+  const configuredMedia = home.homeMediaItems
+    ?.map(normalizeHomeMediaItem)
+    .filter((item): item is HomeMediaItem => Boolean(item))
+    .slice(0, 4) ?? [];
+  const legacyType = home.homeMediaType ?? "iframe";
+  const legacySrc = legacyType === "image"
+    ? home.homeMediaImageUrl
+    : legacyType === "video"
+      ? home.homeMediaVideoUrl
+      : home.homeMediaEmbedUrl ?? "https://watch-move.netlify.app/";
+  const mediaItems = configuredMedia.length > 0
+    ? configuredMedia
+    : legacySrc
+      ? [
+          {
+            id: "legacy-home-media",
+            type: legacyType,
+            src: legacySrc,
+            description: home.homeMediaDescription ?? "Relógio interativo",
+          },
+        ]
+      : [];
+
+  return {
+    brand: home.brand ?? "FELIPE BARBOSA",
+    brandAnimation: home.brandAnimation ?? false,
+    media: {
+      enabled: home.homeMediaEnabled ?? true,
+      randomize: home.homeMediaRandomize ?? false,
+      items: mediaItems,
+    },
+    contactCta: home.contactCta ?? "Say hi!",
+    contactEmail: home.contactEmail ?? "Hello@felipebarbosa.work",
+    contactLinkedinUrl: home.contactLinkedinUrl,
+    contactInstagramUrl: home.contactInstagramUrl,
+    intro: home.intro?.filter(Boolean) ?? [],
+    lists: home.lists
+      ?.filter((list) => list.title)
+      .map((list): HomeListBlock => ({
+        title: list.title!,
+        items:
+          list.items
+            ?.filter((item) => item.title && item.detail)
+            .map((item) => ({
+              title: item.title!,
+              detail: item.detail!,
+              ...(item.link ? { link: item.link } : {}),
+            })) ?? [],
+      })) ?? [],
+  };
+};
 
 const normalizeSiteConfig = (config: RawSiteConfig): PortfolioSiteConfig => ({
   title: config.siteTitle ?? "Felipe Barbosa",

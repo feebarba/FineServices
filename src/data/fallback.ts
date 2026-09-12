@@ -21,9 +21,15 @@ export const fallbackHome: PortfolioHome = {
   brandAnimation: false,
   media: {
     enabled: true,
-    type: "iframe",
-    src: "https://watch-move.netlify.app/",
-    description: "Relógio interativo",
+    randomize: false,
+    items: [
+      {
+        id: "fallback-home-media",
+        type: "iframe",
+        src: "https://watch-move.netlify.app/",
+        description: "Relógio interativo",
+      },
+    ],
   },
   contactCta: "Say hi!",
   contactEmail: "Hello@felipebarbosa.work",
