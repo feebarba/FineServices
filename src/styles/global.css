@@ -1,6 +1,6 @@
 @font-face {
   font-family: "WT Garamono";
-  src: url("/fonts/WTGaramonoTRIAL-Regular.woff") format("woff");
+  src: url("/fonts/WTGaramono-Regular.woff2") format("woff2");
   font-style: normal;
   font-weight: 400;
   font-display: block;
@@ -16,7 +16,7 @@
 
 @font-face {
   font-family: "WT Garamono";
-  src: url("/fonts/WTGaramonoTRIAL-Italic.woff") format("woff");
+  src: url("/fonts/WTGaramono-Italic.woff2") format("woff2");
   font-style: italic;
   font-weight: 400;
   font-display: block;
