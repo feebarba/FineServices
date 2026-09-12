@@ -6,18 +6,19 @@ conteúdo editorial gerenciado no Sanity.
 ## Estrutura
 
 - `src/`: páginas, componentes de conteúdo e estilos do site.
-- `public/`: fontes, ícones e mídia local usada como fallback durante o desenvolvimento.
+- `public/`: fontes e mídia local usada como fallback durante o desenvolvimento.
 - `sanity/`: schemas, migração de conteúdo e o Studio do Sanity.
 - `.fine-services/hosting.json`: configurações locais opcionais do projeto.
 - `netlify.toml`: configuração de build e variáveis públicas do deploy.
 
 Design e Photography são coleções independentes no CMS. A Home possui a
-introdução e blocos de listas editáveis; as configurações gerais controlam
-favicon, metadados e informações de compartilhamento.
+introdução, blocos de listas, mídia em destaque e contato editáveis; as
+configurações gerais controlam favicon, metadados e informações de
+compartilhamento.
 
 Imagens publicadas no Sanity usam o CDN responsivo com negociação automática
-de formato e qualidade. Vídeos só entram no DOM quando a galeria chega ao
-viewport e recebem um poster JPEG leve gerado pelo uploader.
+de formato e qualidade. Os arquivos de vídeo só são solicitados quando chegam
+à janela visível da galeria e recebem um poster JPEG leve gerado pelo uploader.
 
 ## Desenvolvimento local
 

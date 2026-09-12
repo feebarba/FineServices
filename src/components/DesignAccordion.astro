@@ -12,7 +12,6 @@ const isInfo = kind === "info";
 const label = isInfo ? "Info" : "Credits";
 const accordionClass = isInfo ? "design-info-accordion" : "design-credits-accordion";
 const panelClass = isInfo ? "design-info-panel" : "design-credits-panel";
-const iconName = isInfo ? "info" : "credits";
 const toggleId = `design-${kind}-toggle-${projectIndex}`;
 const panelId = `design-${kind}-panel-${projectIndex}`;
 const credits = project.credits ?? [];
@@ -30,9 +29,9 @@ const credits = project.credits ?? [];
     <span>{label}</span>
     <img
       class="design-accordion-arrow"
-      src={`/icons/${iconName}-arrow-down.svg`}
-      data-closed-src={`/icons/${iconName}-arrow-down.svg`}
-      data-open-src={`/icons/${iconName}-arrow-up.svg`}
+      src="/icons/accordion-arrow-down.svg"
+      data-closed-src="/icons/accordion-arrow-down.svg"
+      data-open-src="/icons/accordion-arrow-up.svg"
       alt=""
       width="8"
       height="8"

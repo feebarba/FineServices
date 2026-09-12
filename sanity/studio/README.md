@@ -22,9 +22,10 @@ Os schemas usados pelo Studio vêm de `sanity/schemaTypes/index.ts`, que é comp
 
 ## Organização do conteúdo
 
-O Structure Tool apresenta duas entradas independentes:
+O Structure Tool apresenta quatro entradas independentes:
 
 - `Configurações gerais`: favicon, título e descrição padrão, metadados de compartilhamento, URL canônica, cor do navegador e configuração pública de SSO.
+- `Home`: apresentação, listas, contato, animação da marca e mídia em destaque.
 - `Design`: mostra documentos do tipo `designProject`.
 - `Photography`: mostra documentos do tipo `photographyProject`.
 
@@ -32,7 +33,7 @@ Os projetos são independentes e não possuem o campo `Exibir na aba`. Projetos 
 
 As listas `Design` e `Photography` usam ordenação por arrastar e soltar. O campo técnico `orderRank` fica oculto no editor; basta arrastar um projeto para a posição desejada. Projetos novos entram no topo por padrão.
 
-`Home` concentra a apresentação, os blocos de listas da página inicial e o toggle `Animar nome da marca`. Cada bloco tem um título editável e sua própria lista de itens; use `Adicionar item` para criar novos blocos além de `Pratice` e `Mentions & Awards`, ou edite esses títulos diretamente.
+`Home` concentra a apresentação, os blocos de listas, o contato e os toggles de exibição. A mídia em destaque aceita iframe, imagem ou vídeo MP4. Cada bloco de lista tem um título editável e sua própria lista de itens; use `Adicionar item` para criar novos blocos além de `Pratice` e `Mentions & Awards`, ou edite esses títulos diretamente.
 
 As duas galerias têm apenas o botão de upload múltiplo. Selecione vários arquivos na mesma janela para adicioná-los de uma vez; o nome do arquivo é usado como texto alternativo inicial e cada item pode ser aberto depois para ajustar alt, orientação, paleta e dimensões.
 
