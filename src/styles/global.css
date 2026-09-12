@@ -217,6 +217,7 @@ p { margin: 0; font-family: var(--garamono); font-size: 11px; font-weight: 500; 
 /* Keep the desktop layout on tablet widths, but use the mobile gallery scale. */
 @media (max-width: 768px) {
   .home-contact { width: 100%; max-width: none; margin-left: 0; }
+  .home-embed { width: calc(100% + 40px); max-width: none; }
   .gallery-scroll { --photo-height: 39.031575vw; --photo-height-limit: 191.33125px; }
   .gallery-scroll.is-expanded { --photo-height: 85.1598vw; --photo-height-limit: 417.45px; }
 }
@@ -229,7 +230,6 @@ p { margin: 0; font-family: var(--garamono); font-size: 11px; font-weight: 500; 
   .home-list { display: block; }
   .home-list-label, .home-list-items { width: 100%; }
   .home-list-items { padding-left: 10.1781vw; }
-  .home-embed { width: calc(100% + 40px); max-width: none; }
   .site-header .brand { transform: translateY(-5px); }
   .site-header, .collection-heading { font-size: 9px; }
   .design-panel .tab-content, .collection-content { --gallery-gutter: 10px; padding-inline: 10px; }
