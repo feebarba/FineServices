@@ -13,6 +13,10 @@ export const initializeGallerySystem = (
   const galleryRevealStep = 150;
   const galleryExpansionDuration = 550;
   const slowLoadFallbackDelay = 1000;
+  const softResumeAfter = 15000;
+  const softResumePlaceholderDelay = 80;
+  const softResumeFadeDuration = 420;
+  const softResumeFrameTimeout = 1500;
   const resetGalleryStates: GalleryReset[] = [];
   type GalleryMedia = HTMLImageElement | HTMLVideoElement;
   type GalleryEntry = {
@@ -46,6 +50,7 @@ export const initializeGallerySystem = (
   };
   const galleryLoaders = new Map<HTMLElement, GalleryLoaderState>();
   const loadedVideos = new Set<HTMLVideoElement>();
+  const softResumeTokens = new WeakMap<HTMLElement, symbol>();
 
   const canReleaseWithPlaceholder = (entry: GalleryEntry) => (
     entry.slowLoadElapsed &&
@@ -411,6 +416,128 @@ export const initializeGallerySystem = (
       });
     entriesToLoad.forEach((entry) => loadGalleryEntry(state, entry));
   };
+
+  const waitForVideoFrame = (video: HTMLVideoElement) => new Promise<void>((resolve) => {
+    let resolved = false;
+    let timeout: number | null = null;
+
+    const finish = () => {
+      if (resolved) return;
+      resolved = true;
+      if (timeout !== null) window.clearTimeout(timeout);
+      resolve();
+    };
+
+    timeout = window.setTimeout(finish, softResumeFrameTimeout);
+    if ("requestVideoFrameCallback" in video) {
+      video.requestVideoFrameCallback(finish);
+    } else if (video.readyState >= HTMLMediaElement.HAVE_CURRENT_DATA) {
+      requestAnimationFrame(finish);
+    } else {
+      video.addEventListener("loadeddata", finish, { once: true });
+    }
+
+    playVideoIfVisible(video);
+  });
+
+  const softlyResumeEntry = (entry: GalleryEntry) => {
+    const { frame, media, placeholder } = entry;
+    if (
+      !media ||
+      !placeholder ||
+      !entry.placeholderReady ||
+      !frame.classList.contains("is-revealed") ||
+      frame.classList.contains("has-media-error")
+    ) return;
+
+    const token = Symbol("soft-resume");
+    softResumeTokens.set(frame, token);
+    frame.classList.remove("is-resume-ready");
+    void placeholder.decode?.().catch(() => undefined);
+
+    const placeholderTimer = window.setTimeout(() => {
+      if (softResumeTokens.get(frame) !== token) return;
+      frame.classList.add("is-resuming");
+    }, softResumePlaceholderDelay);
+
+    const mediaReady = media instanceof HTMLImageElement
+      ? media.decode?.().catch(() => undefined) ?? Promise.resolve()
+      : waitForVideoFrame(media);
+
+    void mediaReady.then(() => {
+      window.clearTimeout(placeholderTimer);
+      if (softResumeTokens.get(frame) !== token) return;
+
+      if (!frame.classList.contains("is-resuming")) {
+        softResumeTokens.delete(frame);
+        return;
+      }
+
+      requestAnimationFrame(() => {
+        if (softResumeTokens.get(frame) !== token) return;
+        frame.classList.add("is-resume-ready");
+
+        window.setTimeout(() => {
+          if (softResumeTokens.get(frame) !== token) return;
+          frame.classList.remove("is-resuming", "is-resume-ready");
+          softResumeTokens.delete(frame);
+        }, softResumeFadeDuration);
+      });
+    });
+  };
+
+  let lastSoftResumeAt = -Infinity;
+  const softlyResumeVisibleMedia = () => {
+    const now = performance.now();
+    if (now - lastSoftResumeAt < 500) return;
+    lastSoftResumeAt = now;
+
+    syncLoadedVideoPlayback();
+    galleryLoaders.forEach((state, gallery) => {
+      if (!state.galleryIsVisible || !isGalleryTabActive(gallery) || !isElementInViewport(gallery)) return;
+
+      const galleryRect = gallery.getBoundingClientRect();
+      const visibleEntries = state.entries.filter(({ frame }) => {
+        const frameRect = frame.getBoundingClientRect();
+        return frameRect.right > galleryRect.left && frameRect.left < galleryRect.right;
+      });
+      if (visibleEntries.length === 0) return;
+
+      const firstVisibleIndex = visibleEntries[0].index;
+      const lastVisibleIndex = visibleEntries[visibleEntries.length - 1].index;
+      state.entries
+        .slice(firstVisibleIndex, lastVisibleIndex + 3)
+        .forEach(softlyResumeEntry);
+    });
+  };
+
+  let pageHiddenAt: number | null = document.hidden ? Date.now() : null;
+  const resumeAfterBackground = (force = false) => {
+    const hiddenFor = pageHiddenAt === null ? 0 : Date.now() - pageHiddenAt;
+    pageHiddenAt = null;
+
+    if (force || hiddenFor >= softResumeAfter) {
+      softlyResumeVisibleMedia();
+    } else {
+      syncLoadedVideoPlayback();
+    }
+  };
+
+  document.addEventListener("visibilitychange", () => {
+    if (document.hidden) {
+      pageHiddenAt = Date.now();
+      return;
+    }
+
+    resumeAfterBackground();
+  });
+  window.addEventListener("pagehide", () => {
+    pageHiddenAt ??= Date.now();
+  });
+  window.addEventListener("pageshow", (event) => {
+    const wasDiscarded = (document as Document & { wasDiscarded?: boolean }).wasDiscarded === true;
+    resumeAfterBackground(event.persisted || wasDiscarded);
+  });
 
   const initializeGalleryLoader = (gallery: HTMLElement) => {
     const existingState = galleryLoaders.get(gallery);

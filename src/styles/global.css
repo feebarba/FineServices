@@ -195,6 +195,12 @@ p { margin: 0; font-family: var(--garamono); font-size: 11px; font-weight: 500; 
 .gallery-scroll .photo-frame.is-autoplay-blocked .project-video { opacity: 0; visibility: hidden; }
 .gallery-scroll .photo-frame.is-autoplay-blocked .media-placeholder { opacity: 1; transition-delay: 0ms; }
 .gallery-scroll .photo-frame.is-revealed { opacity: 1; filter: none; animation: none; }
+.gallery-scroll .photo-frame.is-resuming .project-image,
+.gallery-scroll .photo-frame.is-resuming .project-video { opacity: 0; transition: none; }
+.gallery-scroll .photo-frame.is-resuming .media-placeholder { opacity: 1; transition: none; }
+.gallery-scroll .photo-frame.is-resuming.is-resume-ready .project-image,
+.gallery-scroll .photo-frame.is-resuming.is-resume-ready .project-video { opacity: 1; transition: opacity 420ms ease; }
+.gallery-scroll .photo-frame.is-resuming.is-resume-ready .media-placeholder { opacity: 0; transition: opacity 420ms ease; }
 .project-image, .project-video, .media-placeholder { display: block; width: 100%; height: 100%; border: 0; outline: 0; object-fit: cover; user-select: none; pointer-events: none; }
 .media-viewport { position: absolute; z-index: 1; inset: 0; overflow: hidden; border-radius: inherit; }
 .project-image, .project-video { position: absolute; z-index: 1; inset: 0; opacity: 1; visibility: hidden; border-radius: inherit; }
@@ -277,5 +283,8 @@ p { margin: 0; font-family: var(--garamono); font-size: 11px; font-weight: 500; 
 @media (prefers-reduced-motion: reduce) {
   .gallery-scroll { scroll-behavior: auto; }
   .gallery-scroll .photo-frame.is-media-ready,
-  .gallery-scroll .photo-frame.is-media-ready .media-placeholder { animation-duration: 1ms; animation-delay: 0ms; transition-duration: 1ms; }
+  .gallery-scroll .photo-frame.is-media-ready .media-placeholder,
+  .gallery-scroll .photo-frame.is-resume-ready .project-image,
+  .gallery-scroll .photo-frame.is-resume-ready .project-video,
+  .gallery-scroll .photo-frame.is-resume-ready .media-placeholder { animation-duration: 1ms; animation-delay: 0ms; transition-duration: 1ms; }
 }
