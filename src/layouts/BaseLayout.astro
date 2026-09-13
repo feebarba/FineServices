@@ -47,6 +47,20 @@ const canonical = canonicalUrl
     <meta name="twitter:description" content={shareDescription} />
     {shareImageUrl ? <meta name="twitter:image" content={shareImageUrl} /> : null}
     <title>{title}</title>
+    <!-- Google tag (gtag.js) -->
+    <script
+      is:inline
+      async
+      src="https://www.googletagmanager.com/gtag/js?id=G-1C1X8LWGBB"
+    ></script>
+    <script is:inline>
+      window.dataLayer = window.dataLayer || [];
+      function gtag() {
+        dataLayer.push(arguments);
+      }
+      gtag("js", new Date());
+      gtag("config", "G-1C1X8LWGBB");
+    </script>
     <script is:inline>
       (() => {
         const revealPage = () => document.documentElement.classList.add("fonts-ready");
