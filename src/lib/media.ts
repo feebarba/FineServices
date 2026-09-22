@@ -1,4 +1,5 @@
 const SANITY_IMAGE_HOST = "cdn.sanity.io";
+const MAX_RESPONSIVE_IMAGE_WIDTH = 2560;
 
 type ImageTransformOptions = {
   width?: number;
@@ -56,16 +57,17 @@ export const getLowQualityImageUrl = (src: string) => {
 };
 
 /**
- * Builds a compact responsive source set for Sanity images. The original
- * width is retained as the largest candidate so high-density displays do not
- * get an unnecessarily soft image.
+ * Builds a compact responsive source set for Sanity images. Large originals
+ * stay available in Sanity, but delivery is capped to avoid excessive decode
+ * memory on high-density and 4K displays.
  */
 export const getImageSrcSet = (src: string, intrinsicWidth: number) => {
   if (!isSanityImageUrl(src) || intrinsicWidth <= 0) return undefined;
 
-  const candidates = [320, 480, 640, 800, 1024, 1280, 1600, 1920, intrinsicWidth]
-    .filter((width) => width < intrinsicWidth)
-    .concat(intrinsicWidth)
+  const maximumWidth = Math.min(intrinsicWidth, MAX_RESPONSIVE_IMAGE_WIDTH);
+  const candidates = [320, 480, 640, 800, 1024, 1280, 1600, 1920, maximumWidth]
+    .filter((width) => width < maximumWidth)
+    .concat(maximumWidth)
     .filter((width, index, widths) => widths.indexOf(width) === index);
 
   return candidates

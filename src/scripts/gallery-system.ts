@@ -811,6 +811,8 @@ export const initializeGallerySystem = (
       gallery.setPointerCapture(event.pointerId);
     });
 
+    gallery.addEventListener("selectstart", (event) => event.preventDefault());
+
     gallery.addEventListener("pointermove", (event) => {
       if (!isDragging) return;
 

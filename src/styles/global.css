@@ -172,7 +172,7 @@ p { margin: 0; font-family: var(--garamono); font-size: 11px; font-weight: 500; 
   .design-project-meta { margin-bottom: 3.5px; }
 }
 
-.gallery-scroll { --gallery-gutter: var(--shell-gutter); --photo-height: 224.4px; --photo-height-limit: 9999px; width: auto; margin-inline: calc(var(--gallery-gutter) * -1); overflow-x: auto; overflow-y: clip; overscroll-behavior-x: contain; -webkit-overflow-scrolling: touch; scrollbar-width: none; outline: none; cursor: pointer; touch-action: pan-x pan-y; }
+.gallery-scroll { --gallery-gutter: var(--shell-gutter); --photo-height: 224.4px; --photo-height-limit: 9999px; width: auto; margin-inline: calc(var(--gallery-gutter) * -1); overflow-x: auto; overflow-y: clip; overscroll-behavior-x: contain; -webkit-overflow-scrolling: touch; -webkit-user-select: none; user-select: none; scrollbar-width: none; outline: none; cursor: pointer; touch-action: pan-x pan-y; }
 .gallery-scroll::-webkit-scrollbar { display: none; }
 .gallery-scroll:focus-visible { outline: 1px solid var(--ink); outline-offset: 3px; }
 .gallery-scroll.is-dragging { cursor: pointer; user-select: none; }
@@ -202,7 +202,7 @@ p { margin: 0; font-family: var(--garamono); font-size: 11px; font-weight: 500; 
 .gallery-scroll .photo-frame.is-resuming.is-resume-ready .project-image,
 .gallery-scroll .photo-frame.is-resuming.is-resume-ready .project-video { opacity: 1; transition: opacity 420ms ease; }
 .gallery-scroll .photo-frame.is-resuming.is-resume-ready .media-placeholder { opacity: 0; transition: opacity 420ms ease; }
-.project-image, .project-video, .media-placeholder { display: block; width: 100%; height: 100%; border: 0; outline: 0; object-fit: cover; user-select: none; pointer-events: none; }
+.project-image, .project-video, .media-placeholder { display: block; width: 100%; height: 100%; border: 0; outline: 0; object-fit: cover; -webkit-user-drag: none; -webkit-user-select: none; user-select: none; pointer-events: none; }
 .media-viewport { position: absolute; z-index: 1; inset: 0; overflow: hidden; border-radius: inherit; }
 .project-image, .project-video { position: absolute; z-index: 1; inset: 0; opacity: 1; visibility: hidden; border-radius: inherit; }
 .media-placeholder { position: absolute; z-index: 0; inset: 0; opacity: 0; filter: blur(12px); transform: scaleY(1.08); transform-origin: center; clip-path: inset(-5px 0); transition: opacity 300ms ease; }
